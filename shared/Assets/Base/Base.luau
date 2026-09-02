@@ -13,12 +13,15 @@ local Assets = ReplicatedStorage:WaitForChild("Assets")
 
 -- Base Assets
 local BaseAssets = Assets:WaitForChild("Base")
+local RollStand = require(BaseAssets.RollStand)
 
 --------------------------------------------------
 -- TYPES -- 
 --------------------------------------------------
 
 type Profile = ProfileTemplate.ProfileTemplate
+
+type RollStand = RollStand.RollStand
 
 --------------------------------------------------
 -- MAIN -- 
@@ -42,7 +45,7 @@ function Base.new(owner: Player, baseFolder: Folder, services: any)
 	self.BaseData = nil
 	
 	
-	self:_Setup()
+	self:_setup()
 	if not self.State.Active then
 		warn("Base is not active, destroying")
 		self:Destroy()
@@ -57,7 +60,7 @@ end
 -- SETUP -- 
 --------------------------------------------------
 
-function Base:_Setup()
+function Base:_setup()
 	local owner: Player = self.Owner
 	local baseFolder = self.BaseFolder
 	local baseModel = baseFolder:WaitForChild("Base")
@@ -72,21 +75,38 @@ function Base:_Setup()
 	-- hydrate base from profile
 	local profile: Profile = self.Services.DataService:GetProfile(owner)
 	if not profile then warn("[_Setup] No profile found for player", owner) end
-	local baseData: BaseData = profile.BaseData
+	local baseData: BaseData = profile.base
 	self.BaseData = baseData
 	
-	
 	-- setup components
-	
+	self.RollStand = RollStand.new(self, self.sevices)
+	self:_setupFloors()
 	
 	baseFolder:SetAttribute("Owner", owner.Name)
 	self.State.Active = true
 	return self
 end
 
+
+
+
+
+function Base:_setupFloors()
+	local owner: Player = self.Owner
+	local baseFolder = self.BaseFolder
+	local baseModel = baseFolder:FindFirstChild("Base")
+	local floorsFolder = baseModel:FindFirstChild("Floors")
+	
+	
+end
+
 --------------------------------------------------
 -- ACTIONS -- 
 --------------------------------------------------
+
+function Base:Roll()
+	
+end
 
 function Base:Destroy()
 	self.Trove:Destroy()
@@ -102,6 +122,7 @@ end
 export type Base = typeof(setmetatable({} :: {
 	Owner: Player,
 	BaseFolder: Folder,
+	RollStand: RollStand
 	
 }, Base))
 

@@ -16,7 +16,9 @@ local BaseFolders = workspace.Bases
 
 
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
-local remotes = {}
+local remotes = {
+	RollAnimal = remotesFolder.Base.RollAnimal,
+}
 
 --------------------------------------------------
 -- TYPES -- 
@@ -26,7 +28,7 @@ type Profile = ProfileTemplate.ProfileTemplate
 type BaseData = ProfileTemplate.BaseData
 type FloorData = ProfileTemplate.FloorData
 type ShopData = ProfileTemplate.ShopData
-type LootData = ProfileTemplate.LootData
+type AnimalData = ProfileTemplate.AnimalData
 
 type Base = Base.Base
 
@@ -51,9 +53,6 @@ BaseService.PlayerBases = {} :: {[Player]: Base}
 -- PRIVATE FUNCTIONS --
 --------------------------------------------------
 
-local function foo()
-
-end
 
 --------------------------------------------------
 -- PUBLIC FUNCTIONS --
@@ -75,11 +74,7 @@ function BaseService.AssignBase(self: BaseService, player: Player)
 		
 		-- check if claimed by someone else
 		local owner = self.ClaimedBases[baseFolder]
-		if owner and Players:FindFirstChild(owner) then
-			continue
-		elseif owner and Players:FindFirstChild(owner) == nil then
-			self:RemoveBase(owner) -- remove missing player base
-		end
+		if owner then continue end
 		
 		local base: Base? = Base.new(player, baseFolder, self.Services)
 		if not base then
@@ -129,6 +124,15 @@ function BaseService.Start(self: BaseService)
 	
 	Players.PlayerRemoving:Connect(function(player: Player)
 		self:RemoveBase(player)
+	end)
+	
+	
+	remotes.RollAnimal.OnServerEvent:Connect(function(player: Player)
+		local base: Base = self.PlayerBases[player]
+		local rollStand = base and base.Rol
+		if not rollStand then warn("[onAttemptRoll] missing rollStand object") return end
+
+		rollStand:Roll()
 	end)
 end
 
