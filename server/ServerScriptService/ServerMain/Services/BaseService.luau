@@ -17,7 +17,7 @@ local BaseFolders = workspace.Bases
 
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local remotes = {
-	RollAnimal = remotesFolder.Base.RollAnimal,
+	
 }
 
 --------------------------------------------------
@@ -127,13 +127,7 @@ function BaseService.Start(self: BaseService)
 	end)
 	
 	
-	remotes.RollAnimal.OnServerEvent:Connect(function(player: Player)
-		local base: Base = self.PlayerBases[player]
-		local rollStand = base and base.RollStand
-		if not rollStand then warn("[onAttemptRoll] missing rollStand object") return end
-
-		rollStand:Roll()
-	end)
+	
 end
 
 type BaseService = typeof(BaseService) & {}

@@ -24,6 +24,27 @@ type AnimalData = ProfileTemplate.AnimalData
 
 local AnimalUtil = {}
 
+function AnimalUtil.isStack(animalKey: string): boolean
+	return string.sub(animalKey, 1, 1) ~= "."
+end
+
+function AnimalUtil.getAnimalData(animalKey: string, value: AnimalData | number): AnimalData
+	local split = string.split(animalKey, "_")
+	assert(#split == 3, `malformed animal key: "{animalKey}"`)
+	
+	return {
+		definitionKey = split[1],
+		level = split[2],
+		mutation = split[3]
+	}
+end
+
+function AnimalUtil.generateAnimalKey(animalData: AnimalData): string
+	local newKey = animalData.definitionKey .. "_" .. animalData.level .. "_" .. animalData.mutation
+	return newKey
+end
+
+
 function AnimalUtil.getAnimalModel(animalData: AnimalData): Model
 	local defKey = animalData.definitionKey
 	local animalDef = defKey and AnimalDefinitions[animalData.definitionKey]
@@ -77,6 +98,7 @@ function AnimalUtil.getSortedAnimals(): {string}
 
 	return sorted
 end
+
 
 
 AnimalUtil.SortedAnimals = AnimalUtil.getSortedAnimals()

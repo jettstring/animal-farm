@@ -5,6 +5,7 @@ local loadOrder = {
 	{"DataService", require(Services.DataService) },
 	{"NotificationService", require(Services.NotificationService) },
 	{"BaseService", require(Services.BaseService) },
+	{"AnimalService", require(Services.AnimalService) },
 }
 
 -- Build named lookup
