@@ -129,7 +129,7 @@ function BaseService.Start(self: BaseService)
 	
 	remotes.RollAnimal.OnServerEvent:Connect(function(player: Player)
 		local base: Base = self.PlayerBases[player]
-		local rollStand = base and base.Rol
+		local rollStand = base and base.RollStand
 		if not rollStand then warn("[onAttemptRoll] missing rollStand object") return end
 
 		rollStand:Roll()

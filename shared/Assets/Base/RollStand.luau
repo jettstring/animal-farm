@@ -29,9 +29,11 @@ local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 --------------------------------------------------
 
 type Profile = ProfileTemplate.ProfileTemplate
+type RollData = ProfileTemplate.RollData
 
 type AnimalDefinition = AnimalConfig.AnimalDefinition
 type AnimalMutation = AnimalConfig.AnimalMutation
+
 
 --------------------------------------------------
 -- MAIN -- 
@@ -46,28 +48,33 @@ function RollStand.new(base: any, services: any)
 	self.Trove = Trove.new()
 	
 	self.Base = base
-	self.RollStandData = base.BaseData.rollStands
 	
-	self:_refresh()
-	
-	task.spawn(function()
-		wait(3)
-		self:Roll()
-	end)
+	self:_Refresh()
 	
 	return self
 end
    
-
-
 --------------------------------------------------
 -- ACTIONS -- 
 --------------------------------------------------
 
 function RollStand:Roll()
+	local rollData: RollData = self.Base.BaseData.rollData
+	local unlockedCount = rollData.unlockedCount
 	local playerLuck = self:GetRollLuck()
-	local result = AnimalUtil.rollAnimalResult(playerLuck)
-	print("Rolled:", result)
+
+	for slotIndex = 1, unlockedCount do
+		if not rollData.slotData[slotIndex] then rollData.slotData[slotIndex] = {} end
+		local slotData = rollData.slotData[slotIndex]
+		
+		-- get result
+		local result = AnimalUtil.rollAnimalResult(playerLuck)
+		if not result then warn("[Roll] bad result: ", result) continue end
+		
+		slotData.definitionKey = result
+	end
+	
+	self:_Refresh()
 end
 
 function RollStand:Destroy()
@@ -80,18 +87,59 @@ end
 
 function RollStand:GetRollLuck(): number
 	local owner: Player = self.Base.Owner
-	local total = 1
+	
+	local total = 1 
+	
+	-- roll luck upgrade
+	local rollData: RollData = self.Base.BaseData.rollData
+	local rollLuck = rollData.rollLuck
+	total += math.max(rollLuck, 0)
 	
 	return total
 end
 
-function RollStand:_refresh()
+function RollStand:_Refresh()
+	local baseFolder: Folder = self.Base.BaseFolder
+	local baseModel: Model = baseFolder:WaitForChild("Base")
+	local container: Folder = baseModel.Components.RollStand
+	local slots: Folder = container.Slots
 
+	local rollData: RollData = self.Base.BaseData.rollData
+	local unlockedCount = rollData.unlockedCount
+	local rollLuck = rollData.rollLuck
+	
+	-- iterate through stands
+	for _, slot in slots:GetChildren() do
+		local slotIndex = tonumber(slot.Name)
+		local model = slot:FindFirstChild("Model")
+		
+		local available = slotIndex <= unlockedCount
+		slot:SetAttribute("Available", available)
+		
+		if available then
+			local slotData = rollData.slotData[slotIndex]
+			local definitionKey = slotData and slotData.definitionKey
+			slot:SetAttribute("DefinitionKey", definitionKey)
+			
+		else
+			slot:SetAttribute("DefinitionKey", nil)
+			
+		end
+		
+		-- show/hide slot
+		for _, basePart: BasePart in model:QueryDescendants("BasePart") do
+			basePart.Transparency = (available and 0) or 1
+			basePart.CanCollide = available
+		end
+	end
+	
 end
 
 
 export type RollStand = typeof(setmetatable({} :: {
-	Owner: Player,
+	Trove: any,
+	Services: any,
+	Base: any,
 	
 }, RollStand))
 

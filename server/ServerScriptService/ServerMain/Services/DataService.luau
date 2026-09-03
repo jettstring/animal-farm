@@ -43,7 +43,7 @@ DataService.MainKey = "DEV-01"
 DataService.PurchaseKey = "DEV-PURCHASES-01"
 
 DataService.DATA_CONFIG = {
-	Mock = true, 
+	Mock = false, 
 }
 
 DataService.PlayerStore = ProfileStore.New(DataService.MainKey, ProfileTemplate)

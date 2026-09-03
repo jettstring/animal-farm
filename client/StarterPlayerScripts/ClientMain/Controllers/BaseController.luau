@@ -1,4 +1,4 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
 local Observers = require(ReplicatedStorage.Packages.Observers)
@@ -44,18 +44,19 @@ local function mountRollStand(baseFolder: Folder, isOwner: boolean)
 	local baseModel = baseFolder:WaitForChild("Base")
 	local components = baseModel:WaitForChild("Components")
 	local rollStand = components:WaitForChild("RollStand")
-	local stands: Folder = rollStand:WaitForChild("Stands")
-	local leverStand = rollStand:WaitForChild("LeverStand")
-	local interactPart = leverStand:WaitForChild("Interact")
+	local slots: Folder = rollStand:WaitForChild("Slots")
+	local interactPart = rollStand:WaitForChild("Interact")
+	local leverModel = rollStand:WaitForChild("Lever")
 	local rollPrompt: ProximityPrompt = interactPart:WaitForChild("RollPrompt")
 	
 	-- roll prompt
 	rollPrompt.Enabled = isOwner
 	if isOwner then
-		rollPrompt.Triggered:Connect(function()
+		trove:Add(rollPrompt.Triggered:Connect(function()
 			remotes.RollAnimal:FireServer()
-		end)
+		end))
 	end
+	
 	
 	
 	return function() trove:Destroy() end

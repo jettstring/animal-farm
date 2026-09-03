@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local ProfileTemplate = {
-	Money = 10000,
+	Money = 10000,pbase
 	
 	base = {
 		floors = {
@@ -9,9 +9,18 @@ local ProfileTemplate = {
 				
 			} :: FloorData
 		},
-		rollStands = {
-			
+		
+		rollData = {
+			unlockedCount = 2,
+			rollLuck = 1,
+			slotData = {
+				[1] = {
+					definitionKey = "Lion"
+				}
+			}
 		}
+		
+		
 	}:: BaseData,
 	
 	inventory = {
@@ -21,7 +30,13 @@ local ProfileTemplate = {
 
 export type BaseData = {
 	floors: {[number]: FloorData},
-	rollStands: {[number]: AnimalData},
+	rollData: RollData,
+}
+
+export type RollData = {
+	unlockedCount: number,
+	rollLuck: number,
+	slotData: {[number]: AnimalData},
 }
 
 export type FloorData = {
