@@ -3,53 +3,6 @@
   "className": "DataModel",
   "children": [
     {
-      "name": "StarterPlayer",
-      "className": "StarterPlayer",
-      "pluginManaged": true,
-      "children": [
-        {
-          "name": "StarterPlayerScripts",
-          "className": "StarterPlayerScripts",
-          "pluginManaged": true,
-          "children": [
-            {
-              "name": "ClientMain",
-              "className": "LocalScript",
-              "pluginManaged": true,
-              "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/client/StarterPlayerScripts/ClientMain/init.local.luau"
-              ],
-              "children": [
-                {
-                  "name": "Controllers",
-                  "className": "Folder",
-                  "pluginManaged": true,
-                  "children": [
-                    {
-                      "name": "NotificationController",
-                      "className": "ModuleScript",
-                      "pluginManaged": true,
-                      "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/client/StarterPlayerScripts/ClientMain/Controllers/NotificationController.luau"
-                      ]
-                    },
-                    {
-                      "name": "BaseController",
-                      "className": "ModuleScript",
-                      "pluginManaged": true,
-                      "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/client/StarterPlayerScripts/ClientMain/Controllers/BaseController.luau"
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "ReplicatedStorage",
       "className": "ReplicatedStorage",
       "pluginManaged": true,
@@ -64,7 +17,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Spr.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Spr.luau"
               ]
             },
             {
@@ -72,7 +25,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/ProfileStore.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/ProfileStore.luau"
               ]
             },
             {
@@ -80,7 +33,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/init.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/init.luau"
               ],
               "children": [
                 {
@@ -88,7 +41,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Types.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Types.luau"
                   ]
                 },
                 {
@@ -96,7 +49,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/VERSION.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/VERSION.luau"
                   ]
                 },
                 {
@@ -104,7 +57,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Reference.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Reference.luau"
                   ]
                 },
                 {
@@ -112,7 +65,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Attribute.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Attribute.luau"
                   ]
                 },
                 {
@@ -120,7 +73,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Utility.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Utility.luau"
                   ]
                 },
                 {
@@ -133,7 +86,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Elements/Caption.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Elements/Caption.luau"
                       ]
                     },
                     {
@@ -141,7 +94,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Elements/Container.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Elements/Container.luau"
                       ]
                     },
                     {
@@ -149,7 +102,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Elements/Indicator.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Elements/Indicator.luau"
                       ]
                     },
                     {
@@ -157,7 +110,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Elements/Menu.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Elements/Menu.luau"
                       ]
                     },
                     {
@@ -165,7 +118,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Elements/Notice.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Elements/Notice.luau"
                       ]
                     },
                     {
@@ -173,7 +126,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Elements/Selection.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Elements/Selection.luau"
                       ]
                     },
                     {
@@ -181,7 +134,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Elements/Widget.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Elements/Widget.luau"
                       ]
                     },
                     {
@@ -189,7 +142,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Elements/Dropdown.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Elements/Dropdown.luau"
                       ]
                     }
                   ]
@@ -204,7 +157,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Features/Gamepad.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Features/Gamepad.luau"
                       ]
                     },
                     {
@@ -212,7 +165,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Features/Overflow.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Features/Overflow.luau"
                       ]
                     },
                     {
@@ -220,7 +173,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Features/Themes/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Features/Themes/init.luau"
                       ],
                       "children": [
                         {
@@ -228,7 +181,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Features/Themes/Classic.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Features/Themes/Classic.luau"
                           ]
                         },
                         {
@@ -236,7 +189,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Features/Themes/Default.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Features/Themes/Default.luau"
                           ]
                         }
                       ]
@@ -253,7 +206,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Packages/GoodSignal.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Packages/GoodSignal.luau"
                       ]
                     },
                     {
@@ -261,7 +214,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Icon/Packages/Janitor.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Icon/Packages/Janitor.luau"
                       ]
                     }
                   ]
@@ -273,7 +226,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/init.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/init.luau"
               ],
               "children": [
                 {
@@ -281,7 +234,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Dropshadow.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Dropshadow.luau"
                   ]
                 },
                 {
@@ -289,7 +242,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Gradient.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Gradient.luau"
                   ]
                 },
                 {
@@ -297,7 +250,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/init.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/init.luau"
                   ],
                   "children": [
                     {
@@ -305,7 +258,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/Bubblegum.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/Bubblegum.luau"
                       ]
                     },
                     {
@@ -313,7 +266,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/ChromeStroke.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/ChromeStroke.luau"
                       ]
                     },
                     {
@@ -321,7 +274,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/GhostStroke.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/GhostStroke.luau"
                       ]
                     },
                     {
@@ -329,7 +282,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/Gold.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/Gold.luau"
                       ]
                     },
                     {
@@ -337,7 +290,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/GoldStroke.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/GoldStroke.luau"
                       ]
                     },
                     {
@@ -345,7 +298,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/Lava.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/Lava.luau"
                       ]
                     },
                     {
@@ -353,7 +306,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/LavaStroke.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/LavaStroke.luau"
                       ]
                     },
                     {
@@ -361,7 +314,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/OceanicStroke.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/OceanicStroke.luau"
                       ]
                     },
                     {
@@ -369,7 +322,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/Rainbow.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/Rainbow.luau"
                       ]
                     },
                     {
@@ -377,7 +330,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/RainbowStroke.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/RainbowStroke.luau"
                       ]
                     },
                     {
@@ -385,7 +338,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/Silver.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/Silver.luau"
                       ]
                     },
                     {
@@ -393,7 +346,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/SilverStroke.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/SilverStroke.luau"
                       ]
                     },
                     {
@@ -401,7 +354,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/Zebra.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/Zebra.luau"
                       ]
                     },
                     {
@@ -409,7 +362,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/SolidRainbow.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/SolidRainbow.luau"
                       ]
                     },
                     {
@@ -417,7 +370,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/RainbowOutline.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/RainbowOutline.luau"
                       ]
                     },
                     {
@@ -425,7 +378,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/DeathStroke.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/DeathStroke.luau"
                       ]
                     },
                     {
@@ -433,7 +386,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/IceStroke.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/IceStroke.luau"
                       ]
                     },
                     {
@@ -441,7 +394,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/FireStroke.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/FireStroke.luau"
                       ]
                     },
                     {
@@ -449,7 +402,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/Matrix.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/Matrix.luau"
                       ]
                     },
                     {
@@ -457,7 +410,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/GreenOutline.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/GreenOutline.luau"
                       ]
                     },
                     {
@@ -465,7 +418,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/Shine.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/Shine.luau"
                       ]
                     },
                     {
@@ -473,7 +426,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/WaveStroke.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/WaveStroke.luau"
                       ]
                     },
                     {
@@ -481,7 +434,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/ShineOutline.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/ShineOutline.luau"
                       ]
                     },
                     {
@@ -489,7 +442,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Presets/Ghost.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Presets/Ghost.luau"
                       ]
                     }
                   ]
@@ -499,7 +452,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/Stroke.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/Stroke.luau"
                   ]
                 },
                 {
@@ -507,7 +460,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/init.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/init.luau"
                   ],
                   "children": [
                     {
@@ -515,7 +468,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Bubblegum.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Bubblegum.luau"
                       ]
                     },
                     {
@@ -523,7 +476,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Chrome.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Chrome.luau"
                       ]
                     },
                     {
@@ -531,7 +484,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Ghost.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Ghost.luau"
                       ]
                     },
                     {
@@ -539,7 +492,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Gold.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Gold.luau"
                       ]
                     },
                     {
@@ -547,7 +500,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Lava.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Lava.luau"
                       ]
                     },
                     {
@@ -555,7 +508,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Oceanic.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Oceanic.luau"
                       ]
                     },
                     {
@@ -563,7 +516,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Rainbow.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Rainbow.luau"
                       ]
                     },
                     {
@@ -571,7 +524,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Silver.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Silver.luau"
                       ]
                     },
                     {
@@ -579,7 +532,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Zebra.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Zebra.luau"
                       ]
                     },
                     {
@@ -587,7 +540,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Death.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Death.luau"
                       ]
                     },
                     {
@@ -595,7 +548,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Ice.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Ice.luau"
                       ]
                     },
                     {
@@ -603,7 +556,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Fire.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Fire.luau"
                       ]
                     },
                     {
@@ -611,7 +564,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Matrix.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Matrix.luau"
                       ]
                     },
                     {
@@ -619,7 +572,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/Green.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/Green.luau"
                       ]
                     },
                     {
@@ -627,7 +580,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/EasyVisuals/GradientTemplates/SolidRainbow.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/EasyVisuals/GradientTemplates/SolidRainbow.luau"
                       ]
                     }
                   ]
@@ -639,7 +592,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/init.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/init.luau"
               ],
               "children": [
                 {
@@ -647,7 +600,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/CmdrClient/init.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/CmdrClient/init.luau"
                   ],
                   "children": [
                     {
@@ -655,7 +608,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/CmdrClient/CmdrInterface/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/CmdrClient/CmdrInterface/init.luau"
                       ],
                       "children": [
                         {
@@ -663,7 +616,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/CmdrClient/CmdrInterface/AutoComplete.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/CmdrClient/CmdrInterface/AutoComplete.luau"
                           ]
                         },
                         {
@@ -671,7 +624,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/CmdrClient/CmdrInterface/Window.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/CmdrClient/CmdrInterface/Window.luau"
                           ]
                         }
                       ]
@@ -681,7 +634,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/CmdrClient/DefaultEventHandlers.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/CmdrClient/DefaultEventHandlers.luau"
                       ]
                     }
                   ]
@@ -691,7 +644,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/CreateGui.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/CreateGui.luau"
                   ]
                 },
                 {
@@ -699,7 +652,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/Initialize.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/Initialize.luau"
                   ]
                 },
                 {
@@ -712,7 +665,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/help.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/help.luau"
                       ]
                     },
                     {
@@ -725,7 +678,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/announce.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/announce.luau"
                           ]
                         },
                         {
@@ -733,7 +686,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/announceServer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/announceServer.luau"
                           ]
                         },
                         {
@@ -741,7 +694,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/gotoPlace.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/gotoPlace.luau"
                           ]
                         },
                         {
@@ -749,7 +702,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/gotoPlaceServer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/gotoPlaceServer.luau"
                           ]
                         },
                         {
@@ -757,7 +710,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/kick.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/kick.luau"
                           ]
                         },
                         {
@@ -765,7 +718,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/kickServer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/kickServer.luau"
                           ]
                         },
                         {
@@ -773,7 +726,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/kill.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/kill.luau"
                           ]
                         },
                         {
@@ -781,7 +734,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/killServer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/killServer.luau"
                           ]
                         },
                         {
@@ -789,7 +742,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/respawn.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/respawn.luau"
                           ]
                         },
                         {
@@ -797,7 +750,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/respawnServer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/respawnServer.luau"
                           ]
                         },
                         {
@@ -805,7 +758,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/teleport.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/teleport.luau"
                           ]
                         },
                         {
@@ -813,7 +766,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Admin/teleportServer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Admin/teleportServer.luau"
                           ]
                         }
                       ]
@@ -828,7 +781,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Debug/blink.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Debug/blink.luau"
                           ]
                         },
                         {
@@ -836,7 +789,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Debug/fetch.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Debug/fetch.luau"
                           ]
                         },
                         {
@@ -844,7 +797,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Debug/fetchServer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Debug/fetchServer.luau"
                           ]
                         },
                         {
@@ -852,7 +805,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Debug/getPlayerPlaceInstance.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Debug/getPlayerPlaceInstance.luau"
                           ]
                         },
                         {
@@ -860,7 +813,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Debug/getPlayerPlaceInstanceServer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Debug/getPlayerPlaceInstanceServer.luau"
                           ]
                         },
                         {
@@ -868,7 +821,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Debug/position.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Debug/position.luau"
                           ]
                         },
                         {
@@ -876,7 +829,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Debug/thru.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Debug/thru.luau"
                           ]
                         },
                         {
@@ -884,7 +837,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Debug/uptime.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Debug/uptime.luau"
                           ]
                         },
                         {
@@ -892,7 +845,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Debug/uptimeServer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Debug/uptimeServer.luau"
                           ]
                         },
                         {
@@ -900,7 +853,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Debug/version.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Debug/version.luau"
                           ]
                         }
                       ]
@@ -915,7 +868,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/alias.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/alias.luau"
                           ]
                         },
                         {
@@ -923,7 +876,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/bind.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/bind.luau"
                           ]
                         },
                         {
@@ -931,7 +884,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/clear.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/clear.luau"
                           ]
                         },
                         {
@@ -939,7 +892,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/convertTimestamp.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/convertTimestamp.luau"
                           ]
                         },
                         {
@@ -947,7 +900,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/echo.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/echo.luau"
                           ]
                         },
                         {
@@ -955,7 +908,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/edit.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/edit.luau"
                           ]
                         },
                         {
@@ -963,7 +916,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/history.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/history.luau"
                           ]
                         },
                         {
@@ -971,7 +924,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/hover.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/hover.luau"
                           ]
                         },
                         {
@@ -979,7 +932,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/jsonArrayDecode.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/jsonArrayDecode.luau"
                           ]
                         },
                         {
@@ -987,7 +940,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/jsonArrayEncode.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/jsonArrayEncode.luau"
                           ]
                         },
                         {
@@ -995,7 +948,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/len.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/len.luau"
                           ]
                         },
                         {
@@ -1003,7 +956,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/math.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/math.luau"
                           ]
                         },
                         {
@@ -1011,7 +964,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/pick.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/pick.luau"
                           ]
                         },
                         {
@@ -1019,7 +972,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/rand.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/rand.luau"
                           ]
                         },
                         {
@@ -1027,7 +980,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/replace.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/replace.luau"
                           ]
                         },
                         {
@@ -1035,7 +988,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/resolve.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/resolve.luau"
                           ]
                         },
                         {
@@ -1043,7 +996,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/run.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/run.luau"
                           ]
                         },
                         {
@@ -1051,7 +1004,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/runLines.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/runLines.luau"
                           ]
                         },
                         {
@@ -1059,7 +1012,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/runif.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/runif.luau"
                           ]
                         },
                         {
@@ -1067,7 +1020,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/unbind.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/unbind.luau"
                           ]
                         },
                         {
@@ -1075,7 +1028,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/var.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/var.luau"
                           ]
                         },
                         {
@@ -1083,7 +1036,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/varServer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/varServer.luau"
                           ]
                         },
                         {
@@ -1091,7 +1044,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/varSet.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/varSet.luau"
                           ]
                         },
                         {
@@ -1099,7 +1052,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInCommands/Utility/varSetServer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInCommands/Utility/varSetServer.luau"
                           ]
                         }
                       ]
@@ -1116,7 +1069,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/BindableResource.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/BindableResource.luau"
                       ]
                     },
                     {
@@ -1124,7 +1077,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/BrickColor.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/BrickColor.luau"
                       ]
                     },
                     {
@@ -1132,7 +1085,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/Color3.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/Color3.luau"
                       ]
                     },
                     {
@@ -1140,7 +1093,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/Command.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/Command.luau"
                       ]
                     },
                     {
@@ -1148,7 +1101,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/ConditionFunction.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/ConditionFunction.luau"
                       ]
                     },
                     {
@@ -1156,7 +1109,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/Duration.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/Duration.luau"
                       ]
                     },
                     {
@@ -1164,7 +1117,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/JSON.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/JSON.luau"
                       ]
                     },
                     {
@@ -1172,7 +1125,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/MathOperator.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/MathOperator.luau"
                       ]
                     },
                     {
@@ -1180,7 +1133,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/Player.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/Player.luau"
                       ]
                     },
                     {
@@ -1188,7 +1141,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/PlayerId.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/PlayerId.luau"
                       ]
                     },
                     {
@@ -1196,7 +1149,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/Primitives.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/Primitives.luau"
                       ]
                     },
                     {
@@ -1204,7 +1157,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/StoredKey.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/StoredKey.luau"
                       ]
                     },
                     {
@@ -1212,7 +1165,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/Team.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/Team.luau"
                       ]
                     },
                     {
@@ -1220,7 +1173,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/Type.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/Type.luau"
                       ]
                     },
                     {
@@ -1228,7 +1181,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/URL.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/URL.luau"
                       ]
                     },
                     {
@@ -1236,7 +1189,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/UserInput.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/UserInput.luau"
                       ]
                     },
                     {
@@ -1244,7 +1197,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/BuiltInTypes/Vector.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/BuiltInTypes/Vector.luau"
                       ]
                     }
                   ]
@@ -1259,7 +1212,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/Shared/Argument.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/Shared/Argument.luau"
                       ]
                     },
                     {
@@ -1267,7 +1220,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/Shared/Command.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/Shared/Command.luau"
                       ]
                     },
                     {
@@ -1275,7 +1228,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/Shared/Dispatcher.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/Shared/Dispatcher.luau"
                       ]
                     },
                     {
@@ -1283,7 +1236,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/Shared/Registry.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/Shared/Registry.luau"
                       ]
                     },
                     {
@@ -1291,7 +1244,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/Shared/Util.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/Shared/Util.luau"
                       ]
                     }
                   ]
@@ -1306,7 +1259,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/CustomCommands/AddRoom.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/CustomCommands/AddRoom.luau"
                       ]
                     },
                     {
@@ -1314,7 +1267,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/CustomCommands/AddRoomServer.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/CustomCommands/AddRoomServer.luau"
                       ]
                     }
                   ]
@@ -1329,7 +1282,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/Hooks/ModuleScript.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/Hooks/ModuleScript.luau"
                       ]
                     }
                   ]
@@ -1344,7 +1297,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Cmdr/CustomTypes/Currency.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Cmdr/CustomTypes/Currency.luau"
                       ]
                     }
                   ]
@@ -1356,7 +1309,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Abbreviate.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Abbreviate.luau"
               ]
             },
             {
@@ -1364,7 +1317,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Loader.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Loader.luau"
               ]
             },
             {
@@ -1372,7 +1325,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Signal.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Signal.luau"
               ]
             },
             {
@@ -1380,7 +1333,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Trove.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Trove.luau"
               ]
             },
             {
@@ -1388,7 +1341,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Timer.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Timer.luau"
               ]
             },
             {
@@ -1396,7 +1349,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Observers.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Observers.luau"
               ]
             },
             {
@@ -1404,7 +1357,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Spring.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Spring.luau"
               ]
             },
             {
@@ -1412,7 +1365,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/CastVisuals.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/CastVisuals.luau"
               ]
             },
             {
@@ -1420,7 +1373,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/Bezier.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/Bezier.luau"
               ]
             },
             {
@@ -1438,7 +1391,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/evaera_promise@4.0.0/promise/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/evaera_promise@4.0.0/promise/init.luau"
                       ],
                       "children": [
                         {
@@ -1446,7 +1399,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/evaera_promise@4.0.0/promise/init.spec.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/evaera_promise@4.0.0/promise/init.spec.luau"
                           ]
                         }
                       ]
@@ -1463,7 +1416,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/Option.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/Option.luau"
                       ]
                     },
                     {
@@ -1471,7 +1424,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/Promise.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/Promise.luau"
                       ]
                     },
                     {
@@ -1479,7 +1432,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/Signal.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/Signal.luau"
                       ]
                     },
                     {
@@ -1487,7 +1440,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/init.luau"
                       ],
                       "children": [
                         {
@@ -1495,7 +1448,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Client/init.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Client/init.luau"
                           ],
                           "children": [
                             {
@@ -1503,7 +1456,7 @@
                               "className": "ModuleScript",
                               "pluginManaged": true,
                               "filePaths": [
-                                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Client/ClientComm.luau"
+                                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Client/ClientComm.luau"
                               ]
                             },
                             {
@@ -1511,7 +1464,7 @@
                               "className": "ModuleScript",
                               "pluginManaged": true,
                               "filePaths": [
-                                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Client/ClientRemoteProperty.luau"
+                                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Client/ClientRemoteProperty.luau"
                               ]
                             },
                             {
@@ -1519,7 +1472,7 @@
                               "className": "ModuleScript",
                               "pluginManaged": true,
                               "filePaths": [
-                                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Client/ClientRemoteSignal.luau"
+                                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Client/ClientRemoteSignal.luau"
                               ]
                             }
                           ]
@@ -1529,7 +1482,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Server/init.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Server/init.luau"
                           ],
                           "children": [
                             {
@@ -1537,7 +1490,7 @@
                               "className": "ModuleScript",
                               "pluginManaged": true,
                               "filePaths": [
-                                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Server/RemoteProperty.luau"
+                                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Server/RemoteProperty.luau"
                               ]
                             },
                             {
@@ -1545,7 +1498,7 @@
                               "className": "ModuleScript",
                               "pluginManaged": true,
                               "filePaths": [
-                                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Server/RemoteSignal.luau"
+                                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Server/RemoteSignal.luau"
                               ]
                             },
                             {
@@ -1553,7 +1506,7 @@
                               "className": "ModuleScript",
                               "pluginManaged": true,
                               "filePaths": [
-                                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Server/ServerComm.luau"
+                                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Server/ServerComm.luau"
                               ]
                             }
                           ]
@@ -1563,7 +1516,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Types.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Types.luau"
                           ]
                         },
                         {
@@ -1571,7 +1524,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Util.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_comm@1.0.1/comm/Util.luau"
                           ]
                         }
                       ]
@@ -1588,7 +1541,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_component@2.4.8/Promise.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_component@2.4.8/Promise.luau"
                       ]
                     },
                     {
@@ -1596,7 +1549,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_component@2.4.8/Signal.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_component@2.4.8/Signal.luau"
                       ]
                     },
                     {
@@ -1604,7 +1557,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_component@2.4.8/Symbol.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_component@2.4.8/Symbol.luau"
                       ]
                     },
                     {
@@ -1612,7 +1565,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_component@2.4.8/Trove.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_component@2.4.8/Trove.luau"
                       ]
                     },
                     {
@@ -1620,7 +1573,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_component@2.4.8/component/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_component@2.4.8/component/init.luau"
                       ],
                       "children": [
                         {
@@ -1628,7 +1581,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_component@2.4.8/component/init.spec.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_component@2.4.8/component/init.spec.luau"
                           ]
                         }
                       ]
@@ -1645,7 +1598,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_loader@2.0.0/loader.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_loader@2.0.0/loader.luau"
                       ]
                     }
                   ]
@@ -1660,7 +1613,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_option@1.0.5/option/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_option@1.0.5/option/init.luau"
                       ],
                       "children": [
                         {
@@ -1668,7 +1621,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_option@1.0.5/option/init.spec.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_option@1.0.5/option/init.spec.luau"
                           ]
                         }
                       ]
@@ -1685,7 +1638,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_signal@2.0.3/signal/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_signal@2.0.3/signal/init.luau"
                       ],
                       "children": [
                         {
@@ -1693,7 +1646,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_signal@2.0.3/signal/init.test.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_signal@2.0.3/signal/init.test.luau"
                           ]
                         }
                       ]
@@ -1710,7 +1663,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_symbol@2.0.1/symbol/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_symbol@2.0.1/symbol/init.luau"
                       ],
                       "children": [
                         {
@@ -1718,7 +1671,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_symbol@2.0.1/symbol/init.spec.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_symbol@2.0.1/symbol/init.spec.luau"
                           ]
                         }
                       ]
@@ -1735,7 +1688,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_trove@1.5.1/trove/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_trove@1.5.1/trove/init.luau"
                       ],
                       "children": [
                         {
@@ -1743,7 +1696,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_trove@1.5.1/trove/init.test.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_trove@1.5.1/trove/init.test.luau"
                           ]
                         }
                       ]
@@ -1760,7 +1713,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_signal@1.5.0/signal/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_signal@1.5.0/signal/init.luau"
                       ],
                       "children": [
                         {
@@ -1768,7 +1721,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_signal@1.5.0/signal/init.spec.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_signal@1.5.0/signal/init.spec.luau"
                           ]
                         }
                       ]
@@ -1785,7 +1738,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_timer@1.1.2/Signal.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_timer@1.1.2/Signal.luau"
                       ]
                     },
                     {
@@ -1793,7 +1746,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_timer@1.1.2/timer/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_timer@1.1.2/timer/init.luau"
                       ],
                       "children": [
                         {
@@ -1801,7 +1754,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_timer@1.1.2/timer/init.spec.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_timer@1.1.2/timer/init.spec.luau"
                           ]
                         }
                       ]
@@ -1818,7 +1771,7 @@
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/init.luau"
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/init.luau"
                       ],
                       "children": [
                         {
@@ -1826,7 +1779,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/observeAttribute.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/observeAttribute.luau"
                           ]
                         },
                         {
@@ -1834,7 +1787,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/observeCharacter.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/observeCharacter.luau"
                           ]
                         },
                         {
@@ -1842,7 +1795,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/observePlayer.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/observePlayer.luau"
                           ]
                         },
                         {
@@ -1850,7 +1803,7 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/observeProperty.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/observeProperty.luau"
                           ]
                         },
                         {
@@ -1858,13 +1811,28 @@
                           "className": "ModuleScript",
                           "pluginManaged": true,
                           "filePaths": [
-                            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/observeTag.luau"
+                            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Packages/_Index/sleitnick_observers@0.3.4/observers/observeTag.luau"
                           ]
                         }
                       ]
                     }
                   ]
                 }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Utils",
+          "className": "Folder",
+          "pluginManaged": true,
+          "children": [
+            {
+              "name": "AnimalUtil",
+              "className": "ModuleScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/AnimalUtil.luau"
               ]
             }
           ]
@@ -1879,7 +1847,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Modules/PurchaseProfileTemplate.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Modules/PurchaseProfileTemplate.luau"
               ]
             },
             {
@@ -1887,7 +1855,7 @@
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Modules/ProfileTemplate.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Modules/ProfileTemplate.luau"
               ]
             }
           ]
@@ -1907,7 +1875,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Assets/Base/Base.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Base/Base.luau"
                   ]
                 },
                 {
@@ -1915,7 +1883,23 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Assets/Base/RollStand.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Base/RollStand.luau"
+                  ]
+                },
+                {
+                  "name": "AnimalStand",
+                  "className": "ModuleScript",
+                  "pluginManaged": true,
+                  "filePaths": [
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Base/AnimalStand.luau"
+                  ]
+                },
+                {
+                  "name": "Floor",
+                  "className": "ModuleScript",
+                  "pluginManaged": true,
+                  "filePaths": [
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Base/Floor.luau"
                   ]
                 }
               ]
@@ -1930,7 +1914,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/shared/Assets/Animals/AnimalConfig.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Animals/AnimalConfig.luau"
                   ]
                 }
               ]
@@ -1949,7 +1933,7 @@
           "className": "Script",
           "pluginManaged": true,
           "filePaths": [
-            "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/server/ServerScriptService/ServerMain/init.legacy.luau"
+            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/init.legacy.luau"
           ],
           "children": [
             {
@@ -1962,7 +1946,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/server/ServerScriptService/ServerMain/Services/DataService.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/DataService.luau"
                   ]
                 },
                 {
@@ -1970,7 +1954,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/server/ServerScriptService/ServerMain/Services/NotificationService.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/NotificationService.luau"
                   ]
                 },
                 {
@@ -1978,7 +1962,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/server/ServerScriptService/ServerMain/Services/RollingService.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/RollingService.luau"
                   ]
                 },
                 {
@@ -1986,7 +1970,7 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/server/ServerScriptService/ServerMain/Services/ItemService.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/ItemService.luau"
                   ]
                 },
                 {
@@ -1994,7 +1978,62 @@
                   "className": "ModuleScript",
                   "pluginManaged": true,
                   "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/SellLoot/code/server/ServerScriptService/ServerMain/Services/BaseService.luau"
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/BaseService.luau"
+                  ]
+                },
+                {
+                  "name": "AnimalService",
+                  "className": "ModuleScript",
+                  "pluginManaged": true,
+                  "filePaths": [
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/AnimalService.luau"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "StarterPlayer",
+      "className": "StarterPlayer",
+      "pluginManaged": true,
+      "children": [
+        {
+          "name": "StarterPlayerScripts",
+          "className": "StarterPlayerScripts",
+          "pluginManaged": true,
+          "children": [
+            {
+              "name": "ClientMain",
+              "className": "LocalScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/init.local.luau"
+              ],
+              "children": [
+                {
+                  "name": "Controllers",
+                  "className": "Folder",
+                  "pluginManaged": true,
+                  "children": [
+                    {
+                      "name": "NotificationController",
+                      "className": "ModuleScript",
+                      "pluginManaged": true,
+                      "filePaths": [
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/NotificationController.luau"
+                      ]
+                    },
+                    {
+                      "name": "BaseController",
+                      "className": "ModuleScript",
+                      "pluginManaged": true,
+                      "filePaths": [
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/BaseController.luau"
+                      ]
+                    }
                   ]
                 }
               ]

@@ -14,14 +14,18 @@ local Assets = ReplicatedStorage:WaitForChild("Assets")
 -- Base Assets
 local BaseAssets = Assets:WaitForChild("Base")
 local RollStand = require(BaseAssets.RollStand)
+local Floor = require(BaseAssets.Floor)
 
 --------------------------------------------------
 -- TYPES -- 
 --------------------------------------------------
 
 type Profile = ProfileTemplate.ProfileTemplate
+type BaseData = ProfileTemplate.BaseData
+type FloorData = ProfileTemplate.FloorData
 
 type RollStand = RollStand.RollStand
+type Floor = Floor.Floor
 
 --------------------------------------------------
 -- MAIN -- 
@@ -35,16 +39,17 @@ function Base.new(owner: Player, baseFolder: Folder, services: any)
 	self.Services = services
 	self.Trove = Trove.new()
 	
-	self.Owner = owner
-	self.BaseFolder = baseFolder
-	
 	self.State = {
 		Active = false,
 	}
 	
+	self.Owner = owner
+	self.BaseFolder = baseFolder
 	self.BaseData = nil
+	self.Floors = {}
 	
 	
+
 	self:_setup()
 	if not self.State.Active then
 		warn("Base is not active, destroying")
@@ -55,10 +60,6 @@ function Base.new(owner: Player, baseFolder: Folder, services: any)
 	print("[Base] Created base object:", self)
 	return self
 end
-
---------------------------------------------------
--- SETUP -- 
---------------------------------------------------
 
 function Base:_setup()
 	local owner: Player = self.Owner
@@ -79,25 +80,37 @@ function Base:_setup()
 	self.BaseData = baseData
 	
 	-- setup components
-	self.RollStand = RollStand.new(self, self.sevices)
+	self.RollStand = self.Trove:Add(RollStand.new(self, self.Services))
 	self:_setupFloors()
 	
 	baseFolder:SetAttribute("Owner", owner.Name)
 	self.State.Active = true
+	
 	return self
 end
 
 
-
-
-
 function Base:_setupFloors()
-	local owner: Player = self.Owner
 	local baseFolder = self.BaseFolder
-	local baseModel = baseFolder:FindFirstChild("Base")
-	local floorsFolder = baseModel:FindFirstChild("Floors")
+	local baseModel = baseFolder:WaitForChild("Base")
+	local floorsContainer: Folder = baseModel:WaitForChild("Floors")
 	
+	local baseData: BaseData = self.BaseData 
+	local unlockedFloors: number = baseData.unlockedFloors
 	
+	for _, floorFolder in floorsContainer:GetChildren() do
+		local floorIndex = tonumber(floorFolder.Name)
+		if not floorIndex then warn("[_SetupFloors] invalid floor index: ", floorIndex) continue end
+		
+		local floorData: FloorData? = baseData.floors[floorIndex]
+		
+		local floor: Floor = self.Trove:Add(Floor.new(self, floorIndex, floorFolder, floorData, self.Services))
+		self.Floors[floorIndex] = floor
+		
+		if floorIndex <= unlockedFloors then
+			floor:Activate()
+		end
+	end
 end
 
 --------------------------------------------------
@@ -105,7 +118,7 @@ end
 --------------------------------------------------
 
 function Base:Roll()
-	
+
 end
 
 function Base:Destroy()
@@ -122,7 +135,9 @@ end
 export type Base = typeof(setmetatable({} :: {
 	Owner: Player,
 	BaseFolder: Folder,
-	RollStand: RollStand
+	BaseData: BaseData,
+	RollStand: RollStand,
+	Floors: {[number]: Floor}
 	
 }, Base))
 

@@ -1,12 +1,17 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local ProfileTemplate = {
-	Money = 10000,pbase
+	currency = {
+		["Money"] = 10_000,
+	},
 	
 	base = {
+		unlockedFloors = 1,
+		
 		floors = {
 			[1] = {
-				
+				animalStands = {},
+				upgrades = {}
 			} :: FloorData
 		},
 		
@@ -29,6 +34,7 @@ local ProfileTemplate = {
 }
 
 export type BaseData = {
+	unlockedFloors: number,
 	floors: {[number]: FloorData},
 	rollData: RollData,
 }
@@ -40,18 +46,19 @@ export type RollData = {
 }
 
 export type FloorData = {
-	animalStands: {[number]: AnimalStand},  -- resolve unlocked stands by key existence
+	animalStands: {[number]: StandData},  -- resolve unlocked stands by key existence
 	upgrades: { [string]: any}
 }
 
-export type AnimalStand = { }
+export type StandData = {
+	occupant: AnimalData,
+}
+
 
 export type AnimalData = {
 	definitionKey: string,
 	level: number,
-	mutations: {string},
-	floor: number?, -- resolve animal stand from floor/slot existence
-	slot: number?,
+	mutation: string,
 } 
 
 export type ProfileTemplate = typeof(ProfileTemplate) 

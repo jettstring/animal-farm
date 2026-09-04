@@ -43,7 +43,7 @@ DataService.MainKey = "DEV-01"
 DataService.PurchaseKey = "DEV-PURCHASES-01"
 
 DataService.DATA_CONFIG = {
-	Mock = false, 
+	Mock = true, 
 }
 
 DataService.PlayerStore = ProfileStore.New(DataService.MainKey, ProfileTemplate)
@@ -138,7 +138,7 @@ end
 -- PUBLIC FUNCTIONS --
 --------------------------------------------------
 
-function DataService.GetProfile(self: DataService, player: Player)
+function DataService.GetProfile(self: DataService, player: Player): Profile
 	local profile = self.Profiles[player]
 
 	if not profile then
@@ -163,11 +163,11 @@ end
 
 
 function DataService.UpdateAttributes(self: DataService, player: Player)
-	local profile = self:GetProfile(player)
+	local profile: Profile = self:GetProfile(player)
 	if not profile then warn("[UpdateAttributes] No profile found for player:", player.Name) return end
 	
 	for valueName in INCREMENTABLE_CURRENCIES do
-		player:SetAttribute(valueName, profile[valueName])
+		player:SetAttribute(valueName, profile.currency[valueName])
 	end
 end
 
@@ -183,13 +183,13 @@ function DataService.IncrementCurrency(self: DataService, player: Player, curren
 		return "Amount must be a number."
 	end
 
-	local currentValue = profile[currencyName]
+	local currentValue = profile.currency[currencyName]
 	if typeof(currentValue) ~= "number" then
 		currentValue = 0
 	end
 
 	local newValue = currentValue + amount
-	profile[currencyName] = newValue
+	profile.currency[currencyName] = newValue
 
 	-- Update attributes
 	self:UpdateAttributes(player)

@@ -20,7 +20,7 @@ local Base = require(BaseAssets.Base)
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local remotes = {
 	RollAnimal = remotesFolder.Animal.RollAnimal,
-	BuyAnimal = remotesFolder.Animal.RollAnimal
+	BuySlotAnimal = remotesFolder.Animal.BuySlotAnimal,
 }
 
 --------------------------------------------------
@@ -38,6 +38,8 @@ type Base = Base.Base
 local AnimalService = {}
 AnimalService.Services = {}
 AnimalService.Signals = {}
+AnimalService.AnimalTools = {} :: {[Player]: Tool}
+
 
 --------------------------------------------------
 -- VARIABLES --
@@ -50,28 +52,120 @@ AnimalService.Signals = {}
 --------------------------------------------------
 
 local function _playerRemoved(player: Player)
-	
+	AnimalService.AnimalTools[player] = nil
 end
 
 --------------------------------------------------
 -- PUBLIC FUNCTIONS --
 --------------------------------------------------
 
-function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalData: AnimalData)
+
+function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalData: AnimalData): boolean
 	local profile: Profile = self.Services.DataService:GetProfile(player)
-	if not profile then warn("[GiveAnimal] No profile found for player:", player) return end
+	if not profile then warn("[GiveAnimal] No profile found for player:", player) return false end
 	
+	if not animalData or not animalData.definitionKey then warn("[GiveAnimal] invalid animalData: ", animalData) return false end
 	
+	local animalKey = AnimalUtil.generateAnimalKey(animalData)
+	if not animalKey then warn("[GiveAnimal] invalid animalKey: ", animalKey) return false end
+	
+	-- save to profile
+	profile.inventory.animals[animalKey] = (profile.inventory.animals[animalKey] or 0) + 1
+	
+	self:CreateAnimalTool(player, animalKey)
+	
+	return true
 end
 
-function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, animalId: string, animalData: AnimalData)
+function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, animalKey: string)
+	local profile: Profile = self.Services.DataService:GetProfile(player)
+	if not profile then warn("[CreateAnimalTool] No profile found for player:", player) return end
+	
+	-- check if animalKey exists in profile
+	local ownedAmount = profile.inventory.animals[animalKey]
+	if not ownedAmount then warn("[CreateAnimalTool] animalKey not found in profile: ", animalKey) return end
+	
+	local animalData = animalKey and AnimalUtil.getAnimalData(animalKey)
+	if not animalData then warn("[CreateAnimalTool] invalid animalData: ", animalData) return end
+	
+	local character = player.Character
+	if not character then return end
+	
+	-- check if player already has a tool for this animalKey
+	local existingTool: Tool? = self.AnimalTools[player] and self.AnimalTools[player][animalKey]
+	if existingTool and existingTool.Parent then
+		self:UpdateAnimalTool(player, animalKey)
+		return
+	end
+	
+	-- create new tool 
+	local tool = Instance.new("Tool")
+	tool.Name = "AnimalTool"
+	tool.Grip = CFrame.new(0, 0, 1)
+	tool.CanBeDropped = false
+	tool:SetAttribute("AnimalKey", animalKey)
+	tool:SetAttribute("Quantity", ownedAmount)
+	
+	local handle = Instance.new("Part")
+	handle.Name = "Handle"
+	handle.Size = Vector3.new(1, 1, 1)
+	handle.Anchored = false
+	handle.CanCollide = false
+	handle.Parent = tool
+	
+	local animalModel = AnimalUtil.getAnimalModel(animalData)
+	animalModel:PivotTo(handle.CFrame)
+	animalModel.Parent = tool
+	
+	for _, basePart: BasePart in animalModel:QueryDescendants("BasePart") do
+		local weld = Instance.new("WeldConstraint")
+		weld.Part0 = handle
+		weld.Part1 = basePart
+		weld.Parent = basePart
+		basePart.Anchored = false
+		basePart.CanCollide = false
+		basePart.Massless = true
+	end
+	
+	-- track
+	self.AnimalTools[player] = self.AnimalTools[player] or {}
+	self.AnimalTools[player][animalKey] = tool
 
+
+	tool.Parent = player.Backpack
+end
+
+function AnimalService.UpdateAnimalTool(self: AnimalService, player: Player, animalKey: string)
+	local profile: Profile = self.Services.DataService:GetProfile(player)
+	if not profile then warn("[UpdateAnimalTool] No profile found for player:", player) return end
+
+	-- check if animalKey exists in profile
+	local ownedAmount = profile.inventory.animals[animalKey]
+	if not ownedAmount then warn("[UpdateAnimalTool] animalKey not found in profile: ", animalKey) return end
+
+	local animalData = animalKey and AnimalUtil.getAnimalData(animalKey)
+	if not animalData then warn("[UpdateAnimalTool] invalid animalData: ", animalData) return end
+
+	local character = player.Character
+	if not character then return end
+
+	-- check if player already has a tool for this animalKey
+	local existingTool: Tool? = self.AnimalTools[player] and self.AnimalTools[player][animalKey]
+	if not existingTool then
+		warn("[UpdateAnimalTool] no existing tool found for animalKey: ", animalKey)
+		return
+	end
+	
+	existingTool:SetAttribute("Quantity", ownedAmount)
 end
 
 function AnimalService._HydrateTools(self: AnimalService, player: Player)
 	local profile: Profile = self.Services.DataService:GetProfile(player)
 	if not profile then warn("[_HydrateTools] No profile found for player:", player) return end
-	
+
+	for animalKey, _ in profile.inventory.animals do
+		self:CreateAnimalTool(player, animalKey)
+	end
 end
 
 --------------------------------------------------
@@ -86,9 +180,14 @@ end
 function AnimalService.Start(self: AnimalService)
 	self.Services.DataService.Signals.DataLoaded:Connect(function(player: Player)
 		player.CharacterAdded:Connect(function()
+			print("GIVING ANIMAL TOOLS")
+			self.AnimalTools[player] = nil
 			self:_HydrateTools(player)
 		end)
-		if player.Character then self:_HydrateTools(player) end
+		if player.Character then
+			print("GIVING ANIMAL TOOLS")
+			self:_HydrateTools(player)
+		end
 	end)
 	
 	Players.PlayerRemoving:Connect(_playerRemoved)
@@ -98,9 +197,17 @@ function AnimalService.Start(self: AnimalService)
 	remotes.RollAnimal.OnServerEvent:Connect(function(player: Player)
 		local base: Base = self.Services.BaseService.PlayerBases[player]
 		local rollStand = base and base.RollStand
-		if not rollStand then warn("[onAttemptRoll] missing rollStand object") return end
+		if not rollStand then warn("missing rollStand object") return end
 
 		rollStand:Roll()
+	end)
+	
+	remotes.BuySlotAnimal.OnServerEvent:Connect(function(player: Player, slotIndex: number)
+		local base: Base = self.Services.BaseService.PlayerBases[player]
+		local rollStand = base and base.RollStand 
+		if not rollStand then warn("missing rollStand object") return end
+		
+		rollStand:BuySlotAnimal(slotIndex)
 	end)
 	
 end

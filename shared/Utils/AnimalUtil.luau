@@ -28,20 +28,31 @@ function AnimalUtil.isStack(animalKey: string): boolean
 	return string.sub(animalKey, 1, 1) ~= "."
 end
 
-function AnimalUtil.getAnimalData(animalKey: string, value: AnimalData | number): AnimalData
+function AnimalUtil.getAnimalData(animalKey: string): AnimalData
 	local split = string.split(animalKey, "_")
-	assert(#split == 3, `malformed animal key: "{animalKey}"`)
+	assert(#split == 2 or #split == 3, `malformed animal key: "{animalKey}"`)
 	
 	return {
 		definitionKey = split[1],
-		level = split[2],
+		level = tonumber(split[2]),
 		mutation = split[3]
 	}
 end
 
-function AnimalUtil.generateAnimalKey(animalData: AnimalData): string
-	local newKey = animalData.definitionKey .. "_" .. animalData.level .. "_" .. animalData.mutation
-	return newKey
+function AnimalUtil.generateAnimalKey(animalData: AnimalData): string?
+	local definitionKey = animalData.definitionKey
+	if not definitionKey or not AnimalDefinitions[definitionKey] then
+		warn("[generateAnimalKey] invalid definitionKey:", definitionKey)
+		return nil
+	end
+	
+	local level = animalData.level or 1
+	local key = definitionKey .. "_" .. level
+	if animalData.mutation then
+		key = key .. "_" .. animalData.mutation
+	end
+	
+	return key
 end
 
 
