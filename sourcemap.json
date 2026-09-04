@@ -1834,6 +1834,14 @@
               "filePaths": [
                 "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/AnimalUtil.luau"
               ]
+            },
+            {
+              "name": "BaseUtil",
+              "className": "ModuleScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/BaseUtil.luau"
+              ]
             }
           ]
         },

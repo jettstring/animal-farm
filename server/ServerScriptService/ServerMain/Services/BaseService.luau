@@ -7,6 +7,10 @@ local Players = game:GetService("Players")
 
 local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
+-- Utils
+local Utils = ReplicatedStorage:FindFirstChild("Utils")
+local BaseUtil = require(Utils.BaseUtil)
+
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 
 -- Base Assets
@@ -53,10 +57,29 @@ BaseService.PlayerBases = {} :: {[Player]: Base}
 -- PRIVATE FUNCTIONS --
 --------------------------------------------------
 
+local function _cleanupBase(baseFolder: Folder)
+	local baseModel: Model = baseFolder.Base
+	local spawnLocation: SpawnLocation = baseModel.SpawnLocation
+	
+	
+	-- hide floors
+	local floorsContainer = baseModel.Floors
+	for _, floorFolder: Folder in floorsContainer:GetChildren() do
+		BaseUtil.showInstance(floorFolder, false)
+	end
+	
+	-- hide components
+	BaseUtil.showInstance(baseModel.Components, false)
+	
+	
+	
+end
+
 
 --------------------------------------------------
 -- PUBLIC FUNCTIONS --
 --------------------------------------------------
+
 
 function BaseService.AssignBase(self: BaseService, player: Player)
 	if not player then return end
@@ -104,6 +127,8 @@ function BaseService.RemoveBase(self: BaseService, player: Player)
 	
 	player:SetAttribute("BaseAssigned", nil)
 	
+	_cleanupBase(baseFolder)
+	
 	print("[RemoveBase] removed base for", player)
 end
 
@@ -115,6 +140,9 @@ end
 function BaseService.Init(self: BaseService, services)
 	self.Services = services
 	
+	for _, baseFolder in BaseFolders:GetChildren() do
+		_cleanupBase(baseFolder)
+	end
 end
 
 function BaseService.Start(self: BaseService)

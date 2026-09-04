@@ -28,7 +28,9 @@ local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local remotes = {
 	RollAnimal = remotesFolder.Animal.RollAnimal,
 	BuySlotAnimal = remotesFolder.Animal.BuySlotAnimal,
-	StealSlotAnimal = remotesFolder.Animal.StealSlotAnimal
+	StealSlotAnimal = remotesFolder.Animal.StealSlotAnimal,
+	BuyFloor = remotesFolder.Base.BuyFloor,
+	BuyAnimalStand = remotesFolder.Base.BuyAnimalStand,
 }
 
 --------------------------------------------------

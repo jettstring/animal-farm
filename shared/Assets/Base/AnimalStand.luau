@@ -68,6 +68,9 @@ function AnimalStand:_Refresh()
 	
 end
 
+function AnimalStand:Activate()
+	
+end
 
 function AnimalStand:Destroy()
 	self.Trove:Destroy()

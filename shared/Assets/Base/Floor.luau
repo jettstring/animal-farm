@@ -11,6 +11,7 @@ local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
 -- Utils
 local Utils = ReplicatedStorage:FindFirstChild("Utils")
+local BaseUtil = require(Utils.BaseUtil)
 local AnimalUtil = require(Utils.AnimalUtil)
 
 local Assets = ReplicatedStorage:FindFirstChild("Assets")
@@ -24,6 +25,10 @@ local AnimalAssets = Assets:WaitForChild("Animals")
 local AnimalConfig = require(AnimalAssets:WaitForChild("AnimalConfig"))
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 
+local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
+local remotes = {
+	BuyFloor = remotesFolder.Base.BuyFloor,
+}
 
 -------------------------------------------------
 -- TYPES -- 
@@ -73,20 +78,26 @@ end
 function Floor:Activate()
 	if self.Active then return end
 	
-	if not self.FloorData then
+	local floorFolder: Folder = self.FloorFolder
+	
+	-- show 
+	local model: Folder = floorFolder.Model
+	BaseUtil.showInstance(model, true)
+	
+	
+	local floorData: FloorData = self.FloorData
+	if not floorData then
 		local baseData: BaseData = self.Base.BaseData
 		baseData.floors[self.FloorIndex] = {
 			animalStands = {},
 			upgrades = {},
 		}
 		self.FloorData = baseData.floors[self.FloorIndex]		
+		floorData = self.FloorData
 	end
 	
-	local floorData: FloorData = self.FloorData
-	
-	
 	-- hydrate stands
-	local standsContainer = self.FloorFolder.AnimalStands
+	local standsContainer = floorFolder.AnimalStands
 	for _, standFolder in standsContainer:GetChildren() do
 		local standIndex = tonumber(standFolder.Name)
 		if not standIndex then warn("[Floor.new] invalid stand index: ", standIndex) continue end
@@ -97,9 +108,23 @@ function Floor:Activate()
 		self.AnimalStands[standIndex] = self.Trove:Add(AnimalStand.new(self, standIndex, standFolder, standData, self.Services))
 	end
 	
+	self.FloorFolder:SetAttribute("Active", true)
+	
 	self.Active = true
 end
 
+function Floor:Unlock()
+	if self.Active then return end
+	
+	-- fire owner to reveal floor
+	local owner: Player = self.Base.Owner
+	remotes.BuyFloor:FireClient(owner, self.FloorIndex)
+	
+	-- activate
+	task.delay(2, function()
+		self:Activate()
+	end)
+end
 
 function Floor:Destroy()
 	self.Trove:Destroy()

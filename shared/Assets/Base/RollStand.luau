@@ -11,6 +11,7 @@ local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
 -- Utils
 local Utils = ReplicatedStorage:FindFirstChild("Utils")
+local BaseUtil = require(Utils.BaseUtil)
 local AnimalUtil = require(Utils.AnimalUtil)
 
 local Assets = ReplicatedStorage:FindFirstChild("Assets")
@@ -48,6 +49,12 @@ function RollStand.new(base: any, services: any)
 	self.Trove = Trove.new()
 	
 	self.Base = base
+	
+	local baseFolder: Folder = base.BaseFolder
+	local baseModel: Model = baseFolder.Base
+	local container: Folder = baseModel.Components.RollStand
+	BaseUtil.showInstance(container, true)
+	
 	
 	self:_Refresh()
 	
@@ -160,10 +167,7 @@ function RollStand:_Refresh()
 		end
 		
 		-- show/hide slot
-		for _, basePart: BasePart in model:QueryDescendants("BasePart") do
-			basePart.Transparency = (available and 0) or 1
-			basePart.CanCollide = available
-		end
+		BaseUtil.showInstance(model, available)
 	end
 	
 end
