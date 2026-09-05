@@ -87,7 +87,7 @@ end
 function AnimalStand._Refresh(self: AnimalStand)
 	local standFolder: Folder = self.StandFolder
 	local standModel: Model = standFolder.StandModel
-	local buySign: Model = standFolder.BuySign
+	local unlockSign: Model = standFolder.UnlockSign
 	
 	local animalModel: Model? = self.AnimalModel
 	local standData: StandData? = self.StandData
@@ -96,7 +96,11 @@ function AnimalStand._Refresh(self: AnimalStand)
 	standFolder:SetAttribute("Active", unlocked)
 
 	BaseUtil.showInstance(standModel, unlocked)
-	BaseUtil.showInstance(buySign, not unlocked)
+	BaseUtil.showInstance(unlockSign, not unlocked)
+	
+	-- unlock cost
+	local unlockCost: number = BaseUtil.getStandCost(self.Floor.FloorIndex)
+	standFolder:SetAttribute("UnlockCost", unlockCost)
 
 	-- update animal attributes 
 	local animalData: AnimalData? = unlocked and standData.occupant
@@ -119,11 +123,20 @@ function AnimalStand.Unlock(self: AnimalStand)
 	self.Trove:Add(task.delay(3, function()
 		self:_Refresh()
 	end))
+	
+	return true
 end
+
 
 function AnimalStand.Destroy(self: AnimalStand)
 	self.Trove:Destroy()
+	
+	-- clear attributes
+	for attributeName, _ in self.StandFolder:GetAttributes() do
+		self.StandFolder:SetAttribute(attributeName, nil)
+	end
 end
+
 
 --------------------------------------------------
 -- HELPERS -- 

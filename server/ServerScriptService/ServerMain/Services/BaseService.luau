@@ -21,7 +21,8 @@ local BaseFolders = workspace.Bases
 
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local remotes = {
-	
+	BuyFloor = remotesFolder.Base.BuyFloor,
+	BuyAnimalStand = remotesFolder.Base.BuyAnimalStand,
 }
 
 --------------------------------------------------
@@ -57,6 +58,39 @@ BaseService.PlayerBases = {} :: {[Player]: Base}
 -- PRIVATE FUNCTIONS --
 --------------------------------------------------
 
+local function attemptUnlockStand(player: Player, floorIndex: number, standIndex: number)
+	local base: Base = BaseService.PlayerBases[player]
+	if not base then warn("[attemptUnlockStand] missing base") return end
+	
+	local floor = base.Floors[floorIndex]
+	if not floor then warn("[attemptUnlockStand] missing floor object for", floorIndex) return end
+	
+	if not floor:OwnsFloor() then
+		warn("[attemptUnlockStand] Floor is not unlocked")
+		return
+	end
+	
+	local animalStand = floor.AnimalStands[standIndex]
+	if not animalStand then warn("[attemptUnlockStand] missing animalStand object:", standIndex) return end
+	
+	local profile: Profile = BaseService.Services.DataService:GetProfile(player)
+	if not profile then warn("[attemptUnlockStand] No profile found for player:", player) return end
+	
+	local unlockCost: number = BaseUtil.getStandCost(floorIndex)
+	if profile.currency.Money <= unlockCost then
+		BaseService.Services.NotificationService:Error(player, "Cannot buy!")
+		return
+	end
+
+	local success = animalStand:Unlock()
+	if not success then
+		warn("[attemptUnlockStand] failed to unlock animalStand")
+		return
+	end
+
+	BaseService.Services.DataService:IncrementCurrency(player, "Money", -unlockCost, "Buy Stand", false)
+end
+
 local function _cleanupBase(baseFolder: Folder)
 	local baseModel: Model = baseFolder.Base
 	local spawnLocation: SpawnLocation = baseModel.SpawnLocation
@@ -70,8 +104,6 @@ local function _cleanupBase(baseFolder: Folder)
 	
 	-- hide components
 	BaseUtil.showInstance(baseModel.Components, false)
-	
-	
 	
 end
 
@@ -156,6 +188,7 @@ function BaseService.Start(self: BaseService)
 	
 	
 	
+	remotes.BuyAnimalStand.OnServerEvent:Connect(attemptUnlockStand)
 end
 
 type BaseService = typeof(BaseService) & {}

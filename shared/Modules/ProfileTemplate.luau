@@ -6,21 +6,13 @@ local ProfileTemplate = {
 	},
 	
 	base = {
-		unlockedFloors = 0,
+		unlockedFloors = 1,
 		
 		floors = {
-			--[1] = {
-			--	animalStands = {
-			--		--[1] = {
-			--		--	occupant = {
-			--		--		definitionKey = "Lion",
-			--		--		level = 1,
-			--		--		mutation = nil
-			--		--	} :: AnimalData
-			--		--} :: StandData
-			--	},
-			--	upgrades = {}
-			--} :: FloorData
+			[1] = {
+				animalStands = {},
+				upgrades = {}
+			} :: FloorData
 		},
 		
 		rollData = {

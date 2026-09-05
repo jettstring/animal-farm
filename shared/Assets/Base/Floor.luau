@@ -130,7 +130,7 @@ end
 function Floor.Unlock(self: Floor)
 	local baseData: BaseData = self.Base.BaseData
 	if self.FloorIndex ~= baseData.unlockedFloors + 1 then
-		warn("Floor is not unlocked")
+		warn("Floor is not the next floor to be unlocked")
 		return
 	end
 	
@@ -147,12 +147,18 @@ function Floor.Unlock(self: Floor)
 	
 	-- activate
 	self.Trove:Add(task.delay(3, function()
+		self:_buildStands()
 		self:_Refresh()
 	end))
 end
 
 function Floor.Destroy(self: Floor)
 	self.Trove:Destroy()
+	
+	-- clear attributes
+	for attributeName, _ in self.FloorFolder:GetAttributes() do
+		self.FloorFolder:SetAttribute(attributeName, nil)
+	end
 end
 
 --------------------------------------------------

@@ -115,10 +115,10 @@ function Base._setupFloors(self: Base)
 		local floor: Floor = self.Trove:Add(Floor.new(self, floorIndex, floorFolder, floorData, self.Services))
 		self.Floors[floorIndex] = floor
 		
+		if floor.FloorIndex == 2 then
+			floor:Unlock()
+		end
 		
-		task.delay(3, function()
-			floor.AnimalStands[3]:Unlock()
-		end)
 	end
 end
 

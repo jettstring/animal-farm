@@ -15,10 +15,15 @@ local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
 -- Utils
 local Utils = ReplicatedStorage:FindFirstChild("Utils")
+local BaseUtil = require(Utils.BaseUtil)
 local AnimalUtil = require(Utils.AnimalUtil)
 
--- Animal Assets
+-- Base Assets
 local Assets = ReplicatedStorage:WaitForChild("Assets")
+local BaseAssets = Assets:WaitForChild("Base")
+
+
+-- Animal Assets
 local AnimalAssets = Assets:WaitForChild("Animals")
 local AnimalConfig = require(AnimalAssets:WaitForChild("AnimalConfig"))
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
@@ -61,6 +66,76 @@ BaseController.Signals = {}
 --------------------------------------------------
 -- PRIVATE FUNCTIONS --
 --------------------------------------------------
+
+local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: Player)
+	local standIndex = tonumber(standFolder.Name)
+	local isOwner = owner == player
+	
+	return Observers.observeAttribute(standFolder, "Active", function(isActive: boolean)
+		local trove = Trove.new()
+		
+		if isActive then
+			trove:Add(Observers.observeAttribute(standFolder, "DefinitionKey", function(definitionKey: string)
+				if not definitionKey then return function() end end
+			end))
+		else
+			local unlockSign: Model = standFolder:WaitForChild("UnlockSign")
+			local display: Part = unlockSign:WaitForChild("Display")
+			local lockedGui = trove:Add(BaseAssets:WaitForChild("LockedSignGui"):Clone())
+
+			lockedGui.Parent = display
+			lockedGui.Adornee = display
+
+			local unlockButton = lockedGui.Button
+			local buttonDisplay = unlockButton.ButtonDisplay
+			local priceLabel = buttonDisplay.PriceLabel
+			
+			trove:Add(unlockButton.Activated:Connect(function()
+				remotes.BuyAnimalStand:FireServer(floorIndex, standIndex)
+			end))
+			
+			trove:Add(Observers.observeAttribute(standFolder, "UnlockCost", function(unlockCost: number)
+				if not unlockCost then return function() end end
+				priceLabel.Text = string.format("$%s", Abbreviate.AbbreviateNumber(unlockCost, 1))
+				return function() end
+			end))
+		end
+		
+		return function() trove:Destroy() end
+	end)
+end
+
+local function mountFloors(baseFolder: Folder, owner: Player)
+	local trove = Trove.new()
+	local isOwner = owner == player
+	
+	local baseModel = baseFolder:WaitForChild("Base")
+	local floorsContainer: Folder = baseModel:WaitForChild("Floors")
+	
+	for _, floorFolder: Folder in floorsContainer:GetChildren() do
+		local floorIndex: number = tonumber(floorFolder.Name)
+		if not floorIndex then warn("[mountFloors] invalid floor index: ", floorIndex) continue end
+		
+		local modelFolder = floorFolder:WaitForChild("Model")
+		
+		trove:Add(Observers.observeAttribute(floorFolder, "Active", function(isActive: boolean)
+			local upgradesSign = floorFolder:WaitForChild("UpgradeSign")
+			BaseUtil.showInstance(upgradesSign, isOwner and isActive)
+		end))
+		
+		-- animal stands
+		local standsContainer = floorFolder:WaitForChild("AnimalStands")
+		for _, standFolder: Folder in standsContainer:GetChildren() do
+			local standIndex: number = tonumber(standFolder.Name)
+			if not standIndex then warn("[mountFloors] invalid stand index: ", standIndex) continue end
+
+			trove:Add(mountAnimalStand(standFolder, floorIndex, owner))
+		end
+		
+	end
+	
+	return function() trove:Destroy() end
+end
 
 local function mountRollStand(baseFolder: Folder, owner: Player)
 	local trove = Trove.new()
@@ -153,6 +228,7 @@ local function mountBases()
 			local owner: Player = Players:FindFirstChild(ownerName)
 			
 			-- base components
+			trove:Add(mountFloors(baseFolder, owner))
 			trove:Add(mountRollStand(baseFolder, owner))
 			
 			
