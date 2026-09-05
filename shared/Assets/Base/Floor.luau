@@ -54,8 +54,21 @@ type AnimalStand = AnimalStand.AnimalStand
 local Floor = {}
 Floor.__index = Floor
 
-function Floor.new(base: any, floorIndex: number, floorFolder: Folder, floorData: FloorData?, services: any)
-	local self = setmetatable({}, Floor)
+type self = {
+	Trove: any,
+	Services: any,
+	Base: any,
+	FloorIndex: number,
+	FloorFolder: Folder,
+	FloorData: FloorData?,
+	AnimalStands: {[number]: AnimalStand},
+}
+
+export type Floor = typeof(setmetatable({} :: self, Floor))
+
+
+function Floor.new(base: any, floorIndex: number, floorFolder: Folder, floorData: FloorData?, services: any): Floor
+	local self = setmetatable({} :: self, Floor)
 	self.Services = services
 	self.Trove = Trove.new()
 	
@@ -65,68 +78,80 @@ function Floor.new(base: any, floorIndex: number, floorFolder: Folder, floorData
 	self.FloorFolder = floorFolder
 	self.AnimalStands = {}
 	
-	self.Active = false
+	if self:OwnsFloor() then
+		self:_buildStands()
+	end
 	
+	self:_Refresh()
 	
 	return self
+end
+   
+function Floor._Refresh(self: Floor)
+	local floorFolder: Folder = self.FloorFolder
+	local model: Folder = floorFolder.Model
+	
+	local ownsFloor = self:OwnsFloor()
+
+	BaseUtil.showInstance(model, ownsFloor)
+	self.FloorFolder:SetAttribute("Active", ownsFloor)
+end
+
+function Floor._buildStands(self: Floor)
+	local floorFolder: Folder = self.FloorFolder
+	
+	local floorData: FloorData = self.FloorData
+	if not floorData then
+		warn("[_buildStands] missing floor data")
+		return
+	end
+	
+	local standsContainer = floorFolder.AnimalStands
+	for _, standFolder in standsContainer:GetChildren() do
+		local standIndex = tonumber(standFolder.Name)
+		if not standIndex then warn("[_buildStands] invalid stand index: ", standIndex) continue end
+
+		if self.AnimalStands[standIndex] then warn("[_buildStands] duplicate stand index: ", standIndex) continue end
+
+		floorData.animalStands[standIndex] = floorData.animalStands[standIndex] or {
+			unlocked = false,
+			occupant = nil,
+		}
+		local standData: StandData = floorData.animalStands[standIndex]
+		
+		self.AnimalStands[standIndex] = self.Trove:Add(AnimalStand.new(self, standIndex, standFolder, standData, self.Services))
+	end
 end
    
 --------------------------------------------------
 -- ACTIONS -- 
 --------------------------------------------------
 
-function Floor:Activate()
-	if self.Active then return end
-	
-	local floorFolder: Folder = self.FloorFolder
-	
-	-- show 
-	local model: Folder = floorFolder.Model
-	BaseUtil.showInstance(model, true)
-	
-	
-	local floorData: FloorData = self.FloorData
-	if not floorData then
-		local baseData: BaseData = self.Base.BaseData
-		baseData.floors[self.FloorIndex] = {
-			animalStands = {},
-			upgrades = {},
-		}
-		self.FloorData = baseData.floors[self.FloorIndex]		
-		floorData = self.FloorData
+function Floor.Unlock(self: Floor)
+	local baseData: BaseData = self.Base.BaseData
+	if self.FloorIndex ~= baseData.unlockedFloors + 1 then
+		warn("Floor is not unlocked")
+		return
 	end
 	
-	-- hydrate stands
-	local standsContainer = floorFolder.AnimalStands
-	for _, standFolder in standsContainer:GetChildren() do
-		local standIndex = tonumber(standFolder.Name)
-		if not standIndex then warn("[Floor.new] invalid stand index: ", standIndex) continue end
-
-		if self.AnimalStands[standIndex] then warn("[Floor.new] duplicate stand index: ", standIndex) continue end
-
-		local standData: AnimalStand? = floorData.animalStands[standIndex]
-		self.AnimalStands[standIndex] = self.Trove:Add(AnimalStand.new(self, standIndex, standFolder, standData, self.Services))
-	end
-	
-	self.FloorFolder:SetAttribute("Active", true)
-	
-	self.Active = true
-end
-
-function Floor:Unlock()
-	if self.Active then return end
+	baseData.unlockedFloors += 1
+	baseData.floors[self.FloorIndex] = baseData.floors[self.FloorIndex] or { -- TODO: fix sparse numbered data structure 
+		animalStands = {},
+		upgrades = {},
+	}
+	self.FloorData = baseData.floors[self.FloorIndex]
 	
 	-- fire owner to reveal floor
 	local owner: Player = self.Base.Owner
 	remotes.BuyFloor:FireClient(owner, self.FloorIndex)
 	
 	-- activate
-	task.delay(2, function()
-		self:Activate()
-	end)
+	self.Trove:Add(task.delay(3, function()
+		self:_Refresh()
+	end))
 end
 
-function Floor:Destroy()
+function Floor.Destroy(self: Floor)
 	self.Trove:Destroy()
 end
 
@@ -134,16 +159,12 @@ end
 -- HELPERS -- 
 --------------------------------------------------
 
-export type Floor = typeof(setmetatable({} :: {
-	Trove: any,
-	Services: any,
-	Base: any,
-	FloorIndex: number,
-	FloorFolder: Folder,
-	FloorData: FloorData?,
-	AnimalStands: {[number]: AnimalStand},
-	Active: boolean,
-	
-}, Floor))
+function Floor.OwnsFloor(self: Floor): boolean
+	local baseData: BaseData = self.Base.BaseData
+	return self.FloorIndex <= baseData.unlockedFloors
+end
 
 return Floor
+
+
+

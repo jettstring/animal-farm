@@ -90,19 +90,19 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 		local buyPrompt: ProximityPrompt = middlePart:WaitForChild("BuyPrompt")
 		local stealPrompt: ProximityPrompt= middlePart:WaitForChild("StealPrompt")
 		
-		local isAvailable = false
+		local isActive = false
 		local hasAnimal = false
 		
 		local animalTrove = Trove.new()
 		
 		local function updatePrompts()
-			local active = isAvailable and hasAnimal
+			local active = isActive and hasAnimal
 			buyPrompt.Enabled = active and isOwner
 			stealPrompt.Enabled = active and not isOwner
 		end
 		
-		trove:Add(Observers.observeAttribute(slot, "Available", function(state: boolean)
-			isAvailable = state
+		trove:Add(Observers.observeAttribute(slot, "Active", function(state: boolean)
+			isActive = state
 			updatePrompts()
 			return function() end
 		end))

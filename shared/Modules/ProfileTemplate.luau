@@ -6,13 +6,21 @@ local ProfileTemplate = {
 	},
 	
 	base = {
-		unlockedFloors = 1,
+		unlockedFloors = 0,
 		
 		floors = {
-			[1] = {
-				animalStands = {},
-				upgrades = {}
-			} :: FloorData
+			--[1] = {
+			--	animalStands = {
+			--		--[1] = {
+			--		--	occupant = {
+			--		--		definitionKey = "Lion",
+			--		--		level = 1,
+			--		--		mutation = nil
+			--		--	} :: AnimalData
+			--		--} :: StandData
+			--	},
+			--	upgrades = {}
+			--} :: FloorData
 		},
 		
 		rollData = {
@@ -29,7 +37,7 @@ local ProfileTemplate = {
 	}:: BaseData,
 	
 	inventory = {
-		animals = {} :: {[string]: AnimalData}
+		animals = {} :: {[string]: number}
 	},
 }
 
@@ -51,6 +59,7 @@ export type FloorData = {
 }
 
 export type StandData = {
+	unlocked: boolean,
 	occupant: AnimalData,
 }
 

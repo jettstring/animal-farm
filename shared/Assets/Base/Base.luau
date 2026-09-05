@@ -34,8 +34,18 @@ type Floor = Floor.Floor
 local Base = {}
 Base.__index = Base
 
-function Base.new(owner: Player, baseFolder: Folder, services: any)
-	local self = setmetatable({}, Base)
+type self = {
+	Owner: Player,
+	BaseFolder: Folder,
+	BaseData: BaseData,
+	RollStand: RollStand,
+	Floors: {[number]: Floor}
+}
+
+export type Base = typeof(setmetatable({} :: self, Base))
+
+function Base.new(owner: Player, baseFolder: Folder, services: any): Base
+	local self = setmetatable({} :: self, Base)
 	self.Services = services
 	self.Trove = Trove.new()
 	
@@ -48,8 +58,6 @@ function Base.new(owner: Player, baseFolder: Folder, services: any)
 	self.BaseData = nil
 	self.Floors = {}
 	
-	
-
 	self:_setup()
 	if not self.State.Active then
 		warn("Base is not active, destroying")
@@ -61,7 +69,7 @@ function Base.new(owner: Player, baseFolder: Folder, services: any)
 	return self
 end
 
-function Base:_setup()
+function Base._setup(self: Base)
 	local owner: Player = self.Owner
 	local baseFolder = self.BaseFolder
 	local baseModel = baseFolder:WaitForChild("Base")
@@ -90,7 +98,7 @@ function Base:_setup()
 end
 
 
-function Base:_setupFloors()
+function Base._setupFloors(self: Base)
 	local baseFolder = self.BaseFolder
 	local baseModel = baseFolder:WaitForChild("Base")
 	local floorsContainer: Folder = baseModel:WaitForChild("Floors")
@@ -107,9 +115,10 @@ function Base:_setupFloors()
 		local floor: Floor = self.Trove:Add(Floor.new(self, floorIndex, floorFolder, floorData, self.Services))
 		self.Floors[floorIndex] = floor
 		
-		if floorIndex <= unlockedFloors then
-			floor:Activate()
-		end
+		
+		task.delay(3, function()
+			floor.AnimalStands[3]:Unlock()
+		end)
 	end
 end
 
@@ -117,11 +126,7 @@ end
 -- ACTIONS -- 
 --------------------------------------------------
 
-function Base:Roll()
-
-end
-
-function Base:Destroy()
+function Base.Destroy(self: Base)
 	self.Trove:Destroy()
 	self.BaseFolder:SetAttribute("Owner", nil)
 	print("[Base] base object destroyed:", self.BaseFolder.Name)
@@ -131,14 +136,5 @@ end
 -- HELPERS -- 
 --------------------------------------------------
 
-
-export type Base = typeof(setmetatable({} :: {
-	Owner: Player,
-	BaseFolder: Folder,
-	BaseData: BaseData,
-	RollStand: RollStand,
-	Floors: {[number]: Floor}
-	
-}, Base))
 
 return Base

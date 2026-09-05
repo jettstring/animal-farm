@@ -11,6 +11,7 @@ local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
 -- Utils
 local Utils = ReplicatedStorage:FindFirstChild("Utils")
+local BaseUtil = require(Utils.BaseUtil)
 local AnimalUtil = require(Utils.AnimalUtil)
 
 local Assets = ReplicatedStorage:FindFirstChild("Assets")
@@ -23,6 +24,10 @@ local AnimalAssets = Assets:WaitForChild("Animals")
 local AnimalConfig = require(AnimalAssets:WaitForChild("AnimalConfig"))
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 
+local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
+local remotes = {
+	BuyAnimalStand = remotesFolder.Base.BuyAnimalStand,
+}
 
 -------------------------------------------------
 -- TYPES -- 
@@ -31,6 +36,7 @@ local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 type Profile = ProfileTemplate.ProfileTemplate
 type StandData = ProfileTemplate.StandData
 type AnimalData = ProfileTemplate.AnimalData
+type FloorData = ProfileTemplate.FloorData
 
 type AnimalDefinition = AnimalConfig.AnimalDefinition
 type AnimalMutation = AnimalConfig.AnimalMutation
@@ -43,8 +49,22 @@ type AnimalMutation = AnimalConfig.AnimalMutation
 local AnimalStand = {}
 AnimalStand.__index = AnimalStand
 
+
+type self = {
+	Trove: any,
+	Services: any,
+	Floor: any,
+	StandIndex: number,
+	StandFolder: Folder,
+	StandData: StandData?,
+	AnimalModel: Model?,
+	
+}
+
+export type AnimalStand = typeof(setmetatable({} :: self, AnimalStand))
+
 function AnimalStand.new(floor: any, standIndex: number, standFolder: Folder, standData: AnimalStand?, services: any)
-	local self = setmetatable({}, AnimalStand)
+	local self = setmetatable({} :: self, AnimalStand)
 	self.Services = services
 	self.Trove = Trove.new()
 	
@@ -52,8 +72,9 @@ function AnimalStand.new(floor: any, standIndex: number, standFolder: Folder, st
 	self.StandIndex = standIndex
 	self.StandFolder = standFolder
 	self.StandData = standData
+	self.AnimalModel = nil
 	
-	
+	self:_Refresh()
 	
 	return self
 end
@@ -63,31 +84,49 @@ end
 -- ACTIONS -- 
 --------------------------------------------------
 
-function AnimalStand:_Refresh()
+function AnimalStand._Refresh(self: AnimalStand)
+	local standFolder: Folder = self.StandFolder
+	local standModel: Model = standFolder.StandModel
+	local buySign: Model = standFolder.BuySign
+	
+	local animalModel: Model? = self.AnimalModel
 	local standData: StandData? = self.StandData
 	
-end
+	local unlocked = standData.unlocked
+	standFolder:SetAttribute("Active", unlocked)
 
-function AnimalStand:Activate()
+	BaseUtil.showInstance(standModel, unlocked)
+	BaseUtil.showInstance(buySign, not unlocked)
+
+	-- update animal attributes 
+	local animalData: AnimalData? = unlocked and standData.occupant
+	standFolder:SetAttribute("DefinitionKey", (animalData and animalData.definitionKey) or nil)
+	standFolder:SetAttribute("Mutation", (animalData and animalData.mutation) or nil)
+	standFolder:SetAttribute("Level", (animalData and animalData.level) or nil)
 	
 end
 
-function AnimalStand:Destroy()
+
+function AnimalStand.Unlock(self: AnimalStand)
+	local standData: StandData = self.StandData
+	standData.unlocked = true
+
+	-- fire owner for reveal
+	local owner: Player = self.Floor.Base.Owner
+	remotes.BuyAnimalStand:FireClient(owner, self.StandIndex)
+
+	-- activate
+	self.Trove:Add(task.delay(3, function()
+		self:_Refresh()
+	end))
+end
+
+function AnimalStand.Destroy(self: AnimalStand)
 	self.Trove:Destroy()
 end
 
 --------------------------------------------------
 -- HELPERS -- 
 --------------------------------------------------
-
-export type AnimalStand = typeof(setmetatable({} :: {
-	Trove: any,
-	Services: any,
-	Floor: any,
-	StandIndex: number,
-	StandFolder: Folder,
-	StandData: StandData?,
-	
-}, AnimalStand))
 
 return AnimalStand

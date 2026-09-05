@@ -43,8 +43,16 @@ type AnimalMutation = AnimalConfig.AnimalMutation
 local RollStand = {}
 RollStand.__index = RollStand
 
+type self = {
+	Trove: any,
+	Services: any,
+	Base: any,
+}
+
+export type RollStand = typeof(setmetatable({} :: self, RollStand))
+
 function RollStand.new(base: any, services: any)
-	local self = setmetatable({}, RollStand)
+	local self = setmetatable({} :: self, RollStand)
 	self.Services = services
 	self.Trove = Trove.new()
 	
@@ -65,7 +73,7 @@ end
 -- ACTIONS -- 
 --------------------------------------------------
 
-function RollStand:Roll()
+function RollStand.Roll(self: RollStand)
 	local rollData: RollData = self.Base.BaseData.rollData
 	local unlockedCount = rollData.unlockedCount
 	local playerLuck = self:GetRollLuck()
@@ -84,7 +92,7 @@ function RollStand:Roll()
 	self:_Refresh()
 end
 
-function RollStand:BuySlotAnimal(slotIndex: number)
+function RollStand.BuySlotAnimal(self: RollStand, slotIndex: number)
 	local owner: Player = self.Base.Owner
 	local profile: Profile = self.Services.DataService:GetProfile(owner)
 	if not profile then warn("[BuySlotAnimal] No profile found for player:", owner) return end
@@ -117,7 +125,7 @@ function RollStand:BuySlotAnimal(slotIndex: number)
 	self.Services.DataService:IncrementCurrency(owner, "Money", -cost, "Buy Animal", false)
 end
 
-function RollStand:Destroy()
+function RollStand.Destroy(self: RollStand)
 	self.Trove:Destroy()
 end
 
@@ -125,7 +133,7 @@ end
 -- HELPERS -- 
 --------------------------------------------------
 
-function RollStand:GetRollLuck(): number
+function RollStand.GetRollLuck(self: RollStand): number
 	local owner: Player = self.Base.Owner
 	
 	local total = 1 
@@ -138,7 +146,7 @@ function RollStand:GetRollLuck(): number
 	return total
 end
 
-function RollStand:_Refresh()
+function RollStand._Refresh(self: RollStand)
 	local baseFolder: Folder = self.Base.BaseFolder
 	local baseModel: Model = baseFolder:WaitForChild("Base")
 	local container: Folder = baseModel.Components.RollStand
@@ -154,7 +162,7 @@ function RollStand:_Refresh()
 		local model = slot:FindFirstChild("Model")
 		
 		local available = slotIndex <= unlockedCount
-		slot:SetAttribute("Available", available)
+		slot:SetAttribute("Active", available)
 		
 		if available then
 			local slotData = rollData.slotData[slotIndex]
@@ -171,13 +179,5 @@ function RollStand:_Refresh()
 	end
 	
 end
-
-
-export type RollStand = typeof(setmetatable({} :: {
-	Trove: any,
-	Services: any,
-	Base: any,
-	
-}, RollStand))
 
 return RollStand
