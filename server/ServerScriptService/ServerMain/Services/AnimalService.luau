@@ -100,6 +100,7 @@ function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, ani
 	
 	-- create new tool 
 	local tool = Instance.new("Tool")
+	tool:AddTag("AnimalTool")
 	tool.Name = "AnimalTool"
 	tool.Grip = CFrame.new(0, 0, 1)
 	tool.CanBeDropped = false

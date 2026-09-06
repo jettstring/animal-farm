@@ -145,21 +145,6 @@ end
 
 function InteractionController.Start(self: InteractionController)
 	
-	
-	
-	local baseplate = workspace:WaitForChild("Baseplate")
-	if baseplate then
-		self:Register(baseplate, function()
-			task.spawn(function()
-				print("Interacted with ", baseplate)
-				task.wait(2)
-				self:Unregister(baseplate)
-				print("unregistered callback!")
-			end)
-		end)
-		
-		
-	end
 end
 
 type InteractionController = typeof(InteractionController) & {}

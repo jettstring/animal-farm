@@ -2041,6 +2041,14 @@
                       "filePaths": [
                         "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/BaseController.luau"
                       ]
+                    },
+                    {
+                      "name": "InteractionController",
+                      "className": "ModuleScript",
+                      "pluginManaged": true,
+                      "filePaths": [
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/InteractionController.luau"
+                      ]
                     }
                   ]
                 }
