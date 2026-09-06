@@ -10,6 +10,7 @@ local Abbreviate = require(ReplicatedStorage.Packages.Abbreviate)
 --------------------------------------------------
 
 local player = Players.LocalPlayer
+local playerGui = player.PlayerGui
 
 local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
@@ -36,6 +37,7 @@ local remotes = {
 	StealSlotAnimal = remotesFolder.Animal.StealSlotAnimal,
 	BuyFloor = remotesFolder.Base.BuyFloor,
 	BuyAnimalStand = remotesFolder.Base.BuyAnimalStand,
+	PlaceAnimal = remotesFolder.Base.PlaceAnimal,
 }
 
 --------------------------------------------------
@@ -57,11 +59,13 @@ local BaseController = {}
 BaseController.Controllers = {}
 BaseController.Signals = {}
 
+local currentStand: Folder? = nil
 local standDisplayTrove = Trove.new()
 
 --------------------------------------------------
 -- VARIABLES --
 --------------------------------------------------
+
 
 -- Constants
 
@@ -73,6 +77,11 @@ local standDisplayTrove = Trove.new()
 local function showStandDisplay(standFolder: Folder, isOwner: boolean)
 	local trove = standDisplayTrove
 	trove:Clean() -- remove previous billboard
+	
+	if currentStand == standFolder then
+		currentStand = nil
+		return
+	end
 	
 	local standModel: Model = standFolder:WaitForChild("StandModel")
 	local animalMiddle: Part = standModel:WaitForChild("AnimalMiddle")
@@ -92,7 +101,7 @@ local function showStandDisplay(standFolder: Folder, isOwner: boolean)
 	nameLabel.Text = animalDef.displayName
 	rarityLabel.Text = animalDef.rarity
 	billboard.Adornee = animalMiddle
-	billboard.Parent = animalMiddle
+	billboard.Parent = playerGui   
 	
 	trove:Add(Observers.observeAttribute(standFolder, "Level", function(level: number)
 		levelLabel.Text = string.format("Level %s", Abbreviate.AbbreviateNumber(level, 1))
@@ -119,6 +128,8 @@ local function showStandDisplay(standFolder: Folder, isOwner: boolean)
 		earningsLabel.Text = string.format("$%s / Egg", Abbreviate.AbbreviateNumber(moneyPerEgg, 1))
 	end))
 	
+	currentStand = standFolder
+	
 	return function() trove:Clean() end
 end
 
@@ -126,18 +137,51 @@ local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: 
 	local standIndex = tonumber(standFolder.Name)
 	local isOwner = owner == player
 	local standModel: Model = standFolder:WaitForChild("StandModel")
-	
+	local animalMiddle: Part = standModel:WaitForChild("AnimalMiddle")
 	
 	return Observers.observeAttribute(standFolder, "Active", function(isActive: boolean)
 		local trove = Trove.new()
 		
 		if isActive then
+			trove:Add(BaseController.Controllers.InteractionController:Register(standModel, function()
+				if standFolder:GetAttribute("DefinitionKey") then
+					showStandDisplay(standFolder, isOwner)
+				elseif isOwner and player.Character and player.Character:FindFirstChild("AnimalTool") then
+					remotes.PlaceAnimal:FireServer(floorIndex, standIndex)
+				end
+			end))
+			
+			
 			trove:Add(Observers.observeAttribute(standFolder, "DefinitionKey", function(definitionKey: string)
 				local defTrove = Trove.new()
+				local renderTrove = defTrove:Extend()
 				
-				defTrove:Add(BaseController.Controllers.InteractionController:Register(standModel, function()
-					showStandDisplay(standFolder, isOwner)
+				local function updateRender()
+					renderTrove:Clean()
+					
+					local animalData: AnimalData = {
+						definitionKey = definitionKey,
+						level = standFolder:GetAttribute("Level") or 1,
+						mutation = standFolder:GetAttribute("Mutation") or nil,
+					}
+					
+					-- should the rendering of animal (model, animation connections, effects, etc) be on its own trove?
+					local animalModel = renderTrove:Add(AnimalUtil.getAnimalModel(animalData))
+					if animalModel then
+						animalModel.Parent = standFolder
+						animalModel:PivotTo(animalMiddle:GetPivot())
+					end
+					
+					
+					-- TODO: animation, fx, etc
+				end
+				
+				
+				defTrove:Add(Observers.observeAttribute(standFolder, "Mutation", function(mutation: string)
+					updateRender()
 				end))
+				
+				updateRender()
 				
 				return function()
 					defTrove:Destroy()
@@ -290,7 +334,6 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 	
 	return function() trove:Destroy() end
 end
-
 
 local function mountBases()
 	Observers.observeTag("Base", function(baseFolder: Folder)

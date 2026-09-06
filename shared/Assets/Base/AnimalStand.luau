@@ -84,6 +84,51 @@ end
 -- ACTIONS -- 
 --------------------------------------------------
 
+function AnimalStand.AddAnimal(self: AnimalStand, animalData: AnimalData): (boolean, string?)
+	local standData: StandData = self.StandData
+	if not standData.unlocked then
+		warn("[AddAnimal] stand not unlocked")
+		return false, "Stand Locked"
+	end
+	
+	local occupant: AnimalData = standData.occupant
+	if occupant then
+		warn("[AddAnimal] stand already occupied")
+		return nil, "Already Occupied"
+	end
+	
+	-- validate animalData
+	if not animalData or not animalData.definitionKey then
+		warn("[AddAnimal] invalid animalData: ", animalData)
+		return nil, "Invalid AnimalData"
+	end
+	
+	standData.occupant = {
+		definitionKey = animalData.definitionKey,
+		level = animalData.level or 1,
+		mutation = animalData.mutation or nil,
+	}
+	
+	self:_Refresh()
+	return true
+end
+
+function AnimalStand.Unlock(self: AnimalStand)
+	local standData: StandData = self.StandData
+	standData.unlocked = true
+
+	-- fire owner for reveal
+	local owner: Player = self.Floor.Base.Owner
+	remotes.BuyAnimalStand:FireClient(owner, self.StandIndex)
+
+	-- activate
+	self.Trove:Add(task.delay(3, function()
+		self:_Refresh()
+	end))
+
+	return true
+end
+
 function AnimalStand._Refresh(self: AnimalStand)
 	local standFolder: Folder = self.StandFolder
 	local standModel: Model = standFolder.StandModel
@@ -108,23 +153,6 @@ function AnimalStand._Refresh(self: AnimalStand)
 	standFolder:SetAttribute("Mutation", (animalData and animalData.mutation) or nil)
 	standFolder:SetAttribute("Level", (animalData and animalData.level) or nil)
 	
-end
-
-
-function AnimalStand.Unlock(self: AnimalStand)
-	local standData: StandData = self.StandData
-	standData.unlocked = true
-
-	-- fire owner for reveal
-	local owner: Player = self.Floor.Base.Owner
-	remotes.BuyAnimalStand:FireClient(owner, self.StandIndex)
-
-	-- activate
-	self.Trove:Add(task.delay(3, function()
-		self:_Refresh()
-	end))
-	
-	return true
 end
 
 

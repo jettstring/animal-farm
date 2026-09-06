@@ -38,7 +38,7 @@ type Base = Base.Base
 local AnimalService = {}
 AnimalService.Services = {}
 AnimalService.Signals = {}
-AnimalService.AnimalTools = {} :: {[Player]: Tool}
+AnimalService.AnimalTools = {} :: {[Player]: {[string]: Tool}}
 
 
 --------------------------------------------------
@@ -84,6 +84,11 @@ function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, ani
 	-- check if animalKey exists in profile
 	local ownedAmount = profile.inventory.animals[animalKey]
 	if not ownedAmount then warn("[CreateAnimalTool] animalKey not found in profile: ", animalKey) return end
+	
+	if ownedAmount < 1 then
+		warn("[CreateAnimalTool] player does not own animalKey: ", animalKey)
+		return
+	end
 	
 	local animalData = animalKey and AnimalUtil.getAnimalData(animalKey)
 	if not animalData then warn("[CreateAnimalTool] invalid animalData: ", animalData) return end
@@ -157,6 +162,14 @@ function AnimalService.UpdateAnimalTool(self: AnimalService, player: Player, ani
 		return
 	end
 	
+	-- destroy if no more owned
+	if ownedAmount < 1 then
+		existingTool:Destroy()
+		self.AnimalTools[player][animalKey] = nil
+		profile.inventory.animals[animalKey] = nil
+		return
+	end
+	
 	existingTool:SetAttribute("Quantity", ownedAmount)
 end
 
@@ -164,7 +177,12 @@ function AnimalService._HydrateTools(self: AnimalService, player: Player)
 	local profile: Profile = self.Services.DataService:GetProfile(player)
 	if not profile then warn("[_HydrateTools] No profile found for player:", player) return end
 
-	for animalKey, _ in profile.inventory.animals do
+	for animalKey, ownedAmount in profile.inventory.animals do
+		if ownedAmount < 1 then
+			profile.inventory.animals[animalKey] = nil
+			continue
+		end
+		
 		self:CreateAnimalTool(player, animalKey)
 	end
 end

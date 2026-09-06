@@ -10,6 +10,7 @@ local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 -- Utils
 local Utils = ReplicatedStorage:FindFirstChild("Utils")
 local BaseUtil = require(Utils.BaseUtil)
+local AnimalUtil = require(Utils.AnimalUtil)
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 
@@ -23,6 +24,7 @@ local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local remotes = {
 	BuyFloor = remotesFolder.Base.BuyFloor,
 	BuyAnimalStand = remotesFolder.Base.BuyAnimalStand,
+	PlaceAnimal = remotesFolder.Base.PlaceAnimal,
 }
 
 --------------------------------------------------
@@ -57,6 +59,50 @@ BaseService.PlayerBases = {} :: {[Player]: Base}
 --------------------------------------------------
 -- PRIVATE FUNCTIONS --
 --------------------------------------------------
+
+local function attemptPlaceAnimal(player: Player, floorIndex: number, standIndex: number)
+	local base: Base = BaseService.PlayerBases[player]
+	if not base then warn("[attemptPlaceAnimal] missing base") return end
+
+	local floor = base.Floors[floorIndex]
+	if not floor then warn("[attemptPlaceAnimal] missing floor object for", floorIndex) return end
+
+	if not floor:OwnsFloor() then
+		warn("[attemptPlaceAnimal] Floor is not unlocked")
+		return
+	end
+
+	local animalStand: AnimalDt = floor.AnimalStands[standIndex]
+	if not animalStand then warn("[attemptPlaceAnimal] missing animalStand object:", standIndex) return end
+	
+	local animalTool: Tool? = player.Character and player.Character:FindFirstChild("AnimalTool")
+	if not animalTool then warn("[attemptPlaceAnimal] No animal tool equipped") return end
+	
+	local profile: Profile = BaseService.Services.DataService:GetProfile(player)
+	if not profile then warn("[attemptPlaceAnimal] No profile found for player:", player) return end
+
+	-- check if animalKey exists in profile
+	local animalKey = animalTool:GetAttribute("AnimalKey")
+	local ownedAmount = profile.inventory.animals[animalKey]
+	if not ownedAmount then warn("[attemptPlaceAnimal] animalKey not found in profile: ", animalKey) return end
+	
+	if ownedAmount < 1 then
+		warn("[attemptPlaceAnimal] not enough animals for key:", animalKey)
+		return
+	end
+	
+	local animalData: AnimalData? = AnimalUtil.getAnimalData(animalKey)
+	
+	local success, reason = animalStand:AddAnimal(animalData)
+	if not success then
+		warn("[attemptPlaceAnimal] failed to add animal")
+		if reason then BaseService.Services.NotificationService:Error(player, reason) end
+		return
+	end
+	
+	profile.inventory.animals[animalKey] -= 1
+	BaseService.Services.AnimalService:UpdateAnimalTool(player, animalKey)
+end
 
 local function attemptUnlockStand(player: Player, floorIndex: number, standIndex: number)
 	local base: Base = BaseService.PlayerBases[player]
@@ -189,6 +235,7 @@ function BaseService.Start(self: BaseService)
 	
 	
 	remotes.BuyAnimalStand.OnServerEvent:Connect(attemptUnlockStand)
+	remotes.PlaceAnimal.OnServerEvent:Connect(attemptPlaceAnimal)
 end
 
 type BaseService = typeof(BaseService) & {}
