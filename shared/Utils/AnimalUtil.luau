@@ -77,6 +77,27 @@ function AnimalUtil.getAnimalModel(animalData: AnimalData): Model
 	return clone
 end
 
+
+function AnimalUtil.getLevelCost(definitionKey: AnimalData, level: number): number
+	local animalDef: AnimalDefinition = AnimalDefinitions[definitionKey]
+	if not animalDef then
+		warn("[getLevelCost] invalid definitionKey:", definitionKey)
+		return nil
+	end
+	
+	local earningsPerEgg = animalDef.eggEarnings
+	
+	return math.round(earningsPerEgg * level^1.2) 	
+end
+
+function AnimalUtil.getLevelUpCost(definitionKey: string, fromLevel: number, count: number): number
+	local total = 0
+	for i = 0, count - 1 do
+		total += AnimalUtil.getLevelCost(definitionKey, fromLevel + i)
+	end
+	return total
+end
+
 function AnimalUtil.rollAnimalResult(luck: number): string
 	local luck = math.max(luck or 1, 1)
 

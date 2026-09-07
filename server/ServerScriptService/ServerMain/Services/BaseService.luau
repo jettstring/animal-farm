@@ -25,6 +25,8 @@ local remotes = {
 	BuyFloor = remotesFolder.Base.BuyFloor,
 	BuyAnimalStand = remotesFolder.Base.BuyAnimalStand,
 	PlaceAnimal = remotesFolder.Base.PlaceAnimal,
+	BuyAnimalLevel = remotesFolder.Base.BuyAnimalLevel,
+	RemoveAnimal = remotesFolder.Base.RemoveAnimal,
 }
 
 --------------------------------------------------
@@ -104,6 +106,28 @@ local function attemptPlaceAnimal(player: Player, floorIndex: number, standIndex
 	BaseService.Services.AnimalService:UpdateAnimalTool(player, animalKey)
 end
 
+local function attemptRemoveAnimal(player: Player, floorIndex: number, standIndex: number)
+	local base: Base = BaseService.PlayerBases[player]
+	if not base then warn("[attemptRemoveAnimal] missing base") return end
+
+	local floor = base.Floors[floorIndex]
+	if not floor then warn("[attemptRemoveAnimal] missing floor object for", floorIndex) return end
+
+	if not floor:OwnsFloor() then
+		warn("[attemptRemoveAnimal] Floor is not unlocked")
+		return
+	end
+
+	local animalStand = floor.AnimalStands[standIndex]
+	if not animalStand then warn("[attemptRemoveAnimal] missing animalStand object:", standIndex) return end
+
+	local success = animalStand:RemoveAnimal()
+	if not success then
+		BaseService.Services.NotificationService:Error(player, "Failed to remove animal!")
+		return
+	end
+end
+
 local function attemptUnlockStand(player: Player, floorIndex: number, standIndex: number)
 	local base: Base = BaseService.PlayerBases[player]
 	if not base then warn("[attemptUnlockStand] missing base") return end
@@ -123,7 +147,7 @@ local function attemptUnlockStand(player: Player, floorIndex: number, standIndex
 	if not profile then warn("[attemptUnlockStand] No profile found for player:", player) return end
 	
 	local unlockCost: number = BaseUtil.getStandCost(floorIndex)
-	if profile.currency.Money <= unlockCost then
+	if profile.currency.Money < unlockCost then
 		BaseService.Services.NotificationService:Error(player, "Cannot buy!")
 		return
 	end
@@ -135,6 +159,49 @@ local function attemptUnlockStand(player: Player, floorIndex: number, standIndex
 	end
 
 	BaseService.Services.DataService:IncrementCurrency(player, "Money", -unlockCost, "Buy Stand", false)
+end
+
+local function attemptBuyAnimalLevels(player: Player, floorIndex: number, standIndex: number, levelAmount: number)
+	if typeof(levelAmount) ~= "number" then return end
+	levelAmount = math.clamp(levelAmount, 1, 10)
+	if math.floor(levelAmount) ~= levelAmount then return end
+	
+	local base: Base = BaseService.PlayerBases[player]
+	if not base then warn("[attemptBuyAnimalLevels] missing base") return end
+
+	local floor = base.Floors[floorIndex]
+	if not floor then warn("[attemptBuyAnimalLevels] missing floor object for", floorIndex) return end
+
+	if not floor:OwnsFloor() then
+		warn("[attemptRemoveAnimal] Floor is not unlocked")
+		return
+	end
+
+	local animalStand = floor.AnimalStands[standIndex]
+	if not animalStand then warn("[attemptBuyAnimalLevels] missing animalStand object:", standIndex) return end
+	
+	local animalData = animalStand.StandData and animalStand.StandData.occupant
+	if not animalData then warn("[attemptUnlockStand] misising animalData") return end
+	
+	local definitionKey = animalData.definitionKey
+	local currentLevel = animalData.level
+	
+	local profile: Profile = BaseService.Services.DataService:GetProfile(player)
+	if not profile then warn("[attemptUnlockStand] No profile found for player:", player) return end
+
+	local levelsCost: number = AnimalUtil.getLevelUpCost(definitionKey, currentLevel, levelAmount)
+	if profile.currency.Money < levelsCost then
+		BaseService.Services.NotificationService:Error(player, "Cannot buy!")
+		return
+	end
+	
+	local success = animalStand:LevelAnimal(levelAmount)
+	if not success then
+		BaseService.Services.NotificationService:Error(player, "Failed to level animal!")
+		return
+	end
+	
+	BaseService.Services.DataService:IncrementCurrency(player, "Money", -levelsCost, "Level Animal", false)
 end
 
 local function _cleanupBase(baseFolder: Folder)
@@ -233,9 +300,10 @@ function BaseService.Start(self: BaseService)
 	end)
 	
 	
-	
 	remotes.BuyAnimalStand.OnServerEvent:Connect(attemptUnlockStand)
 	remotes.PlaceAnimal.OnServerEvent:Connect(attemptPlaceAnimal)
+	remotes.RemoveAnimal.OnServerEvent:Connect(attemptRemoveAnimal)
+	remotes.BuyAnimalLevel.OnServerEvent:Connect(attemptBuyAnimalLevels)
 end
 
 type BaseService = typeof(BaseService) & {}

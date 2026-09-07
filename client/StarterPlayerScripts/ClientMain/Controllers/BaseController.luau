@@ -38,6 +38,8 @@ local remotes = {
 	BuyFloor = remotesFolder.Base.BuyFloor,
 	BuyAnimalStand = remotesFolder.Base.BuyAnimalStand,
 	PlaceAnimal = remotesFolder.Base.PlaceAnimal,
+	BuyAnimalLevel = remotesFolder.Base.BuyAnimalLevel,
+	RemoveAnimal = remotesFolder.Base.RemoveAnimal,
 }
 
 --------------------------------------------------
@@ -74,7 +76,7 @@ local standDisplayTrove = Trove.new()
 --------------------------------------------------
 
 
-local function showStandDisplay(standFolder: Folder, isOwner: boolean)
+local function showStandDisplay(standFolder: Folder, floorIndex: number, isOwner: boolean)
 	local trove = standDisplayTrove
 	trove:Clean() -- remove previous billboard
 	
@@ -83,6 +85,7 @@ local function showStandDisplay(standFolder: Folder, isOwner: boolean)
 		return
 	end
 	
+	local standIndex = tonumber(standFolder.Name)
 	local standModel: Model = standFolder:WaitForChild("StandModel")
 	local animalMiddle: Part = standModel:WaitForChild("AnimalMiddle")
 	
@@ -97,6 +100,10 @@ local function showStandDisplay(standFolder: Folder, isOwner: boolean)
 	local earningsLabel = display.EarningsLabel
 	local modifiersDisplay = display.Modifiers
 	local rarityLabel = modifiersDisplay.RarityLabel
+	local options = display.Options
+	local removeButton = options:FindFirstChild("Remove")
+	local buy1Button = options:FindFirstChild("Buy1")
+	local buy10Button = options:FindFirstChild("Buy10")
 	
 	nameLabel.Text = animalDef.displayName
 	rarityLabel.Text = animalDef.rarity
@@ -105,6 +112,11 @@ local function showStandDisplay(standFolder: Folder, isOwner: boolean)
 	
 	trove:Add(Observers.observeAttribute(standFolder, "Level", function(level: number)
 		levelLabel.Text = string.format("Level %s", Abbreviate.AbbreviateNumber(level, 1))
+		
+		-- display level cost on buttons
+		buy1Button.PriceLabel.Text  = "$" .. Abbreviate.AbbreviateNumber(AnimalUtil.getLevelUpCost(defKey, level, 1), 1)
+		buy10Button.PriceLabel.Text = "$" .. Abbreviate.AbbreviateNumber(AnimalUtil.getLevelUpCost(defKey, level, 10), 1)
+		
 	end))
 	
 	local mutationLabelTrove = trove:Extend()
@@ -128,6 +140,21 @@ local function showStandDisplay(standFolder: Folder, isOwner: boolean)
 		earningsLabel.Text = string.format("$%s / Egg", Abbreviate.AbbreviateNumber(moneyPerEgg, 1))
 	end))
 	
+	options.Visible = isOwner
+	if isOwner then
+		trove:Add(removeButton.Activated:Connect(function()
+			remotes.RemoveAnimal:FireServer(floorIndex, standIndex)
+		end))
+		
+		trove:Add(buy1Button.Activated:Connect(function()
+			remotes.BuyAnimalLevel:FireServer(floorIndex, standIndex, 1)
+		end))
+		
+		trove:Add(buy10Button.Activated:Connect(function()
+			remotes.BuyAnimalLevel:FireServer(floorIndex, standIndex, 10)
+		end))
+	end
+	
 	currentStand = standFolder
 	
 	return function() trove:Clean() end
@@ -145,7 +172,7 @@ local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: 
 		if isActive then
 			trove:Add(BaseController.Controllers.InteractionController:Register(standModel, function()
 				if standFolder:GetAttribute("DefinitionKey") then
-					showStandDisplay(standFolder, isOwner)
+					showStandDisplay(standFolder, floorIndex, isOwner)
 				elseif isOwner and player.Character and player.Character:FindFirstChild("AnimalTool") then
 					remotes.PlaceAnimal:FireServer(floorIndex, standIndex)
 				end

@@ -45,4 +45,5 @@ function BaseUtil.getStandCost(floorIndex: number): number
 	return 100 * floorIndex
 end
 
+
 return BaseUtil

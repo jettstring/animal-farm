@@ -77,7 +77,7 @@ function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalDat
 	return true
 end
 
-function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, animalKey: string)
+function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, animalKey: string): Tool
 	local profile: Profile = self.Services.DataService:GetProfile(player)
 	if not profile then warn("[CreateAnimalTool] No profile found for player:", player) return end
 	
@@ -137,8 +137,9 @@ function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, ani
 	self.AnimalTools[player] = self.AnimalTools[player] or {}
 	self.AnimalTools[player][animalKey] = tool
 
-
 	tool.Parent = player.Backpack
+	
+	return tool
 end
 
 function AnimalService.UpdateAnimalTool(self: AnimalService, player: Player, animalKey: string)

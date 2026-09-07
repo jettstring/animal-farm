@@ -113,6 +113,65 @@ function AnimalStand.AddAnimal(self: AnimalStand, animalData: AnimalData): (bool
 	return true
 end
 
+function AnimalStand.RemoveAnimal(self: AnimalStand): boolean
+	local owner: Player = self.Floor.Base.Owner
+	
+	local standData: StandData = self.StandData
+	if not standData.unlocked then
+		warn("[RemoveAnimal] stand not unlocked")
+		return false
+	end
+
+	local occupant: AnimalData = standData.occupant
+	if not occupant then
+		warn("[RemoveAnimal] stand not occupied")
+		return nil
+	end
+
+	-- validate occupant animalData
+	if not occupant.definitionKey then
+		warn("[RemoveAnimal] invalid occupant animalData: ", occupant)
+		return nil
+	end
+	
+	local success = self.Services.AnimalService:GiveAnimal(owner, occupant)
+	if not success then
+		warn("[RemoveAnimal] failed to give animal ", occupant)
+		return false
+	end
+	
+	-- remove occupant
+	standData.occupant = nil
+	self:_Refresh()
+	
+	return true
+end
+
+function AnimalStand.LevelAnimal(self: AnimalStand, levels: number): boolean
+	if typeof(levels) ~= "number" then 
+		warn("[LevelAnimal] invalid levels passed: ", levels)
+		return nil
+	end
+	levels = math.round(math.max(levels, 1))
+	
+	local standData: StandData = self.StandData
+	if not standData.unlocked then
+		warn("[LevelAnimal] stand not unlocked")
+		return nil
+	end
+	
+	local occupant: AnimalData = standData.occupant
+	if not occupant then
+		warn("[LevelAnimal] stand not occupied")
+		return nil
+	end
+	
+	occupant.level = occupant.level + levels
+	self:_Refresh()
+	
+	return true
+end
+
 function AnimalStand.Unlock(self: AnimalStand)
 	local standData: StandData = self.StandData
 	standData.unlocked = true
