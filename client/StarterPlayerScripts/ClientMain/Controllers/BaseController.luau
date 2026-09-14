@@ -68,31 +68,29 @@ local standDisplayTrove = Trove.new()
 -- VARIABLES --
 --------------------------------------------------
 
-
 -- Constants
 
 --------------------------------------------------
 -- PRIVATE FUNCTIONS --
 --------------------------------------------------
 
-
 local function showStandDisplay(standFolder: Folder, floorIndex: number, isOwner: boolean)
 	local trove = standDisplayTrove
 	trove:Clean() -- remove previous billboard
-	
+
 	if currentStand == standFolder then
 		currentStand = nil
 		return
 	end
-	
+
 	local standIndex = tonumber(standFolder.Name)
 	local standModel: Model = standFolder:WaitForChild("StandModel")
 	local animalMiddle: Part = standModel:WaitForChild("AnimalMiddle")
-	
+
 	local defKey = standFolder:GetAttribute("DefinitionKey")
 	local animalDef: AnimationDefinition = defKey and AnimalDefinitions[defKey]
 	if not animalDef then warn("[showStandDisplay] invalid animal definition key: ", defKey) return end
-	
+
 	local billboard = trove:Add(BaseAssets:FindFirstChild("StandBillboard"):Clone())
 	local display = billboard.Display
 	local nameLabel = display.NameLabel
@@ -104,67 +102,71 @@ local function showStandDisplay(standFolder: Folder, floorIndex: number, isOwner
 	local removeButton = options:FindFirstChild("Remove")
 	local buy1Button = options:FindFirstChild("Buy1")
 	local buy10Button = options:FindFirstChild("Buy10")
-	
+
 	nameLabel.Text = animalDef.displayName
 	rarityLabel.Text = animalDef.rarity
 	billboard.Adornee = animalMiddle
 	billboard.Parent = playerGui   
-	
+
 	trove:Add(Observers.observeAttribute(standFolder, "Level", function(level: number)
 		levelLabel.Text = string.format("Level %s", Abbreviate.AbbreviateNumber(level, 1))
-		
+
 		-- display level cost on buttons
 		buy1Button.PriceLabel.Text  = "$" .. Abbreviate.AbbreviateNumber(AnimalUtil.getLevelUpCost(defKey, level, 1), 1)
 		buy10Button.PriceLabel.Text = "$" .. Abbreviate.AbbreviateNumber(AnimalUtil.getLevelUpCost(defKey, level, 10), 1)
-		
+
 	end))
-	
+
 	local mutationLabelTrove = trove:Extend()
 	trove:Add(Observers.observeAttribute(standFolder, "Mutation", function(mutation: string)
 		mutationLabelTrove:Clean()
-		
+
 		local mutationLabel = mutationLabelTrove:Add(modifiersDisplay.UIListLayout.MutationLabel:Clone())
 		if mutationLabel:FindFirstChildOfClass("UIGradient") then mutationLabel:FindFirstChildOfClass("UIGradient"):Destroy() end
-		
+
 		mutationLabel.Text = mutation
-		
+
 		local mutationGradient = MutationGradients:FindFirstChild(mutation) and MutationGradients:FindFirstChild(mutation):Clone()
 		if mutationGradient then
 			mutationGradient.Parent = mutationLabel
 		end
-		
+
 		-- TODO: gradient effects
 	end))
-	
+
 	trove:Add(Observers.observeAttribute(standFolder, "MoneyPerEgg", function(moneyPerEgg: number)
 		earningsLabel.Text = string.format("$%s / Egg", Abbreviate.AbbreviateNumber(moneyPerEgg, 1))
 	end))
-	
+
 	options.Visible = isOwner
 	if isOwner then
 		trove:Add(removeButton.Activated:Connect(function()
 			remotes.RemoveAnimal:FireServer(floorIndex, standIndex)
 		end))
-		
+
 		trove:Add(buy1Button.Activated:Connect(function()
 			remotes.BuyAnimalLevel:FireServer(floorIndex, standIndex, 1)
 		end))
-		
+
 		trove:Add(buy10Button.Activated:Connect(function()
 			remotes.BuyAnimalLevel:FireServer(floorIndex, standIndex, 10)
 		end))
 	end
-	
+
 	currentStand = standFolder
-	
+
 	return function() trove:Clean() end
 end
+
 
 local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: Player)
 	local standIndex = tonumber(standFolder.Name)
 	local isOwner = owner == player
 	local standModel: Model = standFolder:WaitForChild("StandModel")
 	local animalMiddle: Part = standModel:WaitForChild("AnimalMiddle")
+	local statusIndicator: Part = standModel:WaitForChild("StatusIndicator")
+	local eggPositionsContainer: Folder = standModel:WaitForChild("EggPositions")
+	
 	
 	return Observers.observeAttribute(standFolder, "Active", function(isActive: boolean)
 		local trove = Trove.new()
@@ -177,7 +179,6 @@ local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: 
 					remotes.PlaceAnimal:FireServer(floorIndex, standIndex)
 				end
 			end))
-			
 			
 			trove:Add(Observers.observeAttribute(standFolder, "DefinitionKey", function(definitionKey: string)
 				local defTrove = Trove.new()
@@ -199,16 +200,46 @@ local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: 
 						animalModel:PivotTo(animalMiddle:GetPivot())
 					end
 					
-					
 					-- TODO: animation, fx, etc
 				end
-				
 				
 				defTrove:Add(Observers.observeAttribute(standFolder, "Mutation", function(mutation: string)
 					updateRender()
 				end))
-				
 				updateRender()
+
+				
+				local eggThread: thread = nil
+				local function updateStandEgg()
+					local now = workspace:GetServerTimeNow()
+					local eggTimestamp: number? = standFolder:GetAttribute("EggReadyAt")
+					local isReady = eggTimestamp and now >= eggTimestamp
+					
+					statusIndicator.Color = (isReady and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(57, 59, 81))
+				end
+				
+				defTrove:Add(Observers.observeAttribute(standFolder, "EggReadyAt", function(eggTimestamp: number)
+					updateStandEgg()
+					
+					if eggThread then task.cancel(eggThread) end
+					eggThread = defTrove:Add(task.spawn(function()
+						local now = workspace:GetServerTimeNow()
+						while true do
+							task.wait(0.25)
+							now = workspace:GetServerTimeNow()
+							local isReady = eggTimestamp and eggTimestamp <= now
+							
+							updateStandEgg()
+							if isReady then break end
+						end
+					end))
+					
+					return function()
+						if eggThread then task.cancel(eggThread) end
+						updateStandEgg()
+					end
+				end))
+				updateStandEgg()
 				
 				return function()
 					defTrove:Destroy()
@@ -216,8 +247,6 @@ local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: 
 				end
 			end))
 		else
-			
-			
 			-- unlock sign
 			if isOwner then
 				local unlockSign: Model = standFolder:WaitForChild("UnlockSign")
@@ -247,6 +276,15 @@ local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: 
 	end)
 end
 
+local function mountDrone(floorFolder: Folder)
+	local trove = Trove.new()
+	
+	local standsContainer = floorFolder:WaitForChild("AnimalStands")
+	
+	
+	return function() trove:Destroy() end
+end
+
 local function mountFloors(baseFolder: Folder, owner: Player)
 	local trove = Trove.new()
 	local isOwner = owner == player
@@ -261,8 +299,14 @@ local function mountFloors(baseFolder: Folder, owner: Player)
 		local modelFolder = floorFolder:WaitForChild("Model")
 		
 		trove:Add(Observers.observeAttribute(floorFolder, "Active", function(isActive: boolean)
+			local floorTrove = trove:Extend()
 			local upgradesSign = floorFolder:WaitForChild("UpgradeSign")
 			BaseUtil.showInstance(upgradesSign, isOwner and isActive)
+			
+			-- drone
+			if isOwner and isActive then floorTrove:Add(mountDrone(floorFolder)) end
+			
+			return function() floorTrove:Destroy() end
 		end))
 		
 		-- animal stands
@@ -273,6 +317,7 @@ local function mountFloors(baseFolder: Folder, owner: Player)
 
 			trove:Add(mountAnimalStand(standFolder, floorIndex, owner))
 		end
+		
 		
 	end
 	

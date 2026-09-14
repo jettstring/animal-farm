@@ -141,7 +141,7 @@ function Floor._startLoop(self: Floor)
 		while true do
 			local now = workspace:GetServerTimeNow()
 			
-			local nearestStand = self.AnimalStands[self.DroneIndex] 
+			local nearestStand = self.AnimalStands[self.DroneIndex]
 			if nearestStand and nearestStand:IsEggReady(now) then
 				task.wait(self:GetDroneCollectTime())
 				nearestStand:CollectEgg()
