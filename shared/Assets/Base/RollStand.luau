@@ -100,7 +100,6 @@ function RollStand.BuySlotAnimal(self: RollStand, slotIndex: number)
 	local rollData: RollData = profile.base.rollData
 	local slotData = rollData and rollData.slotData[slotIndex]
 	if not slotData or not slotData.definitionKey then
-		warn("[BuySlotAnimal] invalid slotData: ", slotData)
 		return
 	end
 
@@ -116,6 +115,8 @@ function RollStand.BuySlotAnimal(self: RollStand, slotIndex: number)
 		return
 	end
 	
+
+	
 	local success = self.Services.AnimalService:GiveAnimal(owner, slotData)
 	if not success then
 		warn("[BuySlotAnimal] failed to give animal: ", success)
@@ -123,6 +124,9 @@ function RollStand.BuySlotAnimal(self: RollStand, slotIndex: number)
 	end
 	
 	self.Services.DataService:IncrementCurrency(owner, "Money", -cost, "Buy Animal", false)
+	
+	rollData.slotData[slotIndex] = nil
+	self:_Refresh()
 end
 
 function RollStand.Destroy(self: RollStand)

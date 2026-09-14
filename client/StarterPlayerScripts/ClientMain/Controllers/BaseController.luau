@@ -344,7 +344,11 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 				animalModel:PivotTo(middlePart:GetPivot())
 			end
 			
-			return function() animalTrove:Destroy() end
+			return function()
+				animalTrove:Destroy()
+				hasAnimal = false
+				updatePrompts()
+			end
 		end))
 		
 		

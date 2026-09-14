@@ -58,7 +58,7 @@ type self = {
 	StandFolder: Folder,
 	StandData: StandData?,
 	AnimalModel: Model?,
-	
+	ReadyAt: number?,
 }
 
 export type AnimalStand = typeof(setmetatable({} :: self, AnimalStand))
@@ -73,6 +73,8 @@ function AnimalStand.new(floor: any, standIndex: number, standFolder: Folder, st
 	self.StandFolder = standFolder
 	self.StandData = standData
 	self.AnimalModel = nil
+	
+	self.StandThread = nil
 	
 	self:_Refresh()
 	
@@ -172,6 +174,22 @@ function AnimalStand.LevelAnimal(self: AnimalStand, levels: number): boolean
 	return true
 end
 
+function AnimalStand.CollectEgg(self: AnimalStand)
+	local earnings = self:GetEggEarnings()
+	if not earnings then warn("[CollectEgg] could not get egg earnings") return end
+	
+	local owner = self.Floor.Base.Owner
+	self.Services.DataService:IncrementCurrency(owner, "Money", earnings)
+	
+	self:StartGrowing()
+	self:_Refresh()
+	print(string.format("Stand #%s Egg Ready: +$%d", self.StandIndex, earnings))
+end
+
+function AnimalStand.StartGrowing(self: AnimalStand)
+	self.ReadyAt = workspace:GetServerTimeNow() + self:GetEggGrowTime()
+end
+
 function AnimalStand.Unlock(self: AnimalStand)
 	local standData: StandData = self.StandData
 	standData.unlocked = true
@@ -208,10 +226,21 @@ function AnimalStand._Refresh(self: AnimalStand)
 
 	-- update animal attributes 
 	local animalData: AnimalData? = unlocked and standData.occupant
+	
+	if animalData then
+		if not self.ReadyAt then
+			self:StartGrowing()
+		end
+	else
+		self.ReadyAt = nil
+	end
+	
 	standFolder:SetAttribute("DefinitionKey", (animalData and animalData.definitionKey) or nil)
 	standFolder:SetAttribute("Mutation", (animalData and animalData.mutation) or nil)
 	standFolder:SetAttribute("Level", (animalData and animalData.level) or nil)
-	
+	standFolder:SetAttribute("EggEarnings", self:GetEggEarnings())
+	standFolder:SetAttribute("EggGrowTime", self:GetEggGrowTime())
+	standFolder:SetAttribute("EggReadyAt", (animalData and self.ReadyAt) or nil)
 end
 
 
@@ -228,5 +257,51 @@ end
 --------------------------------------------------
 -- HELPERS -- 
 --------------------------------------------------
+
+function AnimalStand.IsEggReady(self: AnimalStand, now: number): boolean
+	return self.ReadyAt and now >= self.ReadyAt
+end
+
+function AnimalStand.GetEggEarnings(self: AnimalStand): number
+	local standData: StandData? = self.StandData
+	local occupant = standData and standData.occupant
+	if not occupant or not occupant.definitionKey then return nil end
+
+	local animalDef: AnimalDefinition = AnimalDefinitions[occupant.definitionKey]
+	if not animalDef then return nil end
+	
+	local earnings = 0
+
+	local baseEarnings = animalDef.eggEarnings
+	if not baseEarnings then
+		warn("[GetEggEarnings] invalid baseEarnings: ", animalDef)
+		return nil
+	end
+	
+	earnings += baseEarnings
+	
+	return earnings
+end
+
+
+function AnimalStand.GetEggGrowTime(self: AnimalStand): number
+	local standData: StandData? = self.StandData
+	local occupant = standData and standData.occupant
+	if not occupant or not occupant.definitionKey then return nil end
+	
+	local animalDef: AnimalDefinition = AnimalDefinitions[occupant.definitionKey]
+	if not animalDef then return nil end
+	
+	local baseTime = animalDef.eggGrowTime
+	if not baseTime then
+		warn("[GetEggGrowTime] invalid eggGrowTime: ", animalDef)
+		return nil
+	end
+	
+	-- TODO: get floor egg regen upgrade multiplier
+	
+	return baseTime
+end
+
 
 return AnimalStand

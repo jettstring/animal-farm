@@ -34,19 +34,19 @@
                       ]
                     },
                     {
-                      "name": "BaseController",
-                      "className": "ModuleScript",
-                      "pluginManaged": true,
-                      "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/BaseController.luau"
-                      ]
-                    },
-                    {
                       "name": "InteractionController",
                       "className": "ModuleScript",
                       "pluginManaged": true,
                       "filePaths": [
                         "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/InteractionController.luau"
+                      ]
+                    },
+                    {
+                      "name": "BaseController",
+                      "className": "ModuleScript",
+                      "pluginManaged": true,
+                      "filePaths": [
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/BaseController.luau"
                       ]
                     }
                   ]
@@ -1883,19 +1883,42 @@
           "pluginManaged": true,
           "children": [
             {
+              "name": "PurchaseProfileTemplate",
+              "className": "ModuleScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Modules/PurchaseProfileTemplate.luau"
+              ]
+            },
+            {
               "name": "ProfileTemplate",
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
                 "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Modules/ProfileTemplate.luau"
               ]
-            },
+            }
+          ]
+        },
+        {
+          "name": "Utils",
+          "className": "Folder",
+          "pluginManaged": true,
+          "children": [
             {
-              "name": "PurchaseProfileTemplate",
+              "name": "AnimalUtil",
               "className": "ModuleScript",
               "pluginManaged": true,
               "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Modules/PurchaseProfileTemplate.luau"
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/AnimalUtil.luau"
+              ]
+            },
+            {
+              "name": "BaseUtil",
+              "className": "ModuleScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/BaseUtil.luau"
               ]
             }
           ]
@@ -1957,29 +1980,6 @@
                     "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Animals/AnimalConfig.luau"
                   ]
                 }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Utils",
-          "className": "Folder",
-          "pluginManaged": true,
-          "children": [
-            {
-              "name": "AnimalUtil",
-              "className": "ModuleScript",
-              "pluginManaged": true,
-              "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/AnimalUtil.luau"
-              ]
-            },
-            {
-              "name": "BaseUtil",
-              "className": "ModuleScript",
-              "pluginManaged": true,
-              "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/BaseUtil.luau"
               ]
             }
           ]

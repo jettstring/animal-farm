@@ -62,6 +62,9 @@ type self = {
 	FloorFolder: Folder,
 	FloorData: FloorData?,
 	AnimalStands: {[number]: AnimalStand},
+	FloorThread: thread?,
+	DroneIndex: number?,
+	DroneDirection: number?
 }
 
 export type Floor = typeof(setmetatable({} :: self, Floor))
@@ -77,6 +80,8 @@ function Floor.new(base: any, floorIndex: number, floorFolder: Folder, floorData
 	self.FloorData = floorData
 	self.FloorFolder = floorFolder
 	self.AnimalStands = {}
+	
+	self.FloorThread = nil 
 	
 	if self:OwnsFloor() then
 		self:_buildStands()
@@ -94,7 +99,7 @@ function Floor._Refresh(self: Floor)
 	local ownsFloor = self:OwnsFloor()
 
 	BaseUtil.showInstance(model, ownsFloor)
-	self.FloorFolder:SetAttribute("Active", ownsFloor)
+	floorFolder:SetAttribute("Active", ownsFloor)
 end
 
 function Floor._buildStands(self: Floor)
@@ -121,6 +126,45 @@ function Floor._buildStands(self: Floor)
 		
 		self.AnimalStands[standIndex] = self.Trove:Add(AnimalStand.new(self, standIndex, standFolder, standData, self.Services))
 	end
+	
+	self:_startLoop()
+end
+
+function Floor._startLoop(self: Floor)
+	local floorFolder: Folder = self.FloorFolder
+	if self.FloorThread then warn("[_startLoop] floor thread already active!") return end
+	
+	self.DroneIndex = 1
+	self.DroneDirection = 1
+	
+	self.FloorThread = self.Trove:Add(task.spawn(function()
+		while true do
+			local now = workspace:GetServerTimeNow()
+			
+			local nearestStand = self.AnimalStands[self.DroneIndex] 
+			if nearestStand and nearestStand:IsEggReady(now) then
+				task.wait(self:GetDroneCollectTime())
+				nearestStand:CollectEgg()
+				continue
+			end
+			
+			-- check for ready stand ahead
+			if not self:GetReadyAhead(self.DroneIndex, self.DroneDirection, now) then
+				self.DroneDirection *= -1 -- reverse direction
+				print(string.format("[Floor %d] Reversing %s", self.FloorIndex, (math.sign(self.DroneDirection) == 1) and "Right" or "Left"))
+				if not self:GetReadyAhead(self.DroneIndex, self.DroneDirection, now) then
+					task.wait(0.5)  -- nothing ready, reverse 
+					continue
+				end
+			end
+			
+			-- step 
+			self.DroneIndex += self.DroneDirection
+			floorFolder:SetAttribute("DroneIndex", self.DroneIndex)
+			print(string.format("[Floor %d] DroneIndex: %d", self.FloorIndex, self.DroneIndex))
+			task.wait(self:GetDroneStepTime())
+		end
+	end))
 end
    
 --------------------------------------------------
@@ -164,6 +208,28 @@ end
 --------------------------------------------------
 -- HELPERS -- 
 --------------------------------------------------
+
+function Floor.GetDroneCollectTime(self: Floor): number
+	return 3 -- TODO multiply by speed ugprade
+end
+
+function Floor.GetDroneStepTime(self: Floor): number
+	return 1 -- TODO multiply by speed ugprade
+end
+
+function Floor.GetReadyAhead(self: Floor, fromIndex, dir: number, now: number): AnimalStand?
+	local i = fromIndex + dir
+	while i >= 1 and i <= #self.AnimalStands do
+		local stand = self.AnimalStands[i]
+		if stand and stand:IsEggReady(now) then
+			return stand
+		end
+		
+		i += dir
+	end
+	
+	return nil
+end
 
 function Floor.OwnsFloor(self: Floor): boolean
 	local baseData: BaseData = self.Base.BaseData

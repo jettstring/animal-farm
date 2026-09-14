@@ -16,6 +16,7 @@ export type AnimalDefinition = {
 	rarity: AnimalRarity,
 	odds: number,
 	eggEarnings: number, -- earnings per egg dropped
+	eggGrowTime: number -- time for egg to grow
 }
 
 export type AnimalRarity = "Common" | "Uncommon" | "Rare" | "Legendary" | "Mythical"
@@ -36,6 +37,7 @@ local AnimalDefinitions: {[string]: AnimalDefinition} = {
 		rarity = "Common",
 		odds = 0.8,
 		eggEarnings = 1,
+		eggGrowTime = 1,
 	},
 	
 	["Giraffe"] = {
@@ -43,6 +45,7 @@ local AnimalDefinitions: {[string]: AnimalDefinition} = {
 		rarity = "Uncommon",
 		odds = 0.6,
 		eggEarnings = 5,
+		eggGrowTime = 2,
 	},
 	
 	["Elephant"] = {
@@ -50,6 +53,7 @@ local AnimalDefinitions: {[string]: AnimalDefinition} = {
 		rarity = "Rare",
 		odds = 0.4,
 		eggEarnings = 20,
+		eggGrowTime = 3,
 	},
 	
 	["Gorilla"] = {
@@ -57,6 +61,7 @@ local AnimalDefinitions: {[string]: AnimalDefinition} = {
 		rarity = "Rare",
 		odds = 0.35,
 		eggEarnings = 50,
+		eggGrowTime = 3,	
 	},
 	
 	["Lion"] = {
@@ -64,6 +69,7 @@ local AnimalDefinitions: {[string]: AnimalDefinition} = {
 		rarity = "Legendary",
 		odds = 0.1,
 		eggEarnings = 100,
+		eggGrowTime = 4,
 	},
 	
 } 

@@ -208,7 +208,6 @@ local function _cleanupBase(baseFolder: Folder)
 	local baseModel: Model = baseFolder.Base
 	local spawnLocation: SpawnLocation = baseModel.SpawnLocation
 	
-	
 	-- hide floors
 	local floorsContainer = baseModel.Floors
 	for _, floorFolder: Folder in floorsContainer:GetChildren() do
