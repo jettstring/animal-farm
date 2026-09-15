@@ -39,7 +39,7 @@ DataService.Signals = {
 	DataLoaded = Signal.new(),
 }
 
-DataService.MainKey = "DEV-10"
+DataService.MainKey = "DEV-11"
 DataService.PurchaseKey = "DEV-PURCHASES-01"
 
 DataService.DATA_CONFIG = {

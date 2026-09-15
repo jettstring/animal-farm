@@ -151,7 +151,7 @@ function Floor._startLoop(self: Floor)
 			-- check for ready stand ahead
 			if not self:GetReadyAhead(self.DroneIndex, self.DroneDirection, now) then
 				self.DroneDirection *= -1 -- reverse direction
-				print(string.format("[Floor %d] Reversing %s", self.FloorIndex, (math.sign(self.DroneDirection) == 1) and "Right" or "Left"))
+				--print(string.format("[Floor %d] Reversing %s", self.FloorIndex, (math.sign(self.DroneDirection) == 1) and "Right" or "Left"))
 				if not self:GetReadyAhead(self.DroneIndex, self.DroneDirection, now) then
 					task.wait(0.5)  -- nothing ready, reverse 
 					continue

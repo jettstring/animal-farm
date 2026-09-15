@@ -1,5 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 
 local Observers = require(ReplicatedStorage.Packages.Observers)
 local Trove = require(ReplicatedStorage.Packages.Trove)
@@ -279,8 +280,91 @@ end
 local function mountDrone(floorFolder: Folder)
 	local trove = Trove.new()
 	
+	local waypointParts: {[number]: Part} = {}
 	local standsContainer = floorFolder:WaitForChild("AnimalStands")
+	for _, standFolder: Folder in standsContainer:GetChildren() do
+		local standIndex: number = tonumber(standFolder.Name)
+		if not standIndex then warn("[mountDrone] invalid stand index: ", standIndex) continue end
+		if not waypointParts[standIndex] then
+			waypointParts[standIndex] = standFolder:WaitForChild("DroneWaypoint")
+		end
+	end
+
+	-- setup
+	local droneAssets = BaseAssets:WaitForChild("Drone")
+	local animations = droneAssets:WaitForChild("Animations")
 	
+	local droneRoot = trove:Add(Instance.new("Part"))
+	droneRoot.Name = "DroneRoot"
+	droneRoot.Anchored = true
+	droneRoot.CanCollide = false
+	droneRoot.Transparency = 0
+	droneRoot.Material = Enum.Material.ForceField
+	droneRoot.Parent = floorFolder
+	
+	local droneModel = trove:Add(droneAssets:WaitForChild("DroneModel"):Clone())
+	local droneBody = droneModel:WaitForChild("Body")
+	local animator = droneModel.AnimationController:WaitForChild("Animator")
+
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = droneRoot
+	weld.Part1 = droneModel.PrimaryPart
+	weld.Parent = droneModel.PrimaryPart
+	droneModel:PivotTo(droneRoot.CFrame)
+	droneModel.Parent = floorFolder
+	
+	local tracks = {
+		left = animator:LoadAnimation(animations.Left),
+		right = animator:LoadAnimation(animations.Right),
+		vacuum = animator:LoadAnimation(animations.Vacuuming)
+	}
+	
+	local droneIndex = floorFolder:GetAttribute("DroneIndex") or 1
+	local targetIndex = droneIndex
+	
+	
+	local facing = nil -- nil until first move
+	local function face(dir)
+		if facing == dir then return end            -- don't replay every step
+		local faceTrack = dir == 1 and tracks.right or tracks.left
+		for _, track in tracks do
+			track:Stop()
+		end
+		faceTrack:Play(0.15)
+		facing = dir
+	end
+	
+	trove:Add(task.spawn(function()
+		while true do
+			if droneIndex == targetIndex then
+				task.wait(0.1)
+			else
+				local dir = math.sign(targetIndex - droneIndex)
+				local nextIndex = droneIndex + dir
+				local stepTime = floorFolder:GetAttribute("DroneStepTime") or 1
+				
+				face(dir)
+				
+				local tween = TweenService:Create(droneRoot, 
+					TweenInfo.new(stepTime, Enum.EasingStyle.Linear),
+					{ CFrame = waypointParts[nextIndex].CFrame }
+				)
+				tween:Play()
+				tween.Completed:Wait()
+				droneIndex = nextIndex
+			end
+		end
+	end))
+	
+	trove:Add(Observers.observeAttribute(floorFolder, "DroneIndex", function(standIndex: string)
+		targetIndex = standIndex
+	end))
+	
+	
+	trove:Add(Observers.observeAttribute(floorFolder, "DroneVacuuming", function(isVacuuming: boolean)
+		local vacuumSpeed: number = floorFolder:GetAttribute("DroneVacuumSpeed")
+		
+	end))
 	
 	return function() trove:Destroy() end
 end
