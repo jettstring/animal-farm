@@ -360,10 +360,17 @@ local function mountDrone(floorFolder: Folder)
 		targetIndex = standIndex
 	end))
 	
-	
 	trove:Add(Observers.observeAttribute(floorFolder, "DroneVacuuming", function(isVacuuming: boolean)
-		local vacuumSpeed: number = floorFolder:GetAttribute("DroneVacuumSpeed")
+		if not isVacuuming then return end
 		
+		local collectSpeed: number = floorFolder:GetAttribute("DroneCollectTime")
+		tracks.left:Stop(); tracks.right:Stop()
+		tracks.vacuum:Play(1, 1, collectSpeed)
+		
+		
+		return function() 
+			tracks.vacuum:Stop()
+		end
 	end))
 	
 	return function() trove:Destroy() end

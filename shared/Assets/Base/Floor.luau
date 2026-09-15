@@ -100,6 +100,8 @@ function Floor._Refresh(self: Floor)
 
 	BaseUtil.showInstance(model, ownsFloor)
 	floorFolder:SetAttribute("Active", ownsFloor)
+	floorFolder:SetAttribute("DroneCollectTime", self:GetDroneCollectTime())
+	floorFolder:SetAttribute("DroneStepTime", self:GetDroneStepTime())
 end
 
 function Floor._buildStands(self: Floor)
@@ -143,8 +145,12 @@ function Floor._startLoop(self: Floor)
 			
 			local nearestStand = self.AnimalStands[self.DroneIndex]
 			if nearestStand and nearestStand:IsEggReady(now) then
+				floorFolder:SetAttribute("DroneVacuuming", true)
+				
+				-- collect egg
 				task.wait(self:GetDroneCollectTime())
 				nearestStand:CollectEgg()
+				floorFolder:SetAttribute("DroneVacuuming", false)
 				continue
 			end
 			
