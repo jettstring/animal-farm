@@ -11,6 +11,7 @@ local AnimalAssets = Assets:WaitForChild("Animals")
 local AnimalConfig = require(AnimalAssets:WaitForChild("AnimalConfig"))
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 local AnimalModels = AnimalAssets.AnimalModels
+local EggModels = AnimalAssets.EggModels
 
 --------------------------------------------------
 -- TYPES -- 
@@ -77,6 +78,26 @@ function AnimalUtil.getAnimalModel(animalData: AnimalData): Model
 	return clone
 end
 
+function AnimalUtil.getEggModel(animalData: AnimalData): Model
+	local defKey = animalData.definitionKey
+	local animalDef = defKey and AnimalDefinitions[animalData.definitionKey]
+	if not animalDef then
+		warn("[getEggModel] invalid animalData: ", animalData)
+		return nil
+	end
+
+	local baseModel: Model = EggModels:FindFirstChild(defKey)
+	if not baseModel then
+		warn("[getEggModel] missing animal model for: ", defKey)
+		return nil
+	end
+
+	local clone = baseModel:Clone()
+
+	-- TODO: apply mutation effects
+
+	return clone
+end
 
 function AnimalUtil.getLevelCost(definitionKey: AnimalData, level: number): number
 	local animalDef: AnimalDefinition = AnimalDefinitions[definitionKey]

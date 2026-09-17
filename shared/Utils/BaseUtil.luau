@@ -45,5 +45,15 @@ function BaseUtil.getStandCost(floorIndex: number): number
 	return 100 * floorIndex
 end
 
+function BaseUtil.getConveyorTravelTime(floorIndex: number, standIndex: number): number
+	local STAND_TRAVEL_TIME = 1.85
+	local MIDDLE_STAND_INDEX = 4
+	
+	local standDistanceTime = math.abs(standIndex - MIDDLE_STAND_INDEX) * STAND_TRAVEL_TIME
+	local floorDistanceTime = floorIndex * 0.9
+	
+	return standDistanceTime + floorDistanceTime
+end
+
 
 return BaseUtil

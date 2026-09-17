@@ -1,6 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local Debris = game:GetService("Debris")
 
 local Observers = require(ReplicatedStorage.Packages.Observers)
 local Trove = require(ReplicatedStorage.Packages.Trove)
@@ -280,6 +281,8 @@ end
 local function mountDrone(floorFolder: Folder)
 	local trove = Trove.new()
 	
+	local floorIndex = tonumber(floorFolder.Name)
+	
 	local waypointParts: {[number]: Part} = {}
 	local standsContainer = floorFolder:WaitForChild("AnimalStands")
 	for _, standFolder: Folder in standsContainer:GetChildren() do
@@ -325,12 +328,12 @@ local function mountDrone(floorFolder: Folder)
 	
 	local facing = nil -- nil until first move
 	local function face(dir)
-		if facing == dir then return end            -- don't replay every step
 		local faceTrack = dir == 1 and tracks.right or tracks.left
 		for _, track in tracks do
 			track:Stop()
 		end
 		faceTrack:Play(0.15)
+		print("playing ", faceTrack)
 		facing = dir
 	end
 	
@@ -366,6 +369,52 @@ local function mountDrone(floorFolder: Folder)
 		local collectSpeed: number = floorFolder:GetAttribute("DroneCollectTime")
 		tracks.left:Stop(); tracks.right:Stop()
 		tracks.vacuum:Play(1, 1, collectSpeed)
+		
+		
+		local standFolder = standsContainer[targetIndex]
+		local definitionKey = standFolder and standFolder:GetAttribute("DefinitionKey")
+		if not definitionKey then
+			warn("[mountDrone] missing stand folder definitionKey for index: ", targetIndex)
+		end
+		
+		-- crate conveyor eggs
+		local animalData: AnimalData = definitionKey and { definitionKey = definitionKey }
+		if animalData then
+			trove:Add(task.delay(0.1, function()
+				local travelTime = BaseUtil.getConveyorTravelTime(floorIndex, targetIndex) 
+
+				for i = 1, 5 do
+					local eggModel = AnimalUtil.getEggModel(animalData)
+					if not eggModel then return end
+					Debris:AddItem(eggModel, travelTime)
+
+					local primaryPart = eggModel.PrimaryPart
+					if not primaryPart then
+						eggModel:Destroy()
+						warn("[mountDrone] missing primary part for egg model")
+						return
+					end
+
+					for _, basePart: BasePart in eggModel:QueryDescendants("BasePart") do
+						local weld = Instance.new("WeldConstraint")
+						weld.Part0 = primaryPart
+						weld.Part1 = basePart
+						weld.Parent = basePart
+						basePart.Anchored = false
+						basePart.CollisionGroup = "AssemblyEggs"
+						basePart.CanCollide = (basePart == primaryPart and false) or true
+						basePart.Massless = true
+					end
+
+
+					eggModel:PivotTo(droneModel.Body.EggPart:GetPivot())
+					eggModel.Parent = workspace
+
+					task.wait(0.35)
+				end
+
+			end))
+		end
 		
 		
 		return function() 

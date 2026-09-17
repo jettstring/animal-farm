@@ -1901,29 +1901,6 @@
           ]
         },
         {
-          "name": "Utils",
-          "className": "Folder",
-          "pluginManaged": true,
-          "children": [
-            {
-              "name": "AnimalUtil",
-              "className": "ModuleScript",
-              "pluginManaged": true,
-              "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/AnimalUtil.luau"
-              ]
-            },
-            {
-              "name": "BaseUtil",
-              "className": "ModuleScript",
-              "pluginManaged": true,
-              "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/BaseUtil.luau"
-              ]
-            }
-          ]
-        },
-        {
           "name": "Assets",
           "className": "Folder",
           "pluginManaged": true,
@@ -1980,6 +1957,29 @@
                     "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Animals/AnimalConfig.luau"
                   ]
                 }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Utils",
+          "className": "Folder",
+          "pluginManaged": true,
+          "children": [
+            {
+              "name": "AnimalUtil",
+              "className": "ModuleScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/AnimalUtil.luau"
+              ]
+            },
+            {
+              "name": "BaseUtil",
+              "className": "ModuleScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/BaseUtil.luau"
               ]
             }
           ]
