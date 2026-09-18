@@ -7,6 +7,8 @@ local ProfileTemplate = {
 	
 	base = {
 		unlockedFloors = 1,
+		crateValue = 0,
+		eggsCollected = 0,
 		
 		floors = {
 			[1] = {
@@ -34,6 +36,8 @@ local ProfileTemplate = {
 }
 
 export type BaseData = {
+	crateValue: number,
+	eggsCollected: number, 
 	unlockedFloors: number,
 	floors: {[number]: FloorData},
 	rollData: RollData,

@@ -81,6 +81,43 @@ function AnimalStand.new(floor: any, standIndex: number, standFolder: Folder, st
 	return self
 end
 
+function AnimalStand._Refresh(self: AnimalStand)
+	local standFolder: Folder = self.StandFolder
+	local standModel: Model = standFolder.StandModel
+	local unlockSign: Model = standFolder.UnlockSign
+
+	local animalModel: Model? = self.AnimalModel
+	local standData: StandData? = self.StandData
+
+	local unlocked = standData.unlocked
+	standFolder:SetAttribute("Active", unlocked)
+
+	BaseUtil.showInstance(standModel, unlocked)
+	BaseUtil.showInstance(unlockSign, not unlocked)
+
+	-- unlock cost
+	local unlockCost: number = BaseUtil.getStandCost(self.Floor.FloorIndex)
+	standFolder:SetAttribute("UnlockCost", unlockCost)
+
+	-- update animal attributes 
+	local animalData: AnimalData? = unlocked and standData.occupant
+
+	if animalData then
+		if not self.ReadyAt then
+			self:StartGrowing()
+		end
+	else
+		self.ReadyAt = nil
+	end
+
+	standFolder:SetAttribute("DefinitionKey", (animalData and animalData.definitionKey) or nil)
+	standFolder:SetAttribute("Mutation", (animalData and animalData.mutation) or nil)
+	standFolder:SetAttribute("Level", (animalData and animalData.level) or nil)
+	standFolder:SetAttribute("EggEarnings", self:GetEggEarnings())
+	standFolder:SetAttribute("EggGrowTime", self:GetEggGrowTime())
+	standFolder:SetAttribute("EggReadyAt", (animalData and self.ReadyAt) or nil)
+end
+
 
 --------------------------------------------------
 -- ACTIONS -- 
@@ -178,12 +215,14 @@ function AnimalStand.CollectEgg(self: AnimalStand)
 	local earnings = self:GetEggEarnings()
 	if not earnings then warn("[CollectEgg] could not get egg earnings") return end
 	
-	local owner = self.Floor.Base.Owner
-	self.Services.DataService:IncrementCurrency(owner, "Money", earnings)
-	
 	self:StartGrowing()
 	self:_Refresh()
-	print(string.format("Stand #%s Egg Ready: +$%d", self.StandIndex, earnings))
+	
+	local floorIndex = self.Floor.FloorIndex
+	local travelTime = BaseUtil.getConveyorTravelTime(floorIndex, self.StandIndex) 
+	self.Trove:Add(task.delay(travelTime, function()
+		self.Floor.Base:IncrementCrateValue(earnings)
+	end))
 end
 
 function AnimalStand.StartGrowing(self: AnimalStand)
@@ -204,43 +243,6 @@ function AnimalStand.Unlock(self: AnimalStand)
 	end))
 
 	return true
-end
-
-function AnimalStand._Refresh(self: AnimalStand)
-	local standFolder: Folder = self.StandFolder
-	local standModel: Model = standFolder.StandModel
-	local unlockSign: Model = standFolder.UnlockSign
-	
-	local animalModel: Model? = self.AnimalModel
-	local standData: StandData? = self.StandData
-	
-	local unlocked = standData.unlocked
-	standFolder:SetAttribute("Active", unlocked)
-
-	BaseUtil.showInstance(standModel, unlocked)
-	BaseUtil.showInstance(unlockSign, not unlocked)
-	
-	-- unlock cost
-	local unlockCost: number = BaseUtil.getStandCost(self.Floor.FloorIndex)
-	standFolder:SetAttribute("UnlockCost", unlockCost)
-
-	-- update animal attributes 
-	local animalData: AnimalData? = unlocked and standData.occupant
-	
-	if animalData then
-		if not self.ReadyAt then
-			self:StartGrowing()
-		end
-	else
-		self.ReadyAt = nil
-	end
-	
-	standFolder:SetAttribute("DefinitionKey", (animalData and animalData.definitionKey) or nil)
-	standFolder:SetAttribute("Mutation", (animalData and animalData.mutation) or nil)
-	standFolder:SetAttribute("Level", (animalData and animalData.level) or nil)
-	standFolder:SetAttribute("EggEarnings", self:GetEggEarnings())
-	standFolder:SetAttribute("EggGrowTime", self:GetEggGrowTime())
-	standFolder:SetAttribute("EggReadyAt", (animalData and self.ReadyAt) or nil)
 end
 
 

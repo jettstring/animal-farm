@@ -34,7 +34,8 @@ type Floor = Floor.Floor
 local Base = {}
 Base.__index = Base
 
-type self = {
+type self = { 
+	Services: any,
 	Owner: Player,
 	BaseFolder: Folder,
 	BaseData: BaseData,
@@ -64,6 +65,8 @@ function Base.new(owner: Player, baseFolder: Folder, services: any): Base
 		self:Destroy()
 		return nil
 	end
+	
+	self:_Refresh()
 	
 	print("[Base] Created base object:", self)
 	return self
@@ -122,9 +125,37 @@ function Base._setupFloors(self: Base)
 	end
 end
 
+function Base._Refresh(self: Base)
+	local baseFolder = self.BaseFolder
+	local baseModel = baseFolder:WaitForChild("Base")
+	local components: Folder = baseModel:WaitForChild("Components")
+	
+	local baseData: BaseData = self.BaseData 
+	
+	local eggCollector: Folder = components.EggCollector
+	eggCollector:SetAttribute("CrateValue", baseData and baseData.crateValue or nil)
+	eggCollector:SetAttribute("EggsCollected", baseData and baseData.eggsCollected or nil)
+end
+
 --------------------------------------------------
 -- ACTIONS -- 
 --------------------------------------------------
+
+function Base.IncrementCrateValue(self: Base, addedMoney: number)
+	local baseData: BaseData = self.BaseData 
+	baseData.crateValue += math.max(addedMoney, 0)
+	baseData.eggsCollected += 1
+	self:_Refresh()
+end
+
+function Base.SellCrates(self: Base)
+	local baseData: BaseData = self.BaseData 
+	local value = baseData.crateValue or 0
+	self.Services.DataService:IncrementCurrency(self.Owner, "Money", value)
+	baseData.eggsCollected = 0
+	baseData.crateValue = 0
+	self:_Refresh()
+end
 
 function Base.Destroy(self: Base)
 	self.Trove:Destroy()

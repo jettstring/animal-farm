@@ -31,6 +31,8 @@ local AnimalAssets = Assets:WaitForChild("Animals")
 local AnimalConfig = require(AnimalAssets:WaitForChild("AnimalConfig"))
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 local MutationGradients = AnimalAssets:WaitForChild("MutationGradients")
+local TweenService = game:GetService("TweenService")
+
 
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local remotes = {
@@ -42,6 +44,7 @@ local remotes = {
 	PlaceAnimal = remotesFolder.Base.PlaceAnimal,
 	BuyAnimalLevel = remotesFolder.Base.BuyAnimalLevel,
 	RemoveAnimal = remotesFolder.Base.RemoveAnimal,
+	PickupCollected = remotesFolder.Base.PickupCollected,
 }
 
 --------------------------------------------------
@@ -63,8 +66,10 @@ local BaseController = {}
 BaseController.Controllers = {}
 BaseController.Signals = {}
 
+
 local currentStand: Folder? = nil
 local standDisplayTrove = Trove.new()
+
 
 --------------------------------------------------
 -- VARIABLES --
@@ -75,6 +80,7 @@ local standDisplayTrove = Trove.new()
 --------------------------------------------------
 -- PRIVATE FUNCTIONS --
 --------------------------------------------------
+
 
 local function showStandDisplay(standFolder: Folder, floorIndex: number, isOwner: boolean)
 	local trove = standDisplayTrove
@@ -159,7 +165,6 @@ local function showStandDisplay(standFolder: Folder, floorIndex: number, isOwner
 
 	return function() trove:Clean() end
 end
-
 
 local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: Player)
 	local standIndex = tonumber(standFolder.Name)
@@ -394,6 +399,7 @@ local function mountDrone(floorFolder: Folder)
 						warn("[mountDrone] missing primary part for egg model")
 						return
 					end
+					eggModel:AddTag("EggModel")
 
 					for _, basePart: BasePart in eggModel:QueryDescendants("BasePart") do
 						local weld = Instance.new("WeldConstraint")
@@ -402,7 +408,7 @@ local function mountDrone(floorFolder: Folder)
 						weld.Parent = basePart
 						basePart.Anchored = false
 						basePart.CollisionGroup = "AssemblyEggs"
-						basePart.CanCollide = (basePart == primaryPart and false) or true
+						basePart.CanCollide = basePart ~= primaryPart
 						basePart.Massless = true
 					end
 
@@ -462,6 +468,168 @@ local function mountFloors(baseFolder: Folder, owner: Player)
 	end
 	
 	return function() trove:Destroy() end
+end
+
+local function mountEggCollector(baseFolder: Folder, owner: Player)
+	local trove = Trove.new()
+	local isOwner = owner == player
+	
+	local baseModel = baseFolder:WaitForChild("Base") :: Model
+	local container = baseModel.Components:WaitForChild("EggCollector") :: Folder
+	local eggHitbox = container:WaitForChild("EggHitbox") :: Part
+	local pickupPart = container:WaitForChild("PickupPart") :: Part
+	local earningsBillboard = pickupPart:WaitForChild("EarningsBillboard") :: BillboardGui
+	local cratesContainer = container:WaitForChild("Crates") :: Folder
+
+	local crateModels: {Model} = {}
+	local carrying = false
+	
+	local function updateCrates()
+		local crateMiddle = container:WaitForChild("CrateMiddle") :: Part
+		local eggsCollected = container:GetAttribute("EggsCollected") or 0
+		local n = math.clamp(math.floor(eggsCollected/2), 0, 10)
+		
+		local character = player.Character
+		if carrying and not character then warn("[updateCrates] missing character") return end
+		local hrp = character and character:WaitForChild("HumanoidRootPart") :: Part
+
+		-- add new
+		for i = #crateModels + 1, n do 
+			local crate = BaseAssets.Crate:Clone()
+			local root = crate.PrimaryPart
+			for _, part: BasePart in crate:QueryDescendants("BasePart") do
+				part.CanCollide = false
+				part.Massless = true
+				
+				if part ~= root then
+					part.Anchored = false
+					local weld = Instance.new("WeldConstraint")
+					weld.Part0 = root
+					weld.Part1 = part
+					weld.Parent = part
+				end
+			end
+			
+			root.Anchored = true
+			crate.Parent = cratesContainer
+			crateModels[i] = crate
+		end
+		
+		-- remove extra
+		for i, crate in crateModels do
+			if i > n then
+				crate:Destroy()
+				crateModels[i] = nil
+			end
+		end
+		
+		-- position crates
+		for i, crate in crateModels do
+			local root = crate.PrimaryPart
+			local yOffset = (i - 1) * crate:GetExtentsSize().Y
+			local carryWeld = root:FindFirstChild("CarryWeld")
+			
+			if carrying then
+				root.Anchored = false
+				
+
+				carryWeld = carryWeld or Instance.new("Weld")
+				carryWeld.Name = "CarryWeld"
+				carryWeld.Part0 = hrp
+				carryWeld.Part1 = root
+				carryWeld.C0 = CFrame.new(0, yOffset, crate:GetExtentsSize().Z)
+				carryWeld.Parent = root
+			else
+				if carryWeld then carryWeld:Destroy() end
+				root.Anchored = true
+				crate:PivotTo(crateMiddle:GetPivot() + Vector3.new(0, yOffset, 0))
+			end
+		end
+		
+	end
+	
+	trove:Add(Observers.observeAttribute(container, "CrateValue", function(value: number)
+		local amountLabel: TextLabel = earningsBillboard:WaitForChild("AmountLabel")
+		amountLabel.Text = string.format("$%s", Abbreviate.AddCommas(value))
+	end))
+	
+	trove:Add(Observers.observeAttribute(container, "EggsCollected", function(eggsCollected: number)
+		updateCrates()
+	end))
+	
+	-- setup egg collector
+	if isOwner then
+		-- pickup prompt
+		local pickupPrompt = pickupPart:WaitForChild("PickupPrompt") :: ProximityPrompt
+		pickupPrompt.Triggered:Connect(function()
+			if carrying then return end 
+			carrying = true
+			updateCrates()
+		end)
+		
+		-- sell zone 
+		local inSellZone = false
+		
+		-- add crates to character
+		Observers.observeCharacter(function(player, character)
+			if carrying then updateCrates() end
+		end, {player})
+		
+		local function createPopup()
+			local popup = BaseAssets:WaitForChild("CashPopup"):Clone()
+
+			local radius = math.random(3, 10)
+			local theta = math.random() * math.pi
+
+			local x = radius * math.cos(theta)
+			local y = radius * math.sin(theta)
+
+			popup.Size = UDim2.fromScale(0.1, 0.1)
+			popup.Adornee = eggHitbox
+			popup.Parent = eggHitbox
+
+			local tweenInfo = TweenInfo.new(0.85, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out, 0, true)
+			local tween = TweenService:Create(popup, tweenInfo, {
+				Size = UDim2.fromScale(3, 2),
+				StudsOffset = Vector3.new(x, y, 0)
+			})
+			tween:Play()
+
+			task.spawn(function()
+				tween.Completed:Wait()
+				popup:Destroy()
+			end)
+		end
+		
+		local params = OverlapParams.new()
+		params.CollisionGroup = "AssemblyGroup"
+		task.spawn(function()
+			while true do
+				local eggPartsInside = workspace:GetPartsInPart(eggHitbox, params)
+				local toCollect = {}
+
+				for _, part: BasePart in eggPartsInside do
+					local eggModel: Model = part:FindFirstAncestorOfClass("Model")
+					if not eggModel or not eggModel:HasTag("EggModel") then 
+						continue
+					end
+					toCollect[eggModel] = true
+				end
+
+				for eggModel in toCollect do
+					createPopup()
+					if eggModel then eggModel:Destroy() end
+				end
+
+				task.wait(0.1)
+			end
+		end)
+	end
+	
+	return function()
+		earningsBillboard.Enabled = false
+		trove:Destroy()
+	end
 end
 
 local function mountRollStand(baseFolder: Folder, owner: Player)
@@ -562,7 +730,7 @@ local function mountBases()
 			-- base components
 			trove:Add(mountFloors(baseFolder, owner))
 			trove:Add(mountRollStand(baseFolder, owner))
-			
+			trove:Add(mountEggCollector(baseFolder, owner))
 			
 			return function() trove:Destroy() end
 		end)

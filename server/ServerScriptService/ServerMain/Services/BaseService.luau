@@ -27,6 +27,7 @@ local remotes = {
 	PlaceAnimal = remotesFolder.Base.PlaceAnimal,
 	BuyAnimalLevel = remotesFolder.Base.BuyAnimalLevel,
 	RemoveAnimal = remotesFolder.Base.RemoveAnimal,
+	PickupCollected = remotesFolder.Base.PickupCollected,
 }
 
 --------------------------------------------------
