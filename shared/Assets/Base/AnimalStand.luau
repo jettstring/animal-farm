@@ -1,3 +1,4 @@
+local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
@@ -6,6 +7,9 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 --------------------------------------------------
 -- DEPENDENCIES -- 
 --------------------------------------------------
+
+-- Services
+local AnimalService = require(ServerScriptService.ServerMain.Services.AnimalService)
 
 local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
@@ -52,7 +56,6 @@ AnimalStand.__index = AnimalStand
 
 type self = {
 	Trove: any,
-	Services: any,
 	Floor: any,
 	StandIndex: number,
 	StandFolder: Folder,
@@ -63,9 +66,8 @@ type self = {
 
 export type AnimalStand = typeof(setmetatable({} :: self, AnimalStand))
 
-function AnimalStand.new(floor: any, standIndex: number, standFolder: Folder, standData: AnimalStand?, services: any)
+function AnimalStand.new(floor: any, standIndex: number, standFolder: Folder, standData: AnimalStand?)
 	local self = setmetatable({} :: self, AnimalStand)
-	self.Services = services
 	self.Trove = Trove.new()
 	
 	self.Floor = floor
@@ -173,7 +175,7 @@ function AnimalStand.RemoveAnimal(self: AnimalStand): boolean
 		return nil
 	end
 	
-	local success = self.Services.AnimalService:GiveAnimal(owner, occupant)
+	local success = AnimalService:GiveAnimal(owner, occupant)
 	if not success then
 		warn("[RemoveAnimal] failed to give animal ", occupant)
 		return false

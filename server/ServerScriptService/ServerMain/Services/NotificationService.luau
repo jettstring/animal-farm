@@ -56,11 +56,12 @@ end
 -- MAIN --
 --------------------------------------------------
 
-function NotificationService.Init(self: NotificationService, services)
-	self.Services = services
+function NotificationService.Init(self: NotificationService)
+	
 end
 
 function NotificationService.Start(self: NotificationService)
+	
 end
 
 type NotificationService = typeof(NotificationService) & {}

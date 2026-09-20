@@ -1,3 +1,4 @@
+local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
@@ -6,6 +7,9 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 --------------------------------------------------
 -- DEPENDENCIES -- 
 --------------------------------------------------
+
+-- Services
+local DataService = require(ServerScriptService.ServerMain.Services.DataService)
 
 local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
@@ -35,7 +39,6 @@ local Base = {}
 Base.__index = Base
 
 type self = { 
-	Services: any,
 	Owner: Player,
 	BaseFolder: Folder,
 	BaseData: BaseData,
@@ -45,9 +48,8 @@ type self = {
 
 export type Base = typeof(setmetatable({} :: self, Base))
 
-function Base.new(owner: Player, baseFolder: Folder, services: any): Base
+function Base.new(owner: Player, baseFolder: Folder): Base
 	local self = setmetatable({} :: self, Base)
-	self.Services = services
 	self.Trove = Trove.new()
 	
 	self.State = {
@@ -85,13 +87,13 @@ function Base._setup(self: Base)
 	end
 	
 	-- hydrate base from profile
-	local profile: Profile = self.Services.DataService:GetProfile(owner)
+	local profile: Profile = DataService:GetProfile(owner)
 	if not profile then warn("[_Setup] No profile found for player", owner) end
 	local baseData: BaseData = profile.base
 	self.BaseData = baseData
 	
 	-- setup components
-	self.RollStand = self.Trove:Add(RollStand.new(self, self.Services))
+	self.RollStand = self.Trove:Add(RollStand.new(self))
 	self:_setupFloors()
 	
 	baseFolder:SetAttribute("Owner", owner.Name)
@@ -115,13 +117,8 @@ function Base._setupFloors(self: Base)
 		
 		local floorData: FloorData? = baseData.floors[floorIndex]
 		
-		local floor: Floor = self.Trove:Add(Floor.new(self, floorIndex, floorFolder, floorData, self.Services))
+		local floor: Floor = self.Trove:Add(Floor.new(self, floorIndex, floorFolder, floorData))
 		self.Floors[floorIndex] = floor
-		
-		if floor.FloorIndex == 2 then
-			floor:Unlock()
-		end
-		
 	end
 end
 
@@ -148,12 +145,20 @@ function Base.IncrementCrateValue(self: Base, addedMoney: number)
 	self:_Refresh()
 end
 
-function Base.SellCrates(self: Base)
+function Base.SellCrates(self: Base, source: string)
 	local baseData: BaseData = self.BaseData 
-	local value = baseData.crateValue or 0
-	self.Services.DataService:IncrementCurrency(self.Owner, "Money", value)
-	baseData.eggsCollected = 0
-	baseData.crateValue = 0
+	local earnings = 0
+	
+	if source == "EggCollector" then
+		earnings = baseData.crateValue or 0
+		baseData.eggsCollected = 0
+		baseData.crateValue = 0
+	else
+		return
+	end
+	
+	if earnings <= 0 then return nil end
+	DataService:IncrementCurrency(self.Owner, "Money", earnings)
 	self:_Refresh()
 end
 

@@ -1,9 +1,13 @@
+local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
 --------------------------------------------------
 -- DEPENDENCIES -- 
 --------------------------------------------------
+
+-- Services
+local DataService = require(ServerScriptService.ServerMain.Services.DataService)
 
 local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
@@ -13,14 +17,9 @@ local AnimalUtil = require(Utils.AnimalUtil)
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 
--- Base Assets
-local BaseAssets = Assets:WaitForChild("Base")
-local Base = require(BaseAssets.Base)
-
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local remotes = {
-	RollAnimal = remotesFolder.Animal.RollAnimal,
-	BuySlotAnimal = remotesFolder.Animal.BuySlotAnimal,
+	
 }
 
 --------------------------------------------------
@@ -29,8 +28,6 @@ local remotes = {
 
 type Profile = ProfileTemplate.ProfileTemplate
 type AnimalData = ProfileTemplate.AnimalData
-
-type Base = Base.Base
 
 --------------------------------------------------
 -- STATE --
@@ -61,7 +58,7 @@ end
 
 
 function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalData: AnimalData): boolean
-	local profile: Profile = self.Services.DataService:GetProfile(player)
+	local profile: Profile = DataService:GetProfile(player)
 	if not profile then warn("[GiveAnimal] No profile found for player:", player) return false end
 	
 	if not animalData or not animalData.definitionKey then warn("[GiveAnimal] invalid animalData: ", animalData) return false end
@@ -78,7 +75,7 @@ function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalDat
 end
 
 function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, animalKey: string): Tool
-	local profile: Profile = self.Services.DataService:GetProfile(player)
+	local profile: Profile = DataService:GetProfile(player)
 	if not profile then warn("[CreateAnimalTool] No profile found for player:", player) return end
 	
 	-- check if animalKey exists in profile
@@ -143,7 +140,7 @@ function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, ani
 end
 
 function AnimalService.UpdateAnimalTool(self: AnimalService, player: Player, animalKey: string)
-	local profile: Profile = self.Services.DataService:GetProfile(player)
+	local profile: Profile = DataService:GetProfile(player)
 	if not profile then warn("[UpdateAnimalTool] No profile found for player:", player) return end
 
 	-- check if animalKey exists in profile
@@ -175,7 +172,7 @@ function AnimalService.UpdateAnimalTool(self: AnimalService, player: Player, ani
 end
 
 function AnimalService._HydrateTools(self: AnimalService, player: Player)
-	local profile: Profile = self.Services.DataService:GetProfile(player)
+	local profile: Profile = DataService:GetProfile(player)
 	if not profile then warn("[_HydrateTools] No profile found for player:", player) return end
 
 	for animalKey, ownedAmount in profile.inventory.animals do
@@ -192,13 +189,12 @@ end
 -- MAIN --
 --------------------------------------------------
 
-function AnimalService.Init(self: AnimalService, services)
-	self.Services = services
+function AnimalService.Init(self: AnimalService)
 
 end
 
 function AnimalService.Start(self: AnimalService)
-	self.Services.DataService.Signals.DataLoaded:Connect(function(player: Player)
+	DataService.Signals.DataLoaded:Connect(function(player: Player)
 		player.CharacterAdded:Connect(function()
 			print("GIVING ANIMAL TOOLS")
 			self.AnimalTools[player] = nil
@@ -211,25 +207,6 @@ function AnimalService.Start(self: AnimalService)
 	end)
 	
 	Players.PlayerRemoving:Connect(_playerRemoved)
-	
-	
-	
-	remotes.RollAnimal.OnServerEvent:Connect(function(player: Player)
-		local base: Base = self.Services.BaseService.PlayerBases[player]
-		local rollStand = base and base.RollStand
-		if not rollStand then warn("missing rollStand object") return end
-
-		rollStand:Roll()
-	end)
-	
-	remotes.BuySlotAnimal.OnServerEvent:Connect(function(player: Player, slotIndex: number)
-		local base: Base = self.Services.BaseService.PlayerBases[player]
-		local rollStand = base and base.RollStand 
-		if not rollStand then warn("missing rollStand object") return end
-		
-		rollStand:BuySlotAnimal(slotIndex)
-	end)
-	
 end
 
 type AnimalService = typeof(AnimalService) & {}

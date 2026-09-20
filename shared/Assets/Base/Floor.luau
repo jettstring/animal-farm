@@ -70,9 +70,8 @@ type self = {
 export type Floor = typeof(setmetatable({} :: self, Floor))
 
 
-function Floor.new(base: any, floorIndex: number, floorFolder: Folder, floorData: FloorData?, services: any): Floor
+function Floor.new(base: any, floorIndex: number, floorFolder: Folder, floorData: FloorData?): Floor
 	local self = setmetatable({} :: self, Floor)
-	self.Services = services
 	self.Trove = Trove.new()
 	
 	self.Base = base
@@ -126,7 +125,7 @@ function Floor._buildStands(self: Floor)
 		}
 		local standData: StandData = floorData.animalStands[standIndex]
 		
-		self.AnimalStands[standIndex] = self.Trove:Add(AnimalStand.new(self, standIndex, standFolder, standData, self.Services))
+		self.AnimalStands[standIndex] = self.Trove:Add(AnimalStand.new(self, standIndex, standFolder, standData))
 	end
 	
 	self:_startLoop()

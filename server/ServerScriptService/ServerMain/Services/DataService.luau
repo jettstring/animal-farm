@@ -226,8 +226,7 @@ end
 -- MAIN --
 --------------------------------------------------
 
-function DataService.Init(self: DataService, services)
-	self.Services = services
+function DataService.Init(self: DataService)
 	
 	print("✅ DataService initiated")
 end

@@ -1,3 +1,4 @@
+local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
@@ -6,6 +7,14 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 --------------------------------------------------
 -- DEPENDENCIES -- 
 --------------------------------------------------
+
+-- Services
+local AnimalService = require(ServerScriptService.ServerMain.Services.AnimalService)
+local NotificationService = require(ServerScriptService.ServerMain.Services.NotificationService)
+
+
+-- Services
+local DataService = require(ServerScriptService.ServerMain.Services.DataService)
 
 local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
@@ -45,7 +54,6 @@ RollStand.__index = RollStand
 
 type self = {
 	Trove: any,
-	Services: any,
 	Base: any,
 }
 
@@ -53,7 +61,6 @@ export type RollStand = typeof(setmetatable({} :: self, RollStand))
 
 function RollStand.new(base: any, services: any)
 	local self = setmetatable({} :: self, RollStand)
-	self.Services = services
 	self.Trove = Trove.new()
 	
 	self.Base = base
@@ -94,7 +101,7 @@ end
 
 function RollStand.BuySlotAnimal(self: RollStand, slotIndex: number)
 	local owner: Player = self.Base.Owner
-	local profile: Profile = self.Services.DataService:GetProfile(owner)
+	local profile: Profile = DataService:GetProfile(owner)
 	if not profile then warn("[BuySlotAnimal] No profile found for player:", owner) return end
 	
 	local rollData: RollData = profile.base.rollData
@@ -111,19 +118,19 @@ function RollStand.BuySlotAnimal(self: RollStand, slotIndex: number)
 
 	local cost = 100 -- TODO: derive cost from AnimalUtil
 	if profile.currency.Money <= cost then
-		self.Services.NotificationService:Error(owner, "Cannot buy!")
+		NotificationService:Error(owner, "Cannot buy!")
 		return
 	end
 	
 
 	
-	local success = self.Services.AnimalService:GiveAnimal(owner, slotData)
+	local success = AnimalService:GiveAnimal(owner, slotData)
 	if not success then
 		warn("[BuySlotAnimal] failed to give animal: ", success)
 		return
 	end
 	
-	self.Services.DataService:IncrementCurrency(owner, "Money", -cost, "Buy Animal", false)
+	DataService:IncrementCurrency(owner, "Money", -cost, "Buy Animal", false)
 	
 	rollData.slotData[slotIndex] = nil
 	self:_Refresh()
