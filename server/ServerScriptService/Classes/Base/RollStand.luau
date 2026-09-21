@@ -24,9 +24,9 @@ local Utils = ReplicatedStorage:FindFirstChild("Utils")
 local BaseUtil = require(Utils.BaseUtil)
 local AnimalUtil = require(Utils.AnimalUtil)
 
-local Assets = ReplicatedStorage:FindFirstChild("Assets")
 
 -- Base Assets
+local Assets = ReplicatedStorage:FindFirstChild("Assets")
 local BaseAssets = Assets:FindFirstChild("Base")
 
 -- Animal Assets

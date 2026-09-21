@@ -1,3 +1,4 @@
+local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
@@ -7,18 +8,21 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 -- DEPENDENCIES -- 
 --------------------------------------------------
 
+-- Modules
 local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
+
+-- Classes
+local AnimalStand = require(ServerScriptService.Classes.Base.AnimalStand)
 
 -- Utils
 local Utils = ReplicatedStorage:FindFirstChild("Utils")
 local BaseUtil = require(Utils.BaseUtil)
 local AnimalUtil = require(Utils.AnimalUtil)
 
-local Assets = ReplicatedStorage:FindFirstChild("Assets")
 
 -- Base Assets
+local Assets = ReplicatedStorage:FindFirstChild("Assets")
 local BaseAssets = Assets:FindFirstChild("Base")
-local AnimalStand = require(BaseAssets.AnimalStand)
 
 -- Animal Assets
 local AnimalAssets = Assets:WaitForChild("Animals")

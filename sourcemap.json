@@ -1882,45 +1882,6 @@
           "pluginManaged": true,
           "children": [
             {
-              "name": "Base",
-              "className": "Folder",
-              "pluginManaged": true,
-              "children": [
-                {
-                  "name": "Base",
-                  "className": "ModuleScript",
-                  "pluginManaged": true,
-                  "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Base/Base.luau"
-                  ]
-                },
-                {
-                  "name": "RollStand",
-                  "className": "ModuleScript",
-                  "pluginManaged": true,
-                  "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Base/RollStand.luau"
-                  ]
-                },
-                {
-                  "name": "AnimalStand",
-                  "className": "ModuleScript",
-                  "pluginManaged": true,
-                  "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Base/AnimalStand.luau"
-                  ]
-                },
-                {
-                  "name": "Floor",
-                  "className": "ModuleScript",
-                  "pluginManaged": true,
-                  "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Base/Floor.luau"
-                  ]
-                }
-              ]
-            },
-            {
               "name": "Animals",
               "className": "Folder",
               "pluginManaged": true,
@@ -1931,62 +1892,6 @@
                   "pluginManaged": true,
                   "filePaths": [
                     "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Assets/Animals/AnimalConfig.luau"
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "ServerScriptService",
-      "className": "ServerScriptService",
-      "pluginManaged": true,
-      "children": [
-        {
-          "name": "ServerMain",
-          "className": "Script",
-          "pluginManaged": true,
-          "filePaths": [
-            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/init.legacy.luau"
-          ],
-          "children": [
-            {
-              "name": "Services",
-              "className": "Folder",
-              "pluginManaged": true,
-              "children": [
-                {
-                  "name": "DataService",
-                  "className": "ModuleScript",
-                  "pluginManaged": true,
-                  "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/DataService.luau"
-                  ]
-                },
-                {
-                  "name": "NotificationService",
-                  "className": "ModuleScript",
-                  "pluginManaged": true,
-                  "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/NotificationService.luau"
-                  ]
-                },
-                {
-                  "name": "BaseService",
-                  "className": "ModuleScript",
-                  "pluginManaged": true,
-                  "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/BaseService.luau"
-                  ]
-                },
-                {
-                  "name": "AnimalService",
-                  "className": "ModuleScript",
-                  "pluginManaged": true,
-                  "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/AnimalService.luau"
                   ]
                 }
               ]
@@ -2050,6 +1955,108 @@
                         "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/CarryController.luau"
                       ]
                     }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ServerScriptService",
+      "className": "ServerScriptService",
+      "pluginManaged": true,
+      "children": [
+        {
+          "name": "ServerMain",
+          "className": "Script",
+          "pluginManaged": true,
+          "filePaths": [
+            "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/init.legacy.luau"
+          ],
+          "children": [
+            {
+              "name": "Services",
+              "className": "Folder",
+              "pluginManaged": true,
+              "children": [
+                {
+                  "name": "DataService",
+                  "className": "ModuleScript",
+                  "pluginManaged": true,
+                  "filePaths": [
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/DataService.luau"
+                  ]
+                },
+                {
+                  "name": "NotificationService",
+                  "className": "ModuleScript",
+                  "pluginManaged": true,
+                  "filePaths": [
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/NotificationService.luau"
+                  ]
+                },
+                {
+                  "name": "BaseService",
+                  "className": "ModuleScript",
+                  "pluginManaged": true,
+                  "filePaths": [
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/BaseService.luau"
+                  ]
+                },
+                {
+                  "name": "AnimalService",
+                  "className": "ModuleScript",
+                  "pluginManaged": true,
+                  "filePaths": [
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/AnimalService.luau"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Classes",
+          "className": "Folder",
+          "pluginManaged": true,
+          "children": [
+            {
+              "name": "Base",
+              "className": "Folder",
+              "pluginManaged": true,
+              "children": [
+                {
+                  "name": "RollStand",
+                  "className": "ModuleScript",
+                  "pluginManaged": true,
+                  "filePaths": [
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/Classes/Base/RollStand.luau"
+                  ]
+                },
+                {
+                  "name": "Floor",
+                  "className": "ModuleScript",
+                  "pluginManaged": true,
+                  "filePaths": [
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/Classes/Base/Floor.luau"
+                  ]
+                },
+                {
+                  "name": "Base",
+                  "className": "ModuleScript",
+                  "pluginManaged": true,
+                  "filePaths": [
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/Classes/Base/Base.luau"
+                  ]
+                },
+                {
+                  "name": "AnimalStand",
+                  "className": "ModuleScript",
+                  "pluginManaged": true,
+                  "filePaths": [
+                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/Classes/Base/AnimalStand.luau"
                   ]
                 }
               ]

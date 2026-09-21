@@ -11,14 +11,17 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 -- Services
 local DataService = require(ServerScriptService.ServerMain.Services.DataService)
 
+-- Modules
 local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
-local Assets = ReplicatedStorage:WaitForChild("Assets")
+-- Classes
+local RollStand = require(ServerScriptService.Classes.Base.RollStand)
+local Floor = require(ServerScriptService.Classes.Base.Floor)
 
 -- Base Assets
+local Assets = ReplicatedStorage:WaitForChild("Assets")
 local BaseAssets = Assets:WaitForChild("Base")
-local RollStand = require(BaseAssets.RollStand)
-local Floor = require(BaseAssets.Floor)
+
 
 --------------------------------------------------
 -- TYPES -- 

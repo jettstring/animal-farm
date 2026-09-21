@@ -7,12 +7,16 @@ local Players = game:GetService("Players")
 --------------------------------------------------
 
 -- Services
-local AnimalStand = require(ReplicatedStorage.Assets.Base.AnimalStand)
 local DataService = require(ServerScriptService.ServerMain.Services.DataService)
 local AnimalService = require(ServerScriptService.ServerMain.Services.AnimalService)
 local NotificationService = require(ServerScriptService.ServerMain.Services.NotificationService)
 
+
+-- Modules
 local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
+
+-- Classes
+local Base = require(ServerScriptService.Classes.Base.Base)
 
 -- Utils
 local Utils = ReplicatedStorage:FindFirstChild("Utils")
@@ -23,7 +27,6 @@ local Assets = ReplicatedStorage:WaitForChild("Assets")
 
 -- Base Assets
 local BaseAssets = Assets:WaitForChild("Base")
-local Base = require(BaseAssets.Base)
 local BaseFolders = workspace.Bases
 
 

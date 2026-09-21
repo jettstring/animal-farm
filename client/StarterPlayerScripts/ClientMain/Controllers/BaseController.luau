@@ -847,6 +847,28 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 			end))
 		end
 
+		local function revealAnimal(slotIndex, slotResult: SlotResult)
+			local defKey = slotResult.definitionKey
+			if not defKey then warn("[mountRollStand] missing definitionKey for slot result") return end
+
+			local slotRecord = slotRecords[slotIndex]
+			local trove = slotRecord.trove 
+
+			local animalModel = renderSlotAnimal(slotIndex, { definitionKey = defKey })
+
+			local elapsed = 0
+			local connection: RBXScriptConnection
+			connection = rollTrove:Add(RunService.PreRender:Connect(function(dt)
+				elapsed += dt
+				local a = math.min(elapsed / 0.5, 1)
+				animalModel:ScaleTo(1 + math.sin(a * math.pi) * 0.25)
+				if a >= 1 then
+					connection:Disconnect()
+				end
+			end))
+			
+		end
+
 		local function playPop(step: number)
 			task.delay(0.1, function()
 				local sound = SoundService.SFX.Pop:Clone()
@@ -878,14 +900,7 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 
 				-- final animals: rendered onto the slot records, so update() keeps them once the attribute lands
 				for slotIndex, slotResult in rollResult.slots do
-					local defKey = slotResult.definitionKey
-					if not defKey then warn("[mountRollStand] missing definitionKey for slot ", slotIndex) continue end
-
-					local animalModel = renderSlotAnimal(slotIndex, { definitionKey = defKey })
-					if animalModel then
-						animalModel:ScaleTo(1)
-						-- TODO: pop / particles on animalModel
-					end
+					revealAnimal(slotIndex, slotResult)
 				end
 
 				rollStand:SetAttribute("Rolling", nil) -- the roll's owner ends the roll
