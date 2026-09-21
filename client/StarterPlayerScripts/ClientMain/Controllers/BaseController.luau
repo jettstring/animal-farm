@@ -701,6 +701,7 @@ end
 local function mountRollStand(baseFolder: Folder, owner: Player)
 	local trove = Trove.new()
 	local isOwner = owner == player
+	local slotRecords = {}
 
 	local baseModel = baseFolder:WaitForChild("Base")
 	local components = baseModel:WaitForChild("Components")
@@ -709,7 +710,7 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 	local interactPart = rollStand:WaitForChild("Interact")
 	local leverModel = rollStand:WaitForChild("Lever")
 	local rollPrompt: ProximityPrompt = interactPart:WaitForChild("RollPrompt")
-	
+
 	-- roll prompt
 	rollPrompt.Enabled = isOwner
 	if isOwner then
@@ -717,18 +718,62 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 			remotes.RollAnimal:FireServer()
 		end))
 	end
+
+	local function renderSlotAnimal(slotIndex: number, animalData: AnimalData): Model?
+		local slotRecord = slotRecords[slotIndex]
+		if not slotRecord then warn("[renderSlotAnimal] missing slot record for index ", slotIndex) return end
+		
+		local slotTrove = slotRecord.trove
+
+		if not animalData or not animalData.definitionKey then
+			slotTrove:Clean()
+			slotRecord.animalModel = nil
+			slotRecord.definitionKey = nil
+			return nil
+		end
+
+		-- already showing this animal (e.g. handed off from the roll reveal): keep it, don't tear it down
+		if slotRecord.animalModel and slotRecord.definitionKey == animalData.definitionKey then
+			return slotRecord.animalModel
+		end
+		slotTrove:Clean()
+
+		local animalModel = AnimalUtil.getAnimalModel(animalData)
+		if not animalModel then warn("[renderSlotAnimal] failed to get animal model for definitionKey ", animalData.definitionKey) return nil end
+		slotTrove:Add(animalModel)
+		animalModel.Parent = slotRecord.slot
+		animalModel:PivotTo(slotRecord.middlePart:GetPivot())
+		slotRecord.animalModel = animalModel
+		slotRecord.definitionKey = animalData.definitionKey
+		
+		-- bob effect
+		if isOwner then
+			local middleCF = slotRecord.middlePart:GetPivot()
+			slotTrove:Add(RunService.PreRender:Connect(function()
+				local time = os.clock()
+				animalModel:PivotTo(middleCF * CFrame.new(0, math.sin(time * 2) * 0.1, 0))
+			end))
+		end
+
+		return animalModel
+	end
+
 	
 	-- slots
-	local slotParts: {Part} = {}
 	for _, slot in slots:GetChildren() do
 		local slotIndex = tonumber(slot.Name)
 		local middlePart: Part = slot:WaitForChild("Middle")
 		local model = slot:WaitForChild("Model")
 		local buyPrompt: ProximityPrompt = middlePart:WaitForChild("BuyPrompt")
 		local stealPrompt: ProximityPrompt= middlePart:WaitForChild("StealPrompt")
-		
-		local animalTrove = trove:Extend()
-		slotParts[slotIndex] = middlePart
+
+		slotRecords[slotIndex] = {
+			slot = slot,
+			middlePart = middlePart,
+			trove = trove:Extend(),
+			animalModel = nil,
+			definitionKey = nil,
+		}
 		
 		-- prompts
 		if isOwner then
@@ -740,34 +785,30 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 				remotes.StealSlotAnimal:FireServer(owner, slotIndex)
 			end))
 		end
+
 		
 		local function update()
-			animalTrove:Clean()
 			local active = slot:GetAttribute("Active")
-			local inCutscene = rollStand:GetAttribute("RevealCutscene")
+			local rolling = rollStand:GetAttribute("Rolling")
 			local definitionKey = slot:GetAttribute("DefinitionKey")
 			
-			local showAnimal = active and definitionKey and not inCutscene
+			local showAnimal = active and definitionKey and not rolling
 			
 			buyPrompt.Enabled = showAnimal and isOwner
 			stealPrompt.Enabled = showAnimal and not isOwner
 			
-			if not showAnimal then return end
+			if rolling then return end
 			
 			local animalData: AnimalData = {
 				definitionKey = definitionKey,
 			}
-
-			local animalModel = animalTrove:Add(AnimalUtil.getAnimalModel(animalData))
-			if animalModel then
-				animalModel.Parent = model
-				animalModel:PivotTo(middlePart:GetPivot())
-			end
+		
+			renderSlotAnimal(slotIndex, active and definitionKey and animalData or nil)
 		end
 		
 		trove:Add(slot:GetAttributeChangedSignal("Active"):Connect(update))
 		trove:Add(slot:GetAttributeChangedSignal("DefinitionKey"):Connect(update))
-		trove:Add(slot:GetAttributeChangedSignal("RevealCutscene"):Connect(update))
+		trove:Add(rollStand:GetAttributeChangedSignal("Rolling"):Connect(update))
 		update()
 		
 	end
@@ -776,68 +817,79 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 	-- listen for roll result
 	if isOwner then
 		local rollTrove = trove:Extend()
+
+		local function spawnFlicker(slotRecord, revealLength: number)
+			local randomAnimal = AnimalUtil.getRandomAnimalModel(true)
+			if not randomAnimal then warn("[mountRollStand] failed to get random animal model") return end
+			rollTrove:Add(randomAnimal)
+
+			local shadow = rollTrove:Add(Instance.new("Highlight"))
+			shadow.FillColor = Color3.fromRGB(0, 0, 0)
+			shadow.FillTransparency = 0
+			shadow.OutlineTransparency = 0
+			shadow.Parent = randomAnimal
+
+			randomAnimal:ScaleTo(0.25)
+			randomAnimal.Parent = slotRecord.middlePart
+			randomAnimal:PivotTo(slotRecord.middlePart:GetPivot())
+
+			local elapsed = 0
+			local connection: RBXScriptConnection
+			connection = rollTrove:Add(RunService.PreRender:Connect(function(dt)
+				elapsed += dt
+				local a = math.min(elapsed / revealLength, 1)
+				randomAnimal:ScaleTo(0.25 + (0.75 * a))
+
+				if a >= 1 then
+					connection:Disconnect()
+					randomAnimal:Destroy()
+				end
+			end))
+		end
+
+		local function playPop(step: number)
+			task.delay(0.1, function()
+				local sound = SoundService.SFX.Pop:Clone()
+				sound.PlaybackSpeed = 1 + (step * 0.1)
+				SoundService:PlayLocalSound(sound)
+				Debris:AddItem(sound, sound.TimeLength + 0.1)
+			end)
+		end
+
 		trove:Add(remotes.RollAnimal.OnClientEvent:Connect(function(rollResult: RollResult)
 			rollTrove:Clean()
-			
-			for slotIndex, slotResult in rollResult.slots do
-				local defKey = slotResult.definitionKey
-				local isNew = slotResult.isNew
-				local slotPart = slotParts[slotIndex]
-				if not defKey then warn("[mountRollStand] missing definitionKey for slot ", slotIndex) continue end
-				if not slotPart then warn("[mountRollStand] missing slot part for index ", slotIndex) continue end
+			rollStand:SetAttribute("Rolling", true)
 
-				local animalData: AnimalData = {
-					definitionKey = defKey,
-				}
-				
-				rollTrove:Add(task.spawn(function()
-					
-
-					for i = 1, 5 do
-						local randomAnimal = AnimalUtil.getRandomAnimalModel(true)
-						if not randomAnimal then warn("[mountRollStand] failed to get random animal model") end
-					
-						local shadow = rollTrove:Add(Instance.new("Highlight"))
-						shadow.FillColor = Color3.fromRGB(0, 0, 0)
-						shadow.FillTransparency = 0
-						shadow.OutlineTransparency = 0
-						shadow.Parent = randomAnimal
-					
-						randomAnimal:ScaleTo(0.25)
-						randomAnimal.Parent = slotPart
-						randomAnimal:PivotTo(slotPart:GetPivot())
-						
-						local revealLength = 0.2 * i
-						
-						local elapsed = 0
-						local connection: RBXScriptConnection
-						connection = rollTrove:Add(RunService.PreRender:Connect(function(dt)
-							elapsed += dt
-							local a = math.min(elapsed / revealLength, 1)
-							randomAnimal:ScaleTo(0.25 + (0.75 * a))
-							
-							print(randomAnimal:GetScale())
-							if a >= 1 then
-								connection:Disconnect()
-								randomAnimal:Destroy()
-							end
-						end))
-						
-						if slotIndex == 1 then
-							task.delay(0.1, function()
-								local sound = SoundService.SFX.Pop:Clone()
-								sound.PlaybackSpeed = 1 + (i * 0.1)
-								SoundService:PlayLocalSound(sound)
-								Debris:AddItem(sound, sound.TimeLength + 0.1)
-							end)
-						end
-		
-						task.wait(revealLength)
-					end
-				end))
-				
-				
+			for slotIndex in slotRecords do
+				renderSlotAnimal(slotIndex, nil)
 			end
+
+			rollTrove:Add(task.spawn(function()
+				-- reveal: every slot flickers in lockstep
+				for i = 1, 5 do
+					local revealLength = 0.2 * i
+					for slotIndex in rollResult.slots do
+						local slotRecord = slotRecords[slotIndex]
+						if slotRecord then spawnFlicker(slotRecord, revealLength) end
+					end
+					playPop(i)
+					task.wait(revealLength)
+				end
+
+				-- final animals: rendered onto the slot records, so update() keeps them once the attribute lands
+				for slotIndex, slotResult in rollResult.slots do
+					local defKey = slotResult.definitionKey
+					if not defKey then warn("[mountRollStand] missing definitionKey for slot ", slotIndex) continue end
+
+					local animalModel = renderSlotAnimal(slotIndex, { definitionKey = defKey })
+					if animalModel then
+						animalModel:ScaleTo(1)
+						-- TODO: pop / particles on animalModel
+					end
+				end
+
+				rollStand:SetAttribute("Rolling", nil) -- the roll's owner ends the roll
+			end))
 		end))
 	end
 	

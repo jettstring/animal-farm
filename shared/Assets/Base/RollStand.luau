@@ -100,10 +100,13 @@ function RollStand.Roll(self: RollStand)
 		cutsceneSlotIndex = nil
 	}
 
+	rollData.slotData = {}
+	self:_Refresh()
+
 	for slotIndex = 1, unlockedCount do
 		if not rollData.slotData[slotIndex] then rollData.slotData[slotIndex] = {} end
 		local slotData = rollData.slotData[slotIndex]
-		
+
 		-- get result
 		local animalKey = AnimalUtil.rollAnimalResult(playerLuck)
 		if not animalKey then warn("[Roll] bad result: ", animalKey) continue end
