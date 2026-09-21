@@ -16,8 +16,10 @@ export type AnimalDefinition = {
 	rarity: AnimalRarity,
 	odds: number,
 	eggEarnings: number, -- earnings per egg dropped
-	eggGrowTime: number -- time for egg to grow
+	eggGrowTime: number, -- time for egg to grow
+	nonRollable: boolean? -- if the animal cannot be rolled for
 }
+
 
 export type AnimalRarity = "Common" | "Uncommon" | "Rare" | "Legendary" | "Mythical"
 

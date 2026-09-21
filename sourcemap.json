@@ -3,73 +3,64 @@
   "className": "DataModel",
   "children": [
     {
-      "name": "StarterPlayer",
-      "className": "StarterPlayer",
-      "pluginManaged": true,
-      "children": [
-        {
-          "name": "StarterPlayerScripts",
-          "className": "StarterPlayerScripts",
-          "pluginManaged": true,
-          "children": [
-            {
-              "name": "ClientMain",
-              "className": "LocalScript",
-              "pluginManaged": true,
-              "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/init.local.luau"
-              ],
-              "children": [
-                {
-                  "name": "Controllers",
-                  "className": "Folder",
-                  "pluginManaged": true,
-                  "children": [
-                    {
-                      "name": "NotificationController",
-                      "className": "ModuleScript",
-                      "pluginManaged": true,
-                      "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/NotificationController.luau"
-                      ]
-                    },
-                    {
-                      "name": "BaseController",
-                      "className": "ModuleScript",
-                      "pluginManaged": true,
-                      "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/BaseController.luau"
-                      ]
-                    },
-                    {
-                      "name": "InteractionController",
-                      "className": "ModuleScript",
-                      "pluginManaged": true,
-                      "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/InteractionController.luau"
-                      ]
-                    },
-                    {
-                      "name": "CarryController",
-                      "className": "ModuleScript",
-                      "pluginManaged": true,
-                      "filePaths": [
-                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/CarryController.luau"
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "ReplicatedStorage",
       "className": "ReplicatedStorage",
       "pluginManaged": true,
       "children": [
+        {
+          "name": "Modules",
+          "className": "Folder",
+          "pluginManaged": true,
+          "children": [
+            {
+              "name": "ProfileTemplate",
+              "className": "ModuleScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Modules/ProfileTemplate.luau"
+              ]
+            },
+            {
+              "name": "PurchaseProfileTemplate",
+              "className": "ModuleScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Modules/PurchaseProfileTemplate.luau"
+              ]
+            },
+            {
+              "name": "BaseTypes",
+              "className": "ModuleScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Modules/BaseTypes.luau"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Utils",
+          "className": "Folder",
+          "pluginManaged": true,
+          "children": [
+            {
+              "name": "AnimalUtil",
+              "className": "ModuleScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/AnimalUtil.luau"
+              ]
+            },
+            {
+              "name": "BaseUtil",
+              "className": "ModuleScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/BaseUtil.luau"
+              ]
+            }
+          ]
+        },
         {
           "name": "Packages",
           "className": "Folder",
@@ -1886,29 +1877,6 @@
           ]
         },
         {
-          "name": "Modules",
-          "className": "Folder",
-          "pluginManaged": true,
-          "children": [
-            {
-              "name": "ProfileTemplate",
-              "className": "ModuleScript",
-              "pluginManaged": true,
-              "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Modules/ProfileTemplate.luau"
-              ]
-            },
-            {
-              "name": "PurchaseProfileTemplate",
-              "className": "ModuleScript",
-              "pluginManaged": true,
-              "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Modules/PurchaseProfileTemplate.luau"
-              ]
-            }
-          ]
-        },
-        {
           "name": "Assets",
           "className": "Folder",
           "pluginManaged": true,
@@ -1968,29 +1936,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Utils",
-          "className": "Folder",
-          "pluginManaged": true,
-          "children": [
-            {
-              "name": "AnimalUtil",
-              "className": "ModuleScript",
-              "pluginManaged": true,
-              "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/AnimalUtil.luau"
-              ]
-            },
-            {
-              "name": "BaseUtil",
-              "className": "ModuleScript",
-              "pluginManaged": true,
-              "filePaths": [
-                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/shared/Utils/BaseUtil.luau"
-              ]
-            }
-          ]
         }
       ]
     },
@@ -2029,22 +1974,6 @@
                   ]
                 },
                 {
-                  "name": "RollingService",
-                  "className": "ModuleScript",
-                  "pluginManaged": true,
-                  "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/RollingService.luau"
-                  ]
-                },
-                {
-                  "name": "ItemService",
-                  "className": "ModuleScript",
-                  "pluginManaged": true,
-                  "filePaths": [
-                    "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/ItemService.luau"
-                  ]
-                },
-                {
                   "name": "BaseService",
                   "className": "ModuleScript",
                   "pluginManaged": true,
@@ -2058,6 +1987,69 @@
                   "pluginManaged": true,
                   "filePaths": [
                     "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/server/ServerScriptService/ServerMain/Services/AnimalService.luau"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "StarterPlayer",
+      "className": "StarterPlayer",
+      "pluginManaged": true,
+      "children": [
+        {
+          "name": "StarterPlayerScripts",
+          "className": "StarterPlayerScripts",
+          "pluginManaged": true,
+          "children": [
+            {
+              "name": "ClientMain",
+              "className": "LocalScript",
+              "pluginManaged": true,
+              "filePaths": [
+                "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/init.local.luau"
+              ],
+              "children": [
+                {
+                  "name": "Controllers",
+                  "className": "Folder",
+                  "pluginManaged": true,
+                  "children": [
+                    {
+                      "name": "NotificationController",
+                      "className": "ModuleScript",
+                      "pluginManaged": true,
+                      "filePaths": [
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/NotificationController.luau"
+                      ]
+                    },
+                    {
+                      "name": "BaseController",
+                      "className": "ModuleScript",
+                      "pluginManaged": true,
+                      "filePaths": [
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/BaseController.luau"
+                      ]
+                    },
+                    {
+                      "name": "InteractionController",
+                      "className": "ModuleScript",
+                      "pluginManaged": true,
+                      "filePaths": [
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/InteractionController.luau"
+                      ]
+                    },
+                    {
+                      "name": "CarryController",
+                      "className": "ModuleScript",
+                      "pluginManaged": true,
+                      "filePaths": [
+                        "c:/Users/jstri/Documents/Development/Projects/Animal Farm/code/client/StarterPlayerScripts/ClientMain/Controllers/CarryController.luau"
+                      ]
+                    }
                   ]
                 }
               ]

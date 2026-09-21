@@ -1,4 +1,6 @@
-local BaseUtil = {}
+local BaseUtil = {
+	rollLength = 3,
+}
 
 function BaseUtil.showInstance(instance: Instance, visible: boolean)
 	-- BaseParts

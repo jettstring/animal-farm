@@ -33,6 +33,8 @@ local ProfileTemplate = {
 	inventory = {
 		animals = {} :: {[string]: number}
 	},
+
+	discoveredAnimals = {} :: {[string]: boolean},
 }
 
 export type BaseData = {

@@ -7,6 +7,7 @@ local Players = game:GetService("Players")
 --------------------------------------------------
 
 -- Services
+local AnimalStand = require(ReplicatedStorage.Assets.Base.AnimalStand)
 local DataService = require(ServerScriptService.ServerMain.Services.DataService)
 local AnimalService = require(ServerScriptService.ServerMain.Services.AnimalService)
 local NotificationService = require(ServerScriptService.ServerMain.Services.NotificationService)
@@ -45,7 +46,6 @@ local remotes = {
 type Profile = ProfileTemplate.ProfileTemplate
 type BaseData = ProfileTemplate.BaseData
 type FloorData = ProfileTemplate.FloorData
-type ShopData = ProfileTemplate.ShopData
 type AnimalData = ProfileTemplate.AnimalData
 
 type Base = Base.Base
@@ -82,7 +82,7 @@ local function attemptPlaceAnimal(player: Player, floorIndex: number, standIndex
 		return
 	end
 
-	local animalStand: AnimalDt = floor.AnimalStands[standIndex]
+	local animalStand = floor.AnimalStands[standIndex]
 	if not animalStand then warn("[attemptPlaceAnimal] missing animalStand object:", standIndex) return end
 	
 	local animalTool: Tool? = player.Character and player.Character:FindFirstChild("AnimalTool")

@@ -68,6 +68,7 @@ function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalDat
 	
 	-- save to profile
 	profile.inventory.animals[animalKey] = (profile.inventory.animals[animalKey] or 0) + 1
+	profile.discoveredAnimals[animalKey] = true
 	
 	self:CreateAnimalTool(player, animalKey)
 	
@@ -183,6 +184,12 @@ function AnimalService._HydrateTools(self: AnimalService, player: Player)
 		
 		self:CreateAnimalTool(player, animalKey)
 	end
+end
+
+function AnimalService.HasAnimal(self: AnimalService, player: Player, animalKey: string): boolean
+	local profile: Profile = DataService:GetProfile(player)
+	if not profile then warn("[HasAnimal] No profile found for player:", player) return false end
+	return profile.discoveredAnimals[animalKey] == true 
 end
 
 --------------------------------------------------

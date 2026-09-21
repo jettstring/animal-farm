@@ -71,7 +71,7 @@ local function CreateNotification(text: string, color: Color3, sound: Sound, ico
 	if sound then 
 		sound:Play()
 	else 
-		SoundService.UISounds.Notification1:Play()
+		SoundService.UI.Notification1:Play()
 	end
 
 
@@ -136,7 +136,7 @@ local function CreateBanner(show: boolean, ID: string, text, color: Color3, soun
 	if sound then 
 		sound:Play()
 	else 
-		SoundService.SFX.UI.Notification1:Play()
+		SoundService.UI.Notification1:Play()
 	end
 
 end

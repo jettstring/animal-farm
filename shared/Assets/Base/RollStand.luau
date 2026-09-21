@@ -12,11 +12,12 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 local AnimalService = require(ServerScriptService.ServerMain.Services.AnimalService)
 local NotificationService = require(ServerScriptService.ServerMain.Services.NotificationService)
 
-
 -- Services
 local DataService = require(ServerScriptService.ServerMain.Services.DataService)
 
+-- Modules
 local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
+local BaseTypes = require(ReplicatedStorage.Modules.BaseTypes)
 
 -- Utils
 local Utils = ReplicatedStorage:FindFirstChild("Utils")
@@ -34,6 +35,11 @@ local AnimalConfig = require(AnimalAssets:WaitForChild("AnimalConfig"))
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 
 
+local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
+local remotes = {
+	RollAnimal = remotesFolder.Base.RollAnimal,
+}
+
 -------------------------------------------------
 -- TYPES -- 
 --------------------------------------------------
@@ -43,6 +49,9 @@ type RollData = ProfileTemplate.RollData
 
 type AnimalDefinition = AnimalConfig.AnimalDefinition
 type AnimalMutation = AnimalConfig.AnimalMutation
+
+type RollResult = BaseTypes.RollResult
+type SlotResult = BaseTypes.SlotResult
 
 
 --------------------------------------------------
@@ -75,7 +84,7 @@ function RollStand.new(base: any, services: any)
 	
 	return self
 end
-   
+
 --------------------------------------------------
 -- ACTIONS -- 
 --------------------------------------------------
@@ -84,19 +93,34 @@ function RollStand.Roll(self: RollStand)
 	local rollData: RollData = self.Base.BaseData.rollData
 	local unlockedCount = rollData.unlockedCount
 	local playerLuck = self:GetRollLuck()
+	local owner: Player = self.Base.Owner
+
+	local rollResult: RollResult = {
+		slots = {},
+		cutsceneSlotIndex = nil
+	}
 
 	for slotIndex = 1, unlockedCount do
 		if not rollData.slotData[slotIndex] then rollData.slotData[slotIndex] = {} end
 		local slotData = rollData.slotData[slotIndex]
 		
 		-- get result
-		local result = AnimalUtil.rollAnimalResult(playerLuck)
-		if not result then warn("[Roll] bad result: ", result) continue end
+		local animalKey = AnimalUtil.rollAnimalResult(playerLuck)
+		if not animalKey then warn("[Roll] bad result: ", animalKey) continue end
 		
-		slotData.definitionKey = result
+		rollResult.slots[slotIndex] = {
+			definitionKey = animalKey,
+			isNew = AnimalService:HasAnimal(owner, animalKey) == false
+		}
+
+		slotData.definitionKey = animalKey
 	end
 	
-	self:_Refresh()
+	remotes.RollAnimal:FireClient(owner, rollResult)
+	
+	task.delay(BaseUtil.rollLength, function()
+		self:_Refresh()
+	end)
 end
 
 function RollStand.BuySlotAnimal(self: RollStand, slotIndex: number)

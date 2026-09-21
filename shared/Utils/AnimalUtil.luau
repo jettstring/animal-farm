@@ -99,6 +99,29 @@ function AnimalUtil.getEggModel(animalData: AnimalData): Model
 	return clone
 end
 
+
+function AnimalUtil.getRandomAnimalModel(restrictToRollable: boolean?): Model?
+	local animalKeys = {}
+	for defKey, animalDef in AnimalDefinitions do
+		if restrictToRollable and animalDef.nonRollable then
+			continue
+		end
+		table.insert(animalKeys, defKey)
+	end
+	
+	if #animalKeys == 0 then
+		warn("[getRandomAnimalModel] no animals available to roll")
+		return nil
+	end
+	
+	local randomIndex = math.random(1, #animalKeys)
+	local animalData: AnimalData = {
+		definitionKey = animalKeys[randomIndex],
+	}
+	
+	return AnimalUtil.getAnimalModel(animalData)
+end
+
 function AnimalUtil.getLevelCost(definitionKey: AnimalData, level: number): number
 	local animalDef: AnimalDefinition = AnimalDefinitions[definitionKey]
 	if not animalDef then

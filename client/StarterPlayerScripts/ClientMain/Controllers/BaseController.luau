@@ -20,11 +20,12 @@ local Bezier = require(ReplicatedStorage.Packages.Bezier)
 -- Controllers
 local CarryController = require(StarterPlayer.StarterPlayerScripts.ClientMain.Controllers.CarryController)
 
-
 local player = Players.LocalPlayer
 local playerGui = player.PlayerGui
 
+-- Modules
 local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
+local BaseTypes = require(ReplicatedStorage.Modules.BaseTypes)
 
 
 -- Utils
@@ -41,7 +42,6 @@ local AnimalAssets = Assets:WaitForChild("Animals")
 local AnimalConfig = require(AnimalAssets:WaitForChild("AnimalConfig"))
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 local MutationGradients = AnimalAssets:WaitForChild("MutationGradients")
-local TweenService = game:GetService("TweenService")
 
 
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
@@ -61,13 +61,14 @@ local remotes = {
 -- TYPES -- 
 --------------------------------------------------
 
-
 type AnimationDefinition = AnimalConfig.AnimalDefinition
 type AnimalMutation = AnimalConfig.AnimalMutation
 
-
 type Profile = ProfileTemplate.ProfileTemplate
 type AnimalData = ProfileTemplate.AnimalData
+
+type SlotResult = BaseTypes.SlotResult
+type RollResult = BaseTypes.RollResult
 
 --------------------------------------------------
 -- STATE --
@@ -91,6 +92,9 @@ local standDisplayTrove = Trove.new()
 -- PRIVATE FUNCTIONS --
 --------------------------------------------------
 
+local function playRollReveal(slotParts: {Part}, rollResults)
+	
+end
 
 local function showStandDisplay(standFolder: Folder, floorIndex: number, isOwner: boolean)
 	local trove = standDisplayTrove
@@ -715,68 +719,128 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 	end
 	
 	-- slots
+	local slotParts: {Part} = {}
 	for _, slot in slots:GetChildren() do
-		local slotNumber = tonumber(slot.Name)
+		local slotIndex = tonumber(slot.Name)
 		local middlePart: Part = slot:WaitForChild("Middle")
 		local model = slot:WaitForChild("Model")
 		local buyPrompt: ProximityPrompt = middlePart:WaitForChild("BuyPrompt")
 		local stealPrompt: ProximityPrompt= middlePart:WaitForChild("StealPrompt")
 		
-		local isActive = false
-		local hasAnimal = false
+		local animalTrove = trove:Extend()
+		slotParts[slotIndex] = middlePart
 		
-		
-		local function updatePrompts()
-			local active = isActive and hasAnimal
-			buyPrompt.Enabled = active and isOwner
-			stealPrompt.Enabled = active and not isOwner
+		-- prompts
+		if isOwner then
+			trove:Add(buyPrompt.Triggered:Connect(function()
+				remotes.BuySlotAnimal:FireServer(slotIndex)
+			end))
+		else
+			trove:Add(stealPrompt.Triggered:Connect(function()
+				remotes.StealSlotAnimal:FireServer(owner, slotIndex)
+			end))
 		end
 		
-		trove:Add(Observers.observeAttribute(slot, "Active", function(state: boolean)
-			isActive = state
-			updatePrompts()
-			return function() end
-		end))
-		
-		
-		trove:Add(Observers.observeAttribute(slot, "DefinitionKey", function(definitionKey: string)
-			hasAnimal = definitionKey ~= nil
-			updatePrompts()
+		local function update()
+			animalTrove:Clean()
+			local active = slot:GetAttribute("Active")
+			local inCutscene = rollStand:GetAttribute("RevealCutscene")
+			local definitionKey = slot:GetAttribute("DefinitionKey")
 			
-			if not definitionKey then
-				return function() end
-			end
+			local showAnimal = active and definitionKey and not inCutscene
 			
-			local animalTrove = trove:Extend()
+			buyPrompt.Enabled = showAnimal and isOwner
+			stealPrompt.Enabled = showAnimal and not isOwner
+			
+			if not showAnimal then return end
 			
 			local animalData: AnimalData = {
 				definitionKey = definitionKey,
 			}
-			
+
 			local animalModel = animalTrove:Add(AnimalUtil.getAnimalModel(animalData))
 			if animalModel then
 				animalModel.Parent = model
 				animalModel:PivotTo(middlePart:GetPivot())
 			end
+		end
+		
+		trove:Add(slot:GetAttributeChangedSignal("Active"):Connect(update))
+		trove:Add(slot:GetAttributeChangedSignal("DefinitionKey"):Connect(update))
+		trove:Add(slot:GetAttributeChangedSignal("RevealCutscene"):Connect(update))
+		update()
+		
+	end
+	
+	
+	-- listen for roll result
+	if isOwner then
+		local rollTrove = trove:Extend()
+		trove:Add(remotes.RollAnimal.OnClientEvent:Connect(function(rollResult: RollResult)
+			rollTrove:Clean()
 			
-			return function()
-				animalTrove:Destroy()
-				hasAnimal = false
-				updatePrompts()
+			for slotIndex, slotResult in rollResult.slots do
+				local defKey = slotResult.definitionKey
+				local isNew = slotResult.isNew
+				local slotPart = slotParts[slotIndex]
+				if not defKey then warn("[mountRollStand] missing definitionKey for slot ", slotIndex) continue end
+				if not slotPart then warn("[mountRollStand] missing slot part for index ", slotIndex) continue end
+
+				local animalData: AnimalData = {
+					definitionKey = defKey,
+				}
+				
+				rollTrove:Add(task.spawn(function()
+					
+
+					for i = 1, 5 do
+						local randomAnimal = AnimalUtil.getRandomAnimalModel(true)
+						if not randomAnimal then warn("[mountRollStand] failed to get random animal model") end
+					
+						local shadow = rollTrove:Add(Instance.new("Highlight"))
+						shadow.FillColor = Color3.fromRGB(0, 0, 0)
+						shadow.FillTransparency = 0
+						shadow.OutlineTransparency = 0
+						shadow.Parent = randomAnimal
+					
+						randomAnimal:ScaleTo(0.25)
+						randomAnimal.Parent = slotPart
+						randomAnimal:PivotTo(slotPart:GetPivot())
+						
+						local revealLength = 0.2 * i
+						
+						local elapsed = 0
+						local connection: RBXScriptConnection
+						connection = rollTrove:Add(RunService.PreRender:Connect(function(dt)
+							elapsed += dt
+							local a = math.min(elapsed / revealLength, 1)
+							randomAnimal:ScaleTo(0.25 + (0.75 * a))
+							
+							print(randomAnimal:GetScale())
+							if a >= 1 then
+								connection:Disconnect()
+								randomAnimal:Destroy()
+							end
+						end))
+						
+						if slotIndex == 1 then
+							task.delay(0.1, function()
+								local sound = SoundService.SFX.Pop:Clone()
+								sound.PlaybackSpeed = 1 + (i * 0.1)
+								SoundService:PlayLocalSound(sound)
+								Debris:AddItem(sound, sound.TimeLength + 0.1)
+							end)
+						end
+		
+						task.wait(revealLength)
+					end
+				end))
+				
+				
 			end
 		end))
-		
-		
-		if isOwner then
-			trove:Add(buyPrompt.Triggered:Connect(function()
-				remotes.BuySlotAnimal:FireServer(slotNumber)
-			end))
-		else
-			trove:Add(stealPrompt.Triggered:Connect(function()
-				remotes.StealSlotAnimal:FireServer(owner, slotNumber)
-			end))
-		end
 	end
+	
 	
 	return function() trove:Destroy() end
 end
@@ -804,6 +868,7 @@ local function mountBases()
 end
 
 
+
 --------------------------------------------------
 -- PUBLIC FUNCTIONS --
 --------------------------------------------------
@@ -819,8 +884,8 @@ function BaseController.Init(self: BaseController, controllers)
 end
 
 function BaseController.Start(self: BaseController)
-	
 	mountBases()
+	
 end
 
 type BaseController = typeof(BaseController) & {}
