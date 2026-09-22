@@ -13,9 +13,6 @@ local mouse = player:GetMouse()
 local inputs = ReplicatedStorage:WaitForChild("Inputs")
 local interactionContext = inputs:WaitForChild("Interaction")
 
-local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
-local remotes = {}
-
 --------------------------------------------------
 -- TYPES -- 
 --------------------------------------------------

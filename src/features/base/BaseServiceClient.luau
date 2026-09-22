@@ -1,6 +1,5 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-local StarterPlayer = game:GetService("StarterPlayer")
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
 local RunService = game:GetService("RunService")
@@ -19,29 +18,29 @@ local Bezier = require(ReplicatedStorage.Packages.Bezier)
 --------------------------------------------------
 
 -- Controllers
-local CarryController = require(StarterPlayer.StarterPlayerScripts.ClientMain.Controllers.CarryController)
+local CarryServiceClient = require(ReplicatedStorage.Source.Features.Carry.CarryServiceClient)
+local InteractionServiceClient = require(ReplicatedStorage.Source.Features.Interaction.InteractionServiceClient)
 
 local player = Players.LocalPlayer
 local playerGui = player.PlayerGui
 
 -- Modules
-local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
-local BaseTypes = require(ReplicatedStorage.Modules.BaseTypes)
-
+local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
+local BaseTypes = require(ReplicatedStorage.Source.Features.Base.BaseTypes)
 
 -- Utils
-local BaseServiceUtil = require(Utils.BaseUtil)
-local AnimalServiceUtil = require(Utils.AnimalUtil)
+local BaseServiceUtils = require(ReplicatedStorage.Source.Features.Base.BaseServiceUtils)
+local AnimalServiceUtils = require(ReplicatedStorage.Source.Features.Animal.AnimalServiceUtils)
 
 -- Base Assets
-local Assets = ReplicatedStorage:WaitForChild("Assets")
+local Assets: Folder = ReplicatedStorage:WaitForChild("Assets")
 local BaseAssets = Assets:WaitForChild("Base")
 
 -- Animal Assets
 local AnimalAssets = Assets:WaitForChild("Animals")
-local AnimalConfig = require(ReplicatedStorage.Modules.AnimalConfig)
+local AnimalConfig = require(ReplicatedStorage.Source.Features.Animal.AnimalConfig)
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
-local MutationGradients = AnimalAssets:WaitForChild("MutationGradients")
+local MutationGradients: Folder = AnimalAssets:WaitForChild("MutationGradients")
 
 
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
@@ -134,8 +133,8 @@ local function showStandDisplay(standFolder: Folder, floorIndex: number, isOwner
 		levelLabel.Text = string.format("Level %s", Abbreviate.AbbreviateNumber(level, 1))
 
 		-- display level cost on buttons
-		buy1Button.PriceLabel.Text  = "$" .. Abbreviate.AbbreviateNumber(AnimalUtil.getLevelUpCost(defKey, level, 1), 1)
-		buy10Button.PriceLabel.Text = "$" .. Abbreviate.AbbreviateNumber(AnimalUtil.getLevelUpCost(defKey, level, 10), 1)
+		buy1Button.PriceLabel.Text  = "$" .. Abbreviate.AbbreviateNumber(AnimalServiceUtils.getLevelUpCost(defKey, level, 1), 1)
+		buy10Button.PriceLabel.Text = "$" .. Abbreviate.AbbreviateNumber(AnimalServiceUtils.getLevelUpCost(defKey, level, 10), 1)
 
 	end))
 
@@ -193,7 +192,7 @@ local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: 
 		local trove = Trove.new()
 		
 		if isActive then
-			trove:Add(BaseController.Controllers.InteractionController:Register(standModel, function()
+			trove:Add(InteractionServiceClient:Register(standModel, function()
 				if standFolder:GetAttribute("DefinitionKey") then
 					showStandDisplay(standFolder, floorIndex, isOwner)
 				elseif isOwner and player.Character and player.Character:FindFirstChild("AnimalTool") then
@@ -215,7 +214,7 @@ local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: 
 					}
 					
 					-- should the rendering of animal (model, animation connections, effects, etc) be on its own trove?
-					local animalModel = renderTrove:Add(AnimalUtil.getAnimalModel(animalData))
+					local animalModel = renderTrove:Add(AnimalServiceUtils.getAnimalModel(animalData))
 					if animalModel then
 						animalModel.Parent = standFolder
 						animalModel:PivotTo(animalMiddle:GetPivot())
@@ -400,10 +399,10 @@ local function mountDrone(floorFolder: Folder)
 		local animalData: AnimalData = definitionKey and { definitionKey = definitionKey }
 		if animalData then
 			trove:Add(task.delay(0.1, function()
-				local travelTime = BaseUtil.getConveyorTravelTime(floorIndex, targetIndex) 
+				local travelTime = BaseServiceUtils.getConveyorTravelTime(floorIndex, targetIndex) 
 
 				for i = 1, 5 do
-					local eggModel = AnimalUtil.getEggModel(animalData)
+					local eggModel = AnimalServiceUtils.getEggModel(animalData)
 					if not eggModel then return end
 					Debris:AddItem(eggModel, travelTime)
 
@@ -461,7 +460,7 @@ local function mountFloors(baseFolder: Folder, owner: Player)
 		trove:Add(Observers.observeAttribute(floorFolder, "Active", function(isActive: boolean)
 			local floorTrove = trove:Extend()
 			local upgradesSign = floorFolder:WaitForChild("UpgradeSign")
-			BaseUtil.showInstance(upgradesSign, isOwner and isActive)
+			BaseServiceUtils.showInstance(upgradesSign, isOwner and isActive)
 			
 			-- drone
 			if isOwner and isActive then floorTrove:Add(mountDrone(floorFolder)) end
@@ -503,7 +502,7 @@ local function mountEggCollector(baseFolder: Folder, owner: Player)
 
 	local displayCrates: {Model} = {}
 	local function updateDisplayCrates()
-		local carrying = isOwner and CarryController.source == "EggCollector"
+		local carrying = isOwner and CarryServiceClient.source == "EggCollector"
 		local n = carrying and 0 or getCrateCount()
 		
 		-- add new
@@ -541,8 +540,8 @@ local function mountEggCollector(baseFolder: Folder, owner: Player)
 	end))
 	
 	trove:Add(Observers.observeAttribute(container, "EggsCollected", function(eggsCollected: number)
-		if isOwner and CarryController.source == "EggCollector" then
-			CarryController:SetCrateCount(getCrateCount())
+		if isOwner and CarryServiceClient.source == "EggCollector" then
+			CarryServiceClient:SetCrateCount(getCrateCount())
 		end
 		updateDisplayCrates()
 	end))
@@ -551,8 +550,8 @@ local function mountEggCollector(baseFolder: Folder, owner: Player)
 	if isOwner then
 		local pickupPrompt = pickupPart:WaitForChild("PickupPrompt") :: ProximityPrompt
 		pickupPrompt.Triggered:Connect(function()
-			if CarryController:IsCarrying() then return end
-			CarryController:Carry("EggCollector", BaseAssets.Crate, getCrateCount())
+			if CarryServiceClient:IsCarrying() then return end
+			CarryServiceClient:Carry("EggCollector", BaseAssets.Crate, getCrateCount())
 		end)
 		
 		Observers.observeAttribute(player, "CarryingCrates", function(isCarrying: boolean)
@@ -628,13 +627,13 @@ local function mountSellStand(baseFolder: Folder)
 	-- sell zone 
 	local inSellZone = false
 	sellHitbox.Touched:Connect(function(hit)
-		if not CarryController:IsCarrying() or inSellZone then return end
+		if not CarryServiceClient:IsCarrying() or inSellZone then return end
 		if hit.Parent == player.Character then 
 			inSellZone = true
-			remotes.SellEggs:FireServer(CarryController.source)
+			remotes.SellEggs:FireServer(CarryServiceClient.source)
 			
 			-- suck effect
-			local crateModels = CarryController:Take()
+			local crateModels = CarryServiceClient:Take()
 			task.spawn(function()
 				for i = #crateModels, 1, -1 do
 					local crate = crateModels[i]
@@ -695,7 +694,7 @@ local function mountSellStand(baseFolder: Folder)
 	
 	-- TODO: 2x crate value product pad
 	
-	BaseUtil.showInstance(container, true)
+	BaseServiceUtils.showInstance(container, true)
 end
 
 local function mountRollStand(baseFolder: Folder, owner: Player)
@@ -738,7 +737,7 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 		end
 		slotTrove:Clean()
 
-		local animalModel = AnimalUtil.getAnimalModel(animalData)
+		local animalModel = AnimalServiceUtils.getAnimalModel(animalData)
 		if not animalModel then warn("[renderSlotAnimal] failed to get animal model for definitionKey ", animalData.definitionKey) return nil end
 		slotTrove:Add(animalModel)
 		animalModel.Parent = slotRecord.slot
@@ -819,7 +818,7 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 		local rollTrove = trove:Extend()
 
 		local function spawnFlicker(slotRecord, revealLength: number)
-			local randomAnimal = AnimalUtil.getRandomAnimalModel(true)
+			local randomAnimal = AnimalServiceUtils.getRandomAnimalModel(true)
 			if not randomAnimal then warn("[mountRollStand] failed to get random animal model") return end
 			rollTrove:Add(randomAnimal)
 

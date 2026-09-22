@@ -20,8 +20,8 @@ local INCREMENTABLE_CURRENCIES = {
 	["Money"] = true,
 }
 
-local ProfileTemplate = require(ReplicatedStorage.Modules:WaitForChild("ProfileTemplate"))
-local PurchaseProfileTemplate = require(ReplicatedStorage.Modules:WaitForChild("PurchaseProfileTemplate"))
+local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
+local PurchaseProfileTemplate = require(ReplicatedStorage.Source.Features.Data.PurchaseProfileTemplate)
 
 
 --------------------------------------------------

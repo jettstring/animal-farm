@@ -1,31 +1,17 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
 
 local Trove = require(ReplicatedStorage.Packages.Trove)
 
 --------------------------------------------------
--- DEPENDENCIES -- 
+-- DEPENDENCIES --
 --------------------------------------------------
 
 -- Services
-local AnimalService = require(ServerScriptService.ServerMain.Services.AnimalService)
-
-local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
-
--- Utils
-local Utils = ReplicatedStorage:FindFirstChild("Utils")
-local BaseUtil = require(Utils.BaseUtil)
-local AnimalUtil = require(Utils.AnimalUtil)
-
-local Assets = ReplicatedStorage:FindFirstChild("Assets")
-
--- Base Assets
-local BaseAssets = Assets:FindFirstChild("Base")
-
--- Animal Assets
-local AnimalAssets = Assets:WaitForChild("Animals")
-local AnimalConfig = require(ReplicatedStorage.Modules.AnimalConfig)
+local AnimalService = require(ServerScriptService.Features.Animal.AnimalServiceServer)
+local BaseServiceUtils = require(ReplicatedStorage.Source.Features.Base.BaseServiceUtils)
+local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
+local AnimalConfig = require(ReplicatedStorage.Source.Features.Animal.AnimalConfig)
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
@@ -34,7 +20,7 @@ local remotes = {
 }
 
 -------------------------------------------------
--- TYPES -- 
+-- TYPES --
 --------------------------------------------------
 
 type Profile = ProfileTemplate.ProfileTemplate
@@ -45,14 +31,12 @@ type FloorData = ProfileTemplate.FloorData
 type AnimalDefinition = AnimalConfig.AnimalDefinition
 type AnimalMutation = AnimalConfig.AnimalMutation
 
-
 --------------------------------------------------
--- MAIN -- 
+-- MAIN --
 --------------------------------------------------
 
-local AnimalStand = {}
-AnimalStand.__index = AnimalStand
-
+local AnimalStandServer = {}
+AnimalStandServer.__index = AnimalStandServer
 
 type self = {
 	Trove: any,
@@ -64,26 +48,26 @@ type self = {
 	ReadyAt: number?,
 }
 
-export type AnimalStand = typeof(setmetatable({} :: self, AnimalStand))
+export type AnimalStandServer = typeof(setmetatable({} :: self, AnimalStandServer))
 
-function AnimalStand.new(floor: any, standIndex: number, standFolder: Folder, standData: AnimalStand?)
-	local self = setmetatable({} :: self, AnimalStand)
+function AnimalStandServer.new(floor: any, standIndex: number, standFolder: Folder, standData: AnimalStandServer?)
+	local self = setmetatable({} :: self, AnimalStandServer)
 	self.Trove = Trove.new()
-	
+
 	self.Floor = floor
 	self.StandIndex = standIndex
 	self.StandFolder = standFolder
 	self.StandData = standData
 	self.AnimalModel = nil
-	
+
 	self.StandThread = nil
-	
+
 	self:_Refresh()
-	
+
 	return self
 end
 
-function AnimalStand._Refresh(self: AnimalStand)
+function AnimalStandServer._Refresh(self: AnimalStandServer)
 	local standFolder: Folder = self.StandFolder
 	local standModel: Model = standFolder.StandModel
 	local unlockSign: Model = standFolder.UnlockSign
@@ -94,14 +78,14 @@ function AnimalStand._Refresh(self: AnimalStand)
 	local unlocked = standData.unlocked
 	standFolder:SetAttribute("Active", unlocked)
 
-	BaseUtil.showInstance(standModel, unlocked)
-	BaseUtil.showInstance(unlockSign, not unlocked)
+	BaseServiceUtils.showInstance(standModel, unlocked)
+	BaseServiceUtils.showInstance(unlockSign, not unlocked)
 
 	-- unlock cost
-	local unlockCost: number = BaseUtil.getStandCost(self.Floor.FloorIndex)
+	local unlockCost: number = BaseServiceUtils.getStandCost(self.Floor.FloorIndex)
 	standFolder:SetAttribute("UnlockCost", unlockCost)
 
-	-- update animal attributes 
+	-- update animal attributes
 	local animalData: AnimalData? = unlocked and standData.occupant
 
 	if animalData then
@@ -120,43 +104,42 @@ function AnimalStand._Refresh(self: AnimalStand)
 	standFolder:SetAttribute("EggReadyAt", (animalData and self.ReadyAt) or nil)
 end
 
-
 --------------------------------------------------
--- ACTIONS -- 
+-- ACTIONS --
 --------------------------------------------------
 
-function AnimalStand.AddAnimal(self: AnimalStand, animalData: AnimalData): (boolean, string?)
+function AnimalStandServer.AddAnimal(self: AnimalStandServer, animalData: AnimalData): (boolean, string?)
 	local standData: StandData = self.StandData
 	if not standData.unlocked then
 		warn("[AddAnimal] stand not unlocked")
 		return false, "Stand Locked"
 	end
-	
+
 	local occupant: AnimalData = standData.occupant
 	if occupant then
 		warn("[AddAnimal] stand already occupied")
 		return nil, "Already Occupied"
 	end
-	
+
 	-- validate animalData
 	if not animalData or not animalData.definitionKey then
 		warn("[AddAnimal] invalid animalData: ", animalData)
 		return nil, "Invalid AnimalData"
 	end
-	
+
 	standData.occupant = {
 		definitionKey = animalData.definitionKey,
 		level = animalData.level or 1,
 		mutation = animalData.mutation or nil,
 	}
-	
+
 	self:_Refresh()
 	return true
 end
 
-function AnimalStand.RemoveAnimal(self: AnimalStand): boolean
+function AnimalStandServer.RemoveAnimal(self: AnimalStandServer): boolean
 	local owner: Player = self.Floor.Base.Owner
-	
+
 	local standData: StandData = self.StandData
 	if not standData.unlocked then
 		warn("[RemoveAnimal] stand not unlocked")
@@ -174,64 +157,67 @@ function AnimalStand.RemoveAnimal(self: AnimalStand): boolean
 		warn("[RemoveAnimal] invalid occupant animalData: ", occupant)
 		return nil
 	end
-	
+
 	local success = AnimalService:GiveAnimal(owner, occupant)
 	if not success then
 		warn("[RemoveAnimal] failed to give animal ", occupant)
 		return false
 	end
-	
+
 	-- remove occupant
 	standData.occupant = nil
 	self:_Refresh()
-	
+
 	return true
 end
 
-function AnimalStand.LevelAnimal(self: AnimalStand, levels: number): boolean
-	if typeof(levels) ~= "number" then 
+function AnimalStandServer.LevelAnimal(self: AnimalStandServer, levels: number): boolean
+	if typeof(levels) ~= "number" then
 		warn("[LevelAnimal] invalid levels passed: ", levels)
 		return nil
 	end
 	levels = math.round(math.max(levels, 1))
-	
+
 	local standData: StandData = self.StandData
 	if not standData.unlocked then
 		warn("[LevelAnimal] stand not unlocked")
 		return nil
 	end
-	
+
 	local occupant: AnimalData = standData.occupant
 	if not occupant then
 		warn("[LevelAnimal] stand not occupied")
 		return nil
 	end
-	
+
 	occupant.level = occupant.level + levels
 	self:_Refresh()
-	
+
 	return true
 end
 
-function AnimalStand.CollectEgg(self: AnimalStand)
+function AnimalStandServer.CollectEgg(self: AnimalStandServer)
 	local earnings = self:GetEggEarnings()
-	if not earnings then warn("[CollectEgg] could not get egg earnings") return end
-	
+	if not earnings then
+		warn("[CollectEgg] could not get egg earnings")
+		return
+	end
+
 	self:StartGrowing()
 	self:_Refresh()
-	
+
 	local floorIndex = self.Floor.FloorIndex
-	local travelTime = BaseUtil.getConveyorTravelTime(floorIndex, self.StandIndex) 
+	local travelTime = BaseServiceUtils.getConveyorTravelTime(floorIndex, self.StandIndex)
 	self.Trove:Add(task.delay(travelTime, function()
 		self.Floor.Base:IncrementCrateValue(earnings)
 	end))
 end
 
-function AnimalStand.StartGrowing(self: AnimalStand)
+function AnimalStandServer.StartGrowing(self: AnimalStandServer)
 	self.ReadyAt = workspace:GetServerTimeNow() + self:GetEggGrowTime()
 end
 
-function AnimalStand.Unlock(self: AnimalStand)
+function AnimalStandServer.Unlock(self: AnimalStandServer)
 	local standData: StandData = self.StandData
 	standData.unlocked = true
 
@@ -247,33 +233,35 @@ function AnimalStand.Unlock(self: AnimalStand)
 	return true
 end
 
-
-function AnimalStand.Destroy(self: AnimalStand)
+function AnimalStandServer.Destroy(self: AnimalStandServer)
 	self.Trove:Destroy()
-	
+
 	-- clear attributes
 	for attributeName, _ in self.StandFolder:GetAttributes() do
 		self.StandFolder:SetAttribute(attributeName, nil)
 	end
 end
 
-
 --------------------------------------------------
--- HELPERS -- 
+-- HELPERS --
 --------------------------------------------------
 
-function AnimalStand.IsEggReady(self: AnimalStand, now: number): boolean
+function AnimalStandServer.IsEggReady(self: AnimalStandServer, now: number): boolean
 	return self.ReadyAt and now >= self.ReadyAt
 end
 
-function AnimalStand.GetEggEarnings(self: AnimalStand): number
+function AnimalStandServer.GetEggEarnings(self: AnimalStandServer): number
 	local standData: StandData? = self.StandData
 	local occupant = standData and standData.occupant
-	if not occupant or not occupant.definitionKey then return nil end
+	if not occupant or not occupant.definitionKey then
+		return nil
+	end
 
 	local animalDef: AnimalDefinition = AnimalDefinitions[occupant.definitionKey]
-	if not animalDef then return nil end
-	
+	if not animalDef then
+		return nil
+	end
+
 	local earnings = 0
 
 	local baseEarnings = animalDef.eggEarnings
@@ -281,31 +269,33 @@ function AnimalStand.GetEggEarnings(self: AnimalStand): number
 		warn("[GetEggEarnings] invalid baseEarnings: ", animalDef)
 		return nil
 	end
-	
+
 	earnings += baseEarnings
-	
+
 	return earnings
 end
 
-
-function AnimalStand.GetEggGrowTime(self: AnimalStand): number
+function AnimalStandServer.GetEggGrowTime(self: AnimalStandServer): number
 	local standData: StandData? = self.StandData
 	local occupant = standData and standData.occupant
-	if not occupant or not occupant.definitionKey then return nil end
-	
+	if not occupant or not occupant.definitionKey then
+		return nil
+	end
+
 	local animalDef: AnimalDefinition = AnimalDefinitions[occupant.definitionKey]
-	if not animalDef then return nil end
-	
+	if not animalDef then
+		return nil
+	end
+
 	local baseTime = animalDef.eggGrowTime
 	if not baseTime then
 		warn("[GetEggGrowTime] invalid eggGrowTime: ", animalDef)
 		return nil
 	end
-	
+
 	-- TODO: get floor egg regen upgrade multiplier
-	
+
 	return baseTime
 end
 
-
-return AnimalStand
+return AnimalStandServer

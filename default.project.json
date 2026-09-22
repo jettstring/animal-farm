@@ -13,8 +13,8 @@
             "AnimalConfig": {
               "$path": "src/features/animal/AnimalConfig.luau"
             },
-            "AnimalServiceUtil": {
-              "$path": "src/features/animal/AnimalServiceUtil.luau"
+            "AnimalServiceUtils": {
+              "$path": "src/features/animal/AnimalServiceUtils.luau"
             }
           },
           "Base": {
@@ -61,7 +61,10 @@
           "$className": "Folder"
         },
         "Game": {
-          "$className": "Folder"
+          "$className": "Folder",
+          "ImageIds": {
+            "$path": "src/game/ImageIds.luau"
+          }
         },
         "StartUp": {
           "$className": "Folder",

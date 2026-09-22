@@ -9,9 +9,6 @@ local Observers = require(ReplicatedStorage.Packages.Observers)
 
 local player = Players.LocalPlayer
 
-local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
-local remotes = {}
-
 --------------------------------------------------
 -- TYPES -- 
 --------------------------------------------------

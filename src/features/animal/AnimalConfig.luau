@@ -1,16 +1,3 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
---------------------------------------------------
--- DEPENDENCIES -- 
---------------------------------------------------
-
-local Assets = ReplicatedStorage:WaitForChild("Assets")
-local AnimalAssets = Assets:WaitForChild("Animals")
-
---------------------------------------------------
--- TYPES -- 
---------------------------------------------------
-
 export type AnimalDefinition = {
 	displayName: string,
 	rarity: AnimalRarity,

@@ -7,20 +7,14 @@ local Players = game:GetService("Players")
 --------------------------------------------------
 
 -- Services
-local DataService = require(ServerScriptService.ServerMain.Services.DataService)
+local DataServiceServer = require(ServerScriptService.Features.Data.DataServiceServer)
 
-local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
+local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
 
 -- Utils
 local Utils = ReplicatedStorage:FindFirstChild("Utils")
 local AnimalUtil = require(Utils.AnimalUtil)
 
-local Assets = ReplicatedStorage:WaitForChild("Assets")
-
-local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
-local remotes = {
-	
-}
 
 --------------------------------------------------
 -- TYPES -- 
@@ -58,7 +52,7 @@ end
 
 
 function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalData: AnimalData): boolean
-	local profile: Profile = DataService:GetProfile(player)
+	local profile: Profile = DataServiceServer:GetProfile(player)
 	if not profile then warn("[GiveAnimal] No profile found for player:", player) return false end
 	
 	if not animalData or not animalData.definitionKey then warn("[GiveAnimal] invalid animalData: ", animalData) return false end
@@ -76,7 +70,7 @@ function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalDat
 end
 
 function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, animalKey: string): Tool
-	local profile: Profile = DataService:GetProfile(player)
+	local profile: Profile = DataServiceServer:GetProfile(player)
 	if not profile then warn("[CreateAnimalTool] No profile found for player:", player) return end
 	
 	-- check if animalKey exists in profile
@@ -141,7 +135,7 @@ function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, ani
 end
 
 function AnimalService.UpdateAnimalTool(self: AnimalService, player: Player, animalKey: string)
-	local profile: Profile = DataService:GetProfile(player)
+	local profile: Profile = DataServiceServer:GetProfile(player)
 	if not profile then warn("[UpdateAnimalTool] No profile found for player:", player) return end
 
 	-- check if animalKey exists in profile
@@ -173,7 +167,7 @@ function AnimalService.UpdateAnimalTool(self: AnimalService, player: Player, ani
 end
 
 function AnimalService._HydrateTools(self: AnimalService, player: Player)
-	local profile: Profile = DataService:GetProfile(player)
+	local profile: Profile = DataServiceServer:GetProfile(player)
 	if not profile then warn("[_HydrateTools] No profile found for player:", player) return end
 
 	for animalKey, ownedAmount in profile.inventory.animals do
@@ -187,7 +181,7 @@ function AnimalService._HydrateTools(self: AnimalService, player: Player)
 end
 
 function AnimalService.HasAnimal(self: AnimalService, player: Player, animalKey: string): boolean
-	local profile: Profile = DataService:GetProfile(player)
+	local profile: Profile = DataServiceServer:GetProfile(player)
 	if not profile then warn("[HasAnimal] No profile found for player:", player) return false end
 	return profile.discoveredAnimals[animalKey] == true 
 end
@@ -201,7 +195,7 @@ function AnimalService.Init(self: AnimalService)
 end
 
 function AnimalService.Start(self: AnimalService)
-	DataService.Signals.DataLoaded:Connect(function(player: Player)
+	DataServiceServer.Signals.DataLoaded:Connect(function(player: Player)
 		player.CharacterAdded:Connect(function()
 			print("GIVING ANIMAL TOOLS")
 			self.AnimalTools[player] = nil

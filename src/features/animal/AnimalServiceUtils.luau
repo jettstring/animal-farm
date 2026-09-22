@@ -1,20 +1,20 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --------------------------------------------------
--- DEPENDENCIES -- 
+-- DEPENDENCIES --
 --------------------------------------------------
 
-local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
+local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 local AnimalAssets = Assets:WaitForChild("Animals")
-local AnimalConfig = require(ReplicatedStorage.Modules.a)
+local AnimalConfig = require(ReplicatedStorage.Source.Features.Animal.AnimalConfig)
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 local AnimalModels = AnimalAssets.AnimalModels
 local EggModels = AnimalAssets.EggModels
 
 --------------------------------------------------
--- TYPES -- 
+-- TYPES --
 --------------------------------------------------
 
 type AnimalDefinition = AnimalConfig.AnimalDefinition
@@ -32,11 +32,11 @@ end
 function AnimalUtil.getAnimalData(animalKey: string): AnimalData
 	local split = string.split(animalKey, "_")
 	assert(#split == 2 or #split == 3, `malformed animal key: "{animalKey}"`)
-	
+
 	return {
 		definitionKey = split[1],
 		level = tonumber(split[2]),
-		mutation = split[3]
+		mutation = split[3],
 	}
 end
 
@@ -46,16 +46,15 @@ function AnimalUtil.generateAnimalKey(animalData: AnimalData): string?
 		warn("[generateAnimalKey] invalid definitionKey:", definitionKey)
 		return nil
 	end
-	
+
 	local level = animalData.level or 1
 	local key = definitionKey .. "_" .. level
 	if animalData.mutation then
 		key = key .. "_" .. animalData.mutation
 	end
-	
+
 	return key
 end
-
 
 function AnimalUtil.getAnimalModel(animalData: AnimalData): Model
 	local defKey = animalData.definitionKey
@@ -64,17 +63,17 @@ function AnimalUtil.getAnimalModel(animalData: AnimalData): Model
 		warn("[getAnimalModel] invalid animalData: ", animalData)
 		return nil
 	end
-	
+
 	local baseModel: Model = AnimalModels:FindFirstChild(defKey)
 	if not baseModel then
 		warn("[getAnimalModel] missing animal model for: ", defKey)
 		return nil
 	end
-	
+
 	local clone = baseModel:Clone()
-	
+
 	-- TODO: apply mutation effects
-	
+
 	return clone
 end
 
@@ -99,7 +98,6 @@ function AnimalUtil.getEggModel(animalData: AnimalData): Model
 	return clone
 end
 
-
 function AnimalUtil.getRandomAnimalModel(restrictToRollable: boolean?): Model?
 	local animalKeys = {}
 	for defKey, animalDef in AnimalDefinitions do
@@ -108,17 +106,17 @@ function AnimalUtil.getRandomAnimalModel(restrictToRollable: boolean?): Model?
 		end
 		table.insert(animalKeys, defKey)
 	end
-	
+
 	if #animalKeys == 0 then
 		warn("[getRandomAnimalModel] no animals available to roll")
 		return nil
 	end
-	
+
 	local randomIndex = math.random(1, #animalKeys)
 	local animalData: AnimalData = {
 		definitionKey = animalKeys[randomIndex],
 	}
-	
+
 	return AnimalUtil.getAnimalModel(animalData)
 end
 
@@ -128,10 +126,10 @@ function AnimalUtil.getLevelCost(definitionKey: AnimalData, level: number): numb
 		warn("[getLevelCost] invalid definitionKey:", definitionKey)
 		return nil
 	end
-	
+
 	local earningsPerEgg = animalDef.eggEarnings
-	
-	return math.round(earningsPerEgg * level^1.2) 	
+
+	return math.round(earningsPerEgg * level ^ 1.2)
 end
 
 function AnimalUtil.getLevelUpCost(definitionKey: string, fromLevel: number, count: number): number
@@ -150,7 +148,7 @@ function AnimalUtil.rollAnimalResult(luck: number): string
 		local animalOdds = math.clamp(animalDef.odds, 0, 1)
 		totalOdds += animalOdds
 	end
-	
+
 	local roll = math.random() * totalOdds
 	local cumulativeWeight = 0
 	for animalName, animalDef: AnimalDefinition in AnimalDefinitions do
@@ -159,11 +157,11 @@ function AnimalUtil.rollAnimalResult(luck: number): string
 			return animalName
 		end
 	end
-	
+
 	return nil
 end
 
-function AnimalUtil.getSortedAnimals(): {string}
+function AnimalUtil.getSortedAnimals(): { string }
 	local sorted = {}
 	for animalName in AnimalDefinitions do
 		table.insert(sorted, animalName)
@@ -175,9 +173,6 @@ function AnimalUtil.getSortedAnimals(): {string}
 	return sorted
 end
 
-
-
 AnimalUtil.SortedAnimals = AnimalUtil.getSortedAnimals()
-
 
 return AnimalUtil

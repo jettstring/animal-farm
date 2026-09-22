@@ -7,28 +7,21 @@ local Players = game:GetService("Players")
 --------------------------------------------------
 
 -- Services
-local DataService = require(ServerScriptService.ServerMain.Services.DataService)
-local AnimalService = require(ServerScriptService.ServerMain.Services.AnimalService)
-local NotificationService = require(ServerScriptService.ServerMain.Services.NotificationService)
-
+local DataServiceServer = require(ServerScriptService.Features.Data.DataServiceServer)
+local AnimalServiceServer = require(ServerScriptService.Features.Animal.AnimalServiceServer)
+local NotificationService = require(ServerScriptService.Features.Notification.NotificationServiceServer)
 
 -- Modules
-local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
+local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
 
 -- Classes
-local Base = require(ServerScriptService.Classes.Base.Base)
+local BaseServer = require(ServerScriptService.Features.Base.Classes.BaseServer)
 
 -- Utils
-local Utils = ReplicatedStorage:FindFirstChild("Utils")
-local BaseUtil = require(Utils.BaseUtil)
-local AnimalUtil = require(Utils.AnimalUtil)
+local BaseServiceUtils = require(ReplicatedStorage.Source.Features.Base.BaseServiceUtils)
+local AnimalServiceUtils = require(ReplicatedStorage.Source.Features.Animal.AnimalServiceUtils)
 
-local Assets = ReplicatedStorage:WaitForChild("Assets")
-
--- Base Assets
-local BaseAssets = Assets:WaitForChild("Base")
-local BaseFolders = workspace.Bases
-
+local BaseFolders: Folder = workspace.Bases
 
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local remotes = {
@@ -51,7 +44,7 @@ type BaseData = ProfileTemplate.BaseData
 type FloorData = ProfileTemplate.FloorData
 type AnimalData = ProfileTemplate.AnimalData
 
-type Base = Base.Base
+type BaseServer = BaseServer.BaseServer
 
 --------------------------------------------------
 -- STATE --
@@ -60,7 +53,7 @@ local BaseService = {}
 BaseService.Signals = {}
 
 BaseService.ClaimedBases = {} :: {[Folder]: Player}
-BaseService.PlayerBases = {} :: {[Player]: Base}
+BaseService.PlayerBases = {} :: {[Player]: 	BaseServer}
 
 
 --------------------------------------------------
@@ -74,7 +67,7 @@ BaseService.PlayerBases = {} :: {[Player]: Base}
 --------------------------------------------------
 
 local function attemptPlaceAnimal(player: Player, floorIndex: number, standIndex: number)
-	local base: Base = BaseService.PlayerBases[player]
+	local base: BaseServer = BaseService.PlayerBases[player]
 	if not base then warn("[attemptPlaceAnimal] missing base") return end
 
 	local floor = base.Floors[floorIndex]
@@ -91,7 +84,7 @@ local function attemptPlaceAnimal(player: Player, floorIndex: number, standIndex
 	local animalTool: Tool? = player.Character and player.Character:FindFirstChild("AnimalTool")
 	if not animalTool then warn("[attemptPlaceAnimal] No animal tool equipped") return end
 	
-	local profile: Profile = DataService:GetProfile(player)
+	local profile: Profile = DataServiceServer:GetProfile(player)
 	if not profile then warn("[attemptPlaceAnimal] No profile found for player:", player) return end
 
 	-- check if animalKey exists in profile
@@ -104,7 +97,7 @@ local function attemptPlaceAnimal(player: Player, floorIndex: number, standIndex
 		return
 	end
 	
-	local animalData: AnimalData? = AnimalUtil.getAnimalData(animalKey)
+	local animalData: AnimalData? = AnimalServiceUtils.getAnimalData(animalKey)
 	
 	local success, reason = animalStand:AddAnimal(animalData)
 	if not success then
@@ -114,11 +107,11 @@ local function attemptPlaceAnimal(player: Player, floorIndex: number, standIndex
 	end
 	
 	profile.inventory.animals[animalKey] -= 1
-	AnimalService:UpdateAnimalTool(player, animalKey)
+	AnimalServiceServer:UpdateAnimalTool(player, animalKey)
 end
 
 local function attemptRemoveAnimal(player: Player, floorIndex: number, standIndex: number)
-	local base: Base = BaseService.PlayerBases[player]
+	local base: BaseServer = BaseService.PlayerBases[player]
 	if not base then warn("[attemptRemoveAnimal] missing base") return end
 
 	local floor = base.Floors[floorIndex]
@@ -140,7 +133,7 @@ local function attemptRemoveAnimal(player: Player, floorIndex: number, standInde
 end
 
 local function attemptUnlockStand(player: Player, floorIndex: number, standIndex: number)
-	local base: Base = BaseService.PlayerBases[player]
+	local base: BaseServer = BaseService.PlayerBases[player]
 	if not base then warn("[attemptUnlockStand] missing base") return end
 	
 	local floor = base.Floors[floorIndex]
@@ -154,10 +147,10 @@ local function attemptUnlockStand(player: Player, floorIndex: number, standIndex
 	local animalStand = floor.AnimalStands[standIndex]
 	if not animalStand then warn("[attemptUnlockStand] missing animalStand object:", standIndex) return end
 	
-	local profile: Profile = DataService:GetProfile(player)
+	local profile: Profile = DataServiceServer:GetProfile(player)
 	if not profile then warn("[attemptUnlockStand] No profile found for player:", player) return end
 	
-	local unlockCost: number = BaseUtil.getStandCost(floorIndex)
+	local unlockCost: number = BaseServiceUtils.getStandCost(floorIndex)
 	if profile.currency.Money < unlockCost then
 		NotificationService:Error(player, "Cannot buy!")
 		return
@@ -169,7 +162,7 @@ local function attemptUnlockStand(player: Player, floorIndex: number, standIndex
 		return
 	end
 
-	DataService:IncrementCurrency(player, "Money", -unlockCost, "Buy Stand", false)
+	DataServiceServer:IncrementCurrency(player, "Money", -unlockCost, "Buy Stand", false)
 end
 
 local function attemptBuyAnimalLevels(player: Player, floorIndex: number, standIndex: number, levelAmount: number)
@@ -177,14 +170,14 @@ local function attemptBuyAnimalLevels(player: Player, floorIndex: number, standI
 	levelAmount = math.clamp(levelAmount, 1, 10)
 	if math.floor(levelAmount) ~= levelAmount then return end
 	
-	local base: Base = BaseService.PlayerBases[player]
+	local base: BaseServer = BaseService.PlayerBases[player]
 	if not base then warn("[attemptBuyAnimalLevels] missing base") return end
 
 	local floor = base.Floors[floorIndex]
 	if not floor then warn("[attemptBuyAnimalLevels] missing floor object for", floorIndex) return end
 
 	if not floor:OwnsFloor() then
-		warn("[attemptRemoveAnimal] Floor is not unlocked")
+		warn("[attemptBuyAnimalLevels] Floor is not unlocked")
 		return
 	end
 
@@ -197,10 +190,10 @@ local function attemptBuyAnimalLevels(player: Player, floorIndex: number, standI
 	local definitionKey = animalData.definitionKey
 	local currentLevel = animalData.level
 	
-	local profile: Profile = DataService:GetProfile(player)
+	local profile: Profile = DataServiceServer:GetProfile(player)
 	if not profile then warn("[attemptUnlockStand] No profile found for player:", player) return end
 
-	local levelsCost: number = AnimalUtil.getLevelUpCost(definitionKey, currentLevel, levelAmount)
+	local levelsCost: number = AnimalServiceUtils.getLevelUpCost(definitionKey, currentLevel, levelAmount)
 	if profile.currency.Money < levelsCost then
 		NotificationService:Error(player, "Cannot buy!")
 		return
@@ -212,24 +205,24 @@ local function attemptBuyAnimalLevels(player: Player, floorIndex: number, standI
 		return
 	end
 	
-	DataService:IncrementCurrency(player, "Money", -levelsCost, "Level Animal", false)
+	DataServiceServer:IncrementCurrency(player, "Money", -levelsCost, "Level Animal", false)
 end
 
 local function attemptSellEggs(player: Player, source: string)
-	local base: Base = BaseService.PlayerBases[player]
+	local base: BaseServer = BaseService.PlayerBases[player]
 	if not base then warn("[attemptSellEggs] missing base") return end
 	base:SellCrates(source)
 end
 
 local function attemptRollAnimal(player)
-	local base: Base = BaseService.PlayerBases[player]
+	local base: BaseServer = BaseService.PlayerBases[player]
 	local rollStand = base and base.RollStand
 	if not rollStand then warn("missing rollStand object") return end
 	rollStand:Roll()
 end
 
 local function attemptBuySlotAnimal(player: Player, slotIndex: number)
-	local base: Base = BaseService.PlayerBases[player]
+	local base: BaseServer = BaseService.PlayerBases[player]
 	local rollStand = base and base.RollStand 
 	if not rollStand then warn("missing rollStand object") return end
 	rollStand:BuySlotAnimal(slotIndex)
@@ -242,11 +235,11 @@ local function _cleanupBase(baseFolder: Folder)
 	-- hide floors
 	local floorsContainer = baseModel.Floors
 	for _, floorFolder: Folder in floorsContainer:GetChildren() do
-		BaseUtil.showInstance(floorFolder, false)
+		BaseServiceUtils.showInstance(floorFolder, false)
 	end
 	
 	-- hide components
-	BaseUtil.showInstance(baseModel.Components, false)
+	BaseServiceUtils.showInstance(baseModel.Components, false)
 	
 end
 
@@ -274,7 +267,7 @@ function BaseService.AssignBase(self: BaseService, player: Player)
 		local owner = self.ClaimedBases[baseFolder]
 		if owner then continue end
 		
-		local base: Base? = Base.new(player, baseFolder)
+		local base: BaseServer? = BaseServer.new(player, baseFolder)
 		if not base then
 			warn("[AssignBase] failed to create base for player", player)
 			return
@@ -294,7 +287,7 @@ function BaseService.RemoveBase(self: BaseService, player: Player)
 		self.ClaimedBases[baseFolder] = nil
 	end
 
-	local base: Base = self.PlayerBases[player]
+	local base: BaseServer = self.PlayerBases[player]
 	if base then
 		base:Destroy()
 		self.PlayerBases[player] = nil 
@@ -319,7 +312,7 @@ function BaseService.Init(self: BaseService)
 end
 
 function BaseService.Start(self: BaseService)
-	DataService.Signals.DataLoaded:Connect(function(player: Player)
+	DataServiceServer.Signals.DataLoaded:Connect(function(player: Player)
 		self:AssignBase(player)
 	end)
 	
