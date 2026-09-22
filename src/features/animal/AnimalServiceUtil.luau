@@ -8,7 +8,7 @@ local ProfileTemplate = require(ReplicatedStorage.Modules.ProfileTemplate)
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 local AnimalAssets = Assets:WaitForChild("Animals")
-local AnimalConfig = require(AnimalAssets:WaitForChild("AnimalConfig"))
+local AnimalConfig = require(ReplicatedStorage.Modules.a)
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 local AnimalModels = AnimalAssets.AnimalModels
 local EggModels = AnimalAssets.EggModels

@@ -13,6 +13,7 @@ local Abbreviate = require(ReplicatedStorage.Packages.Abbreviate)
 local Bezier = require(ReplicatedStorage.Packages.Bezier)
 
 
+
 --------------------------------------------------
 -- DEPENDENCIES -- 
 --------------------------------------------------
@@ -29,9 +30,8 @@ local BaseTypes = require(ReplicatedStorage.Modules.BaseTypes)
 
 
 -- Utils
-local Utils = ReplicatedStorage:FindFirstChild("Utils")
-local BaseUtil = require(Utils.BaseUtil)
-local AnimalUtil = require(Utils.AnimalUtil)
+local BaseServiceUtil = require(Utils.BaseUtil)
+local AnimalServiceUtil = require(Utils.AnimalUtil)
 
 -- Base Assets
 local Assets = ReplicatedStorage:WaitForChild("Assets")
@@ -39,7 +39,7 @@ local BaseAssets = Assets:WaitForChild("Base")
 
 -- Animal Assets
 local AnimalAssets = Assets:WaitForChild("Animals")
-local AnimalConfig = require(AnimalAssets:WaitForChild("AnimalConfig"))
+local AnimalConfig = require(ReplicatedStorage.Modules.AnimalConfig)
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 local MutationGradients = AnimalAssets:WaitForChild("MutationGradients")
 

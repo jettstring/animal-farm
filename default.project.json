@@ -1,0 +1,134 @@
+{
+  "emitLegacyScripts": false,
+  "name": "animal-farm",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Source": {
+        "$className": "Folder",
+        "Features": {
+          "$className": "Folder",
+          "Animal": {
+            "$className": "Folder",
+            "AnimalConfig": {
+              "$path": "src/features/animal/AnimalConfig.luau"
+            },
+            "AnimalServiceUtil": {
+              "$path": "src/features/animal/AnimalServiceUtil.luau"
+            }
+          },
+          "Base": {
+            "$className": "Folder",
+            "BaseServiceClient": {
+              "$path": "src/features/base/BaseServiceClient.luau"
+            },
+            "BaseServiceUtils": {
+              "$path": "src/features/base/BaseServiceUtils.luau"
+            },
+            "BaseTypes": {
+              "$path": "src/features/base/BaseTypes.luau"
+            }
+          },
+          "Carry": {
+            "$className": "Folder",
+            "CarryServiceClient": {
+              "$path": "src/features/carry/CarryServiceClient.luau"
+            }
+          },
+          "Data": {
+            "$className": "Folder",
+            "ProfileTemplate": {
+              "$path": "src/features/data/ProfileTemplate.luau"
+            },
+            "PurchaseProfileTemplate": {
+              "$path": "src/features/data/PurchaseProfileTemplate.luau"
+            }
+          },
+          "Interaction": {
+            "$className": "Folder",
+            "InteractionServiceClient": {
+              "$path": "src/features/interaction/InteractionServiceClient.luau"
+            }
+          },
+          "Notification": {
+            "$className": "Folder",
+            "NotificationServiceClient": {
+              "$path": "src/features/notification/NotificationServiceClient.luau"
+            }
+          }
+        },
+        "Core": {
+          "$className": "Folder"
+        },
+        "Game": {
+          "$className": "Folder"
+        },
+        "StartUp": {
+          "$className": "Folder",
+          "Client": {
+            "$path": "src/startup/Client.client.luau"
+          }
+        }
+      },
+      "Packages": {
+        "$path": "Packages"
+      }
+    },
+    "ServerScriptService": {
+      "Features": {
+        "$className": "Folder",
+        "Animal": {
+          "$className": "Folder",
+          "AnimalServiceServer": {
+            "$path": "src/features/animal/AnimalServiceServer.luau"
+          }
+        },
+        "Base": {
+          "$className": "Folder",
+          "BaseServiceServer": {
+            "$path": "src/features/base/BaseServiceServer.luau"
+          },
+          "Classes": {
+            "$className": "Folder",
+            "AnimalStandServer": {
+              "$path": "src/features/base/Classes/AnimalStandServer.luau"
+            },
+            "BaseServer": {
+              "$path": "src/features/base/Classes/BaseServer.luau"
+            },
+            "FloorServer": {
+              "$path": "src/features/base/Classes/FloorServer.luau"
+            },
+            "RollStandServer": {
+              "$path": "src/features/base/Classes/RollStandServer.luau"
+            }
+          }
+        },
+        "Data": {
+          "$className": "Folder",
+          "DataServiceServer": {
+            "$path": "src/features/data/DataServiceServer.luau"
+          }
+        },
+        "Notification": {
+          "$className": "Folder",
+          "NotificationServiceServer": {
+            "$path": "src/features/notification/NotificationServiceServer.luau"
+          }
+        }
+      },
+      "Core": {
+        "$className": "Folder"
+      },
+      "Game": {
+        "$className": "Folder"
+      },
+      "StartUp": {
+        "$className": "Folder",
+        "Server": {
+          "$path": "src/startup/Server.server.luau"
+        }
+      }
+    }
+  }
+}

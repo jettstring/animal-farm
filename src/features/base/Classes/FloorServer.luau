@@ -26,7 +26,7 @@ local BaseAssets = Assets:FindFirstChild("Base")
 
 -- Animal Assets
 local AnimalAssets = Assets:WaitForChild("Animals")
-local AnimalConfig = require(AnimalAssets:WaitForChild("AnimalConfig"))
+local AnimalConfig = require(ReplicatedStorage.Modules.AnimalConfig)
 local AnimalDefinitions = AnimalConfig.AnimalDefinitions
 
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")

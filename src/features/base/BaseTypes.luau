@@ -8,4 +8,5 @@ export type RollResult = {
 	cutsceneSlotIndex: number?
 }
 
+
 return nil
