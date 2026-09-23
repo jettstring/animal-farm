@@ -5,6 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --------------------------------------------------
 
 local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
+local Rarities = require(ReplicatedStorage.Source.Features.Animal.Modules.Rarities)
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 local AnimalAssets = Assets:WaitForChild("Animals")
@@ -77,6 +78,22 @@ function AnimalUtil.getAnimalModel(animalData: AnimalData): Model
 	return clone
 end
 
+function AnimalUtil.getAnimalDefinitionFromData(animalData: AnimalData): AnimalDefinition?
+	local defKey = animalData.definitionKey
+	if not defKey then
+		warn("[getAnimalDefinition] invalid animalData: ", animalData)
+		return nil
+	end
+
+	local animalDef = AnimalDefinitions[defKey]
+	if not animalDef then
+		warn("[getAnimalDefinition] missing animal definition for: ", defKey)
+		return nil
+	end
+
+	return animalDef
+end
+
 function AnimalUtil.getEggModel(animalData: AnimalData): Model
 	local defKey = animalData.definitionKey
 	local animalDef = defKey and AnimalDefinitions[animalData.definitionKey]
@@ -98,7 +115,7 @@ function AnimalUtil.getEggModel(animalData: AnimalData): Model
 	return clone
 end
 
-function AnimalUtil.getRandomAnimalModel(restrictToRollable: boolean?): Model?
+function AnimalUtil.getRandomAnimalKey(restrictToRollable: boolean?): string?
 	local animalKeys = {}
 	for defKey, animalDef in AnimalDefinitions do
 		if restrictToRollable and animalDef.nonRollable then
@@ -108,17 +125,28 @@ function AnimalUtil.getRandomAnimalModel(restrictToRollable: boolean?): Model?
 	end
 
 	if #animalKeys == 0 then
-		warn("[getRandomAnimalModel] no animals available to roll")
+		warn("[getRandomAnimalKey] no animals available to roll")
 		return nil
 	end
 
-	local randomIndex = math.random(1, #animalKeys)
-	local animalData: AnimalData = {
-		definitionKey = animalKeys[randomIndex],
-	}
-
-	return AnimalUtil.getAnimalModel(animalData)
+	return animalKeys[math.random(1, #animalKeys)]
 end
+
+function AnimalUtil.resolveRarityInfo(defKey: string): Rarities.RarityInfo?
+	local animalDef = AnimalDefinitions[defKey]
+	if not animalDef then
+		warn("[resolveRarity] missing animal definition for: ", defKey)
+		return nil
+	end
+
+	if animalDef.rarity then
+		return Rarities.getRarityInfo(animalDef.rarity)
+	end
+
+	return Rarities.getRarityForOdds(animalDef.odds)
+end
+
+
 
 function AnimalUtil.getLevelCost(definitionKey: AnimalData, level: number): number
 	local animalDef: AnimalDefinition = AnimalDefinitions[definitionKey]
@@ -172,6 +200,8 @@ function AnimalUtil.getSortedAnimals(): { string }
 
 	return sorted
 end
+
+
 
 AnimalUtil.SortedAnimals = AnimalUtil.getSortedAnimals()
 

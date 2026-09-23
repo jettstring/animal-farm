@@ -17,7 +17,7 @@ AnimalServiceServer:Start()
 BaseServiceServer:Start()
 
 
-local Cmdr = require(ReplicatedStorage.Packages.Cmdr)
-Cmdr:RegisterDefaultCommands()
-Cmdr:RegisterCommandsIn(ReplicatedStorage.Packages.Cmdr.CustomCommands)
-Cmdr:RegisterHooksIn(ReplicatedStorage.Packages.Cmdr.Hooks)
+local Cmdr = require(ServerScriptService.ServerPackages.Cmdr)
+Cmdr.Registry:RegisterDefaultCommands()
+--Cmdr.Registry:RegisterCommandsIn(ReplicatedStorage.Packages.Cmdr.CustomCommands)
+--Cmdr.Registry:RegisterHooksIn(ReplicatedStorage.Packages.Cmdr.Hooks)

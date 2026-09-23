@@ -10,14 +10,11 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 
 -- Modules
 local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
+local BaseServiceUtils = require(ReplicatedStorage.Source.Features.Base.BaseServiceUtils)
 
 -- Classes
 local AnimalStandServer = require(ServerScriptService.Features.Base.Classes.AnimalStandServer)
 
--- Utils
-local Utils = ReplicatedStorage:FindFirstChild("Utils")
-local BaseUtil = require(Utils.BaseUtil)
-local AnimalUtil = require(Utils.AnimalUtil)
 
 -- Base Assets
 local Assets = ReplicatedStorage:FindFirstChild("Assets")
@@ -54,7 +51,7 @@ local FloorServer = {}
 FloorServer.__index = FloorServer
 
 type self = {
-	Trove: any,
+	Trove: Trove.Trove,
 	Services: any,
 	Base: any,
 	FloorIndex: number,
@@ -95,7 +92,7 @@ function FloorServer._Refresh(self: FloorServer)
 
 	local ownsFloor = self:OwnsFloor()
 
-	BaseUtil.showInstance(model, ownsFloor)
+	BaseServiceUtils.showInstance(model, ownsFloor)
 	floorFolder:SetAttribute("Active", ownsFloor)
 	floorFolder:SetAttribute("DroneCollectTime", self:GetDroneCollectTime())
 	floorFolder:SetAttribute("DroneStepTime", self:GetDroneStepTime())

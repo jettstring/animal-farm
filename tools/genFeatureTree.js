@@ -78,6 +78,7 @@ const tree = {
         $className: "Folder",
         Server: { $path: "src/startup/Server.server.luau" },
       },
+      ServerPackages: { $path: "ServerPackages" },
     },
   },
 };

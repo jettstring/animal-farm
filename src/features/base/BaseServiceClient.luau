@@ -5,13 +5,14 @@ local Debris = game:GetService("Debris")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 
-
 local Observers = require(ReplicatedStorage.Packages.Observers)
 local Trove = require(ReplicatedStorage.Packages.Trove)
-local Abbreviate = require(ReplicatedStorage.Packages.Abbreviate)
-local Bezier = require(ReplicatedStorage.Packages.Bezier)
+local Abbreviate = require(ReplicatedStorage.Source.Core.Util.Abbreviate)
+local VfxUtils = require(ReplicatedStorage.Source.Core.Util.VfxUtils)
 
-
+local function quadraticBezier(p0: Vector3, p1: Vector3, p2: Vector3, t: number): Vector3
+	return p0:Lerp(p1, t):Lerp(p1:Lerp(p2, t), t)
+end
 
 --------------------------------------------------
 -- DEPENDENCIES -- 
@@ -27,6 +28,7 @@ local playerGui = player.PlayerGui
 -- Modules
 local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
 local BaseTypes = require(ReplicatedStorage.Source.Features.Base.BaseTypes)
+local AnimalBillboard = require(ReplicatedStorage.Source.Features.Animal.Classes.AnimalBillboard)
 
 -- Utils
 local BaseServiceUtils = require(ReplicatedStorage.Source.Features.Base.BaseServiceUtils)
@@ -60,6 +62,8 @@ local remotes = {
 -- TYPES -- 
 --------------------------------------------------
 
+type Trove = Trove.Trove
+
 type AnimationDefinition = AnimalConfig.AnimalDefinition
 type AnimalMutation = AnimalConfig.AnimalMutation
 
@@ -68,6 +72,8 @@ type AnimalData = ProfileTemplate.AnimalData
 
 type SlotResult = BaseTypes.SlotResult
 type RollResult = BaseTypes.RollResult
+
+type AnimalBillboard = AnimalBillboard.AnimalBillboard
 
 --------------------------------------------------
 -- STATE --
@@ -96,7 +102,7 @@ local function playRollReveal(slotParts: {Part}, rollResults)
 end
 
 local function showStandDisplay(standFolder: Folder, floorIndex: number, isOwner: boolean)
-	local trove = standDisplayTrove
+	local trove: Trove = standDisplayTrove
 	trove:Clean() -- remove previous billboard
 
 	if currentStand == standFolder then
@@ -652,9 +658,7 @@ local function mountSellStand(baseFolder: Folder)
 					local startPos = startCF.Position
 					local endPos = endCF.Position
 					local controlPos = startPos:Lerp(endPos, 0.3) + Vector3.new(0, 5, 0)
-					local path = Bezier.new({startPos, controlPos, endPos})
-					path:toggleVisualization(true)
-					
+
 					local DURATION = 0.5
 					local elapsed = 0
 					local conn: RBXScriptConnection
@@ -663,16 +667,15 @@ local function mountSellStand(baseFolder: Folder)
 						local a = math.min(elapsed / DURATION, 1)
 						local e = TweenService:GetValue(a, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
 						
-						crate:PivotTo(CFrame.new(path:positionAt(e)) * startCF.Rotation:Lerp(endCF.Rotation, e))						
+						crate:PivotTo(CFrame.new(quadraticBezier(startPos, controlPos, endPos, e)) * startCF.Rotation:Lerp(endCF.Rotation, e))
 						crate:ScaleTo(math.max(1 - e / 2, 0.5))
 						for _, basePart: BasePart in parts do
 							basePart.Transparency = e/2
 						end
-						
+
 						if a >= 1 then
 							conn:Disconnect()
 							crate:Destroy()
-							path:Destroy()
 							return
 						end
 					end)
@@ -700,7 +703,14 @@ end
 local function mountRollStand(baseFolder: Folder, owner: Player)
 	local trove = Trove.new()
 	local isOwner = owner == player
-	local slotRecords = {}
+	local slotRecords = {} :: {[number]: {
+		slot: Folder,
+		middlePart: Part,
+		trove: Trove,
+		animalModel: Model?,
+		definitionKey: string?,
+		animalBillboard: AnimalBillboard?
+	}}
 
 	local baseModel = baseFolder:WaitForChild("Base")
 	local components = baseModel:WaitForChild("Components")
@@ -744,7 +754,14 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 		animalModel:PivotTo(slotRecord.middlePart:GetPivot())
 		slotRecord.animalModel = animalModel
 		slotRecord.definitionKey = animalData.definitionKey
-		
+
+		-- animal billboard
+		if slotRecord.animalBillboard then 
+			slotRecord.animalBillboard:destroy()
+			slotRecord.animalBillboard = nil
+		end
+		slotRecord.animalBillboard = slotTrove:Add(AnimalBillboard.new(animalModel.PrimaryPart or slotRecord.middlePart, animalData))
+
 		-- bob effect
 		if isOwner then
 			local middleCF = slotRecord.middlePart:GetPivot()
@@ -817,31 +834,38 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 	if isOwner then
 		local rollTrove = trove:Extend()
 
-		local function spawnFlicker(slotRecord, revealLength: number)
-			local randomAnimal = AnimalServiceUtils.getRandomAnimalModel(true)
-			if not randomAnimal then warn("[mountRollStand] failed to get random animal model") return end
-			rollTrove:Add(randomAnimal)
+		local function spawnFlickerAnimal(slotRecord, revealLength: number)
+			local middlePart = slotRecord.middlePart
+			local randomKey = AnimalServiceUtils.getRandomAnimalKey(true)
+			local animalModel = randomKey and AnimalServiceUtils.getAnimalModel({definitionKey = randomKey})
+			if not animalModel then warn("[mountRollStand] failed to get random animal model for key: ", randomKey) return end
+			rollTrove:Add(animalModel)
 
 			local shadow = rollTrove:Add(Instance.new("Highlight"))
+			shadow.DepthMode = Enum.HighlightDepthMode.Occluded
 			shadow.FillColor = Color3.fromRGB(0, 0, 0)
 			shadow.FillTransparency = 0
 			shadow.OutlineTransparency = 0
-			shadow.Parent = randomAnimal
+			shadow.Parent = animalModel
 
-			randomAnimal:ScaleTo(0.25)
-			randomAnimal.Parent = slotRecord.middlePart
-			randomAnimal:PivotTo(slotRecord.middlePart:GetPivot())
+			animalModel:ScaleTo(0.25)
+			animalModel.Parent = middlePart
+			animalModel:PivotTo(middlePart:GetPivot())
+
+			local animalBillboard = AnimalBillboard.new(middlePart, { definitionKey = randomKey })
+			rollTrove:Add(animalBillboard)
 
 			local elapsed = 0
 			local connection: RBXScriptConnection
 			connection = rollTrove:Add(RunService.PreRender:Connect(function(dt)
 				elapsed += dt
 				local a = math.min(elapsed / revealLength, 1)
-				randomAnimal:ScaleTo(0.25 + (0.75 * a))
+				animalModel:ScaleTo(0.25 + (0.75 * a))
 
 				if a >= 1 then
 					connection:Disconnect()
-					randomAnimal:Destroy()
+					animalModel:Destroy()
+					animalBillboard:destroy()
 				end
 			end))
 		end
@@ -851,20 +875,22 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 			if not defKey then warn("[mountRollStand] missing definitionKey for slot result") return end
 
 			local slotRecord = slotRecords[slotIndex]
-			local trove = slotRecord.trove 
-
+			local trove = slotRecord.trove
 			local animalModel = renderSlotAnimal(slotIndex, { definitionKey = defKey })
 
+			local REVEAL_LENGTH = 0.3
 			local elapsed = 0
 			local connection: RBXScriptConnection
 			connection = rollTrove:Add(RunService.PreRender:Connect(function(dt)
 				elapsed += dt
-				local a = math.min(elapsed / 0.5, 1)
+				local a = math.min(elapsed / REVEAL_LENGTH, 1)
 				animalModel:ScaleTo(1 + math.sin(a * math.pi) * 0.25)
 				if a >= 1 then
 					connection:Disconnect()
 				end
 			end))
+
+			VfxUtils.emitVfx("ExpandingRing", animalModel.PrimaryPart or slotRecord.middlePart)
 			
 		end
 
@@ -891,7 +917,7 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 					local revealLength = 0.2 * i
 					for slotIndex in rollResult.slots do
 						local slotRecord = slotRecords[slotIndex]
-						if slotRecord then spawnFlicker(slotRecord, revealLength) end
+						if slotRecord then spawnFlickerAnimal(slotRecord, revealLength) end
 					end
 					playPop(i)
 					task.wait(revealLength)

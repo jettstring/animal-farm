@@ -2,9 +2,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local AnalyticsService = game:GetService("AnalyticsService")
+local ServerScriptService = game:GetService("ServerScriptService")
 
 local Signal = require(ReplicatedStorage.Packages.Signal)
-local ProfileStore = require(ReplicatedStorage.Packages.ProfileStore)
+local ProfileStore = require(ServerScriptService.ServerPackages.ProfileStore)
 
 --------------------------------------------------
 -- DEPENDENCIES -- 

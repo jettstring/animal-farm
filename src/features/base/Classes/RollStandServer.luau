@@ -52,7 +52,7 @@ local RollStandServer = {}
 RollStandServer.__index = RollStandServer
 
 type self = {
-	Trove: any,
+	Trove: Trove.Trove,
 	Base: any,
 }
 

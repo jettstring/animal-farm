@@ -15,6 +15,18 @@
             },
             "AnimalServiceUtils": {
               "$path": "src/features/animal/AnimalServiceUtils.luau"
+            },
+            "Classes": {
+              "$className": "Folder",
+              "AnimalBillboard": {
+                "$path": "src/features/animal/Classes/AnimalBillboard.luau"
+              }
+            },
+            "Modules": {
+              "$className": "Folder",
+              "Rarities": {
+                "$path": "src/features/animal/modules/Rarities.luau"
+              }
             }
           },
           "Base": {
@@ -58,7 +70,22 @@
           }
         },
         "Core": {
-          "$className": "Folder"
+          "$className": "Folder",
+          "UI": {
+            "$className": "Folder",
+            "GradientSpinner": {
+              "$path": "src/core/ui/GradientSpinner.luau"
+            }
+          },
+          "Util": {
+            "$className": "Folder",
+            "Abbreviate": {
+              "$path": "src/core/util/Abbreviate.luau"
+            },
+            "VfxUtils": {
+              "$path": "src/core/util/VfxUtils.luau"
+            }
+          }
         },
         "Game": {
           "$className": "Folder",
@@ -131,6 +158,9 @@
         "Server": {
           "$path": "src/startup/Server.server.luau"
         }
+      },
+      "ServerPackages": {
+        "$path": "ServerPackages"
       }
     }
   }

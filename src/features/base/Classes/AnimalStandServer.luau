@@ -39,7 +39,7 @@ local AnimalStandServer = {}
 AnimalStandServer.__index = AnimalStandServer
 
 type self = {
-	Trove: any,
+	Trove: Trove.Trove,
 	Floor: any,
 	StandIndex: number,
 	StandFolder: Folder,

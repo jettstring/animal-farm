@@ -37,6 +37,7 @@ local BaseServer = {}
 BaseServer.__index = BaseServer
 
 type self = {
+	Trove: Trove.Trove,
 	Owner: Player,
 	BaseFolder: Folder,
 	BaseData: BaseData,

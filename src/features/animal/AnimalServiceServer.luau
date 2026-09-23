@@ -10,10 +10,7 @@ local Players = game:GetService("Players")
 local DataServiceServer = require(ServerScriptService.Features.Data.DataServiceServer)
 
 local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
-
--- Utils
-local Utils = ReplicatedStorage:FindFirstChild("Utils")
-local AnimalUtil = require(Utils.AnimalUtil)
+local AnimalServiceUtils = require(ReplicatedStorage.Source.Features.Animal.AnimalServiceUtils)
 
 
 --------------------------------------------------
@@ -57,7 +54,7 @@ function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalDat
 	
 	if not animalData or not animalData.definitionKey then warn("[GiveAnimal] invalid animalData: ", animalData) return false end
 	
-	local animalKey = AnimalUtil.generateAnimalKey(animalData)
+	local animalKey = AnimalServiceUtils.generateAnimalKey(animalData)
 	if not animalKey then warn("[GiveAnimal] invalid animalKey: ", animalKey) return false end
 	
 	-- save to profile
@@ -69,7 +66,7 @@ function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalDat
 	return true
 end
 
-function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, animalKey: string): Tool
+function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, animalKey: string): Tool?
 	local profile: Profile = DataServiceServer:GetProfile(player)
 	if not profile then warn("[CreateAnimalTool] No profile found for player:", player) return end
 	
@@ -79,10 +76,10 @@ function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, ani
 	
 	if ownedAmount < 1 then
 		warn("[CreateAnimalTool] player does not own animalKey: ", animalKey)
-		return
+		return nil
 	end
 	
-	local animalData = animalKey and AnimalUtil.getAnimalData(animalKey)
+	local animalData = animalKey and AnimalServiceUtils.getAnimalData(animalKey)
 	if not animalData then warn("[CreateAnimalTool] invalid animalData: ", animalData) return end
 	
 	local character = player.Character
@@ -92,7 +89,7 @@ function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, ani
 	local existingTool: Tool? = self.AnimalTools[player] and self.AnimalTools[player][animalKey]
 	if existingTool and existingTool.Parent then
 		self:UpdateAnimalTool(player, animalKey)
-		return
+		return nil
 	end
 	
 	-- create new tool 
@@ -111,7 +108,7 @@ function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, ani
 	handle.CanCollide = false
 	handle.Parent = tool
 	
-	local animalModel = AnimalUtil.getAnimalModel(animalData)
+	local animalModel = AnimalServiceUtils.getAnimalModel(animalData)
 	animalModel:PivotTo(handle.CFrame)
 	animalModel.Parent = tool
 	
@@ -142,7 +139,7 @@ function AnimalService.UpdateAnimalTool(self: AnimalService, player: Player, ani
 	local ownedAmount = profile.inventory.animals[animalKey]
 	if not ownedAmount then warn("[UpdateAnimalTool] animalKey not found in profile: ", animalKey) return end
 
-	local animalData = animalKey and AnimalUtil.getAnimalData(animalKey)
+	local animalData = animalKey and AnimalServiceUtils.getAnimalData(animalKey)
 	if not animalData then warn("[UpdateAnimalTool] invalid animalData: ", animalData) return end
 
 	local character = player.Character
