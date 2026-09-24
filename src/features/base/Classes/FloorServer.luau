@@ -221,11 +221,11 @@ end
 --------------------------------------------------
 
 function FloorServer.GetDroneCollectTime(self: FloorServer): number
-	return 3 -- TODO multiply by speed ugprade
+	return 3 -- TODO multiply by speed ugprade from player data
 end
 
 function FloorServer.GetDroneStepTime(self: FloorServer): number
-	return 1 -- TODO multiply by speed ugprade
+	return 1 -- TODO multiply by speed ugprade from player data
 end
 
 function FloorServer.GetReadyAhead(self: FloorServer, fromIndex, dir: number, now: number): AnimalStandServer?

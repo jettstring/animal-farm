@@ -107,7 +107,7 @@ function RollStandServer.Roll(self: RollStandServer)
 
 		rollResult.slots[slotIndex] = {
 			definitionKey = animalKey,
-			isNew = AnimalService:HasAnimal(owner, animalKey) == false,
+			isNew = AnimalService:discoveredAnimal(owner, animalKey) == false,
 		}
 
 		slotData.definitionKey = animalKey

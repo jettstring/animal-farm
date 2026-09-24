@@ -89,6 +89,9 @@
         },
         "Game": {
           "$className": "Folder",
+          "Data": {
+            "$path": "src/game/Data.luau"
+          },
           "ImageIds": {
             "$path": "src/game/ImageIds.luau"
           }
@@ -132,12 +135,6 @@
             "RollStandServer": {
               "$path": "src/features/base/Classes/RollStandServer.luau"
             }
-          }
-        },
-        "Data": {
-          "$className": "Folder",
-          "DataServiceServer": {
-            "$path": "src/features/data/DataServiceServer.luau"
           }
         },
         "Notification": {
