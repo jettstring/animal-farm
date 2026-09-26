@@ -37,23 +37,20 @@
             "BaseServiceUtils": {
               "$path": "src/features/base/BaseServiceUtils.luau"
             },
-            "BaseTypes": {
-              "$path": "src/features/base/BaseTypes.luau"
+            "Modules": {
+              "$className": "Folder",
+              "BaseTypes": {
+                "$path": "src/features/base/modules/BaseTypes.luau"
+              },
+              "DroneUtils": {
+                "$path": "src/features/base/modules/DroneUtils.luau"
+              }
             }
           },
           "Carry": {
             "$className": "Folder",
             "CarryServiceClient": {
               "$path": "src/features/carry/CarryServiceClient.luau"
-            }
-          },
-          "Data": {
-            "$className": "Folder",
-            "ProfileTemplate": {
-              "$path": "src/features/data/ProfileTemplate.luau"
-            },
-            "PurchaseProfileTemplate": {
-              "$path": "src/features/data/PurchaseProfileTemplate.luau"
             }
           },
           "Interaction": {
@@ -92,6 +89,9 @@
           "Data": {
             "$path": "src/game/Data.luau"
           },
+          "DataTemplate": {
+            "$path": "src/game/DataTemplate.luau"
+          },
           "ImageIds": {
             "$path": "src/game/ImageIds.luau"
           }
@@ -128,6 +128,9 @@
             },
             "BaseServer": {
               "$path": "src/features/base/Classes/BaseServer.luau"
+            },
+            "DroneServer": {
+              "$path": "src/features/base/Classes/DroneServer.luau"
             },
             "FloorServer": {
               "$path": "src/features/base/Classes/FloorServer.luau"

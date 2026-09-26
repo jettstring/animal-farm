@@ -1,3 +1,4 @@
+local EncodingService = game:GetService("EncodingService")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
@@ -8,8 +9,9 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 -- DEPENDENCIES --
 --------------------------------------------------
 
--- Modules
-local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
+local Scribe = require(ReplicatedStorage.Packages.Scribe)
+local Data = require(ReplicatedStorage.Source.Game.Data).Server
+local DataTemplate = require(ReplicatedStorage.Source.Game.DataTemplate)
 local BaseServiceUtils = require(ReplicatedStorage.Source.Features.Base.BaseServiceUtils)
 
 -- Classes
@@ -32,11 +34,9 @@ local remotes = {
 -- TYPES --
 --------------------------------------------------
 
-type Profile = ProfileTemplate.ProfileTemplate
-type BaseData = ProfileTemplate.BaseData
-type FloorData = ProfileTemplate.FloorData
-type AnimalData = ProfileTemplate.AnimalData
-type StandData = ProfileTemplate.StandData
+type FloorData = DataTemplate.FloorData
+type AnimalData = DataTemplate.AnimalData
+type StandData = DataTemplate.StandData
 
 type AnimalDefinition = AnimalConfig.AnimalDefinition
 type AnimalMutation = AnimalConfig.AnimalMutation
@@ -53,10 +53,11 @@ FloorServer.__index = FloorServer
 type self = {
 	Trove: Trove.Trove,
 	Services: any,
-	Base: any,
+	Owner: Player,
+	Unlocked: boolean,
 	FloorIndex: number,
 	FloorFolder: Folder,
-	FloorData: FloorData?,
+	FloorData: Scribe.PlayerData<FloorData>,
 	AnimalStands: { [number]: AnimalStandServer },
 	FloorThread: thread?,
 	DroneIndex: number?,
@@ -65,72 +66,61 @@ type self = {
 
 export type FloorServer = typeof(setmetatable({} :: self, FloorServer))
 
-function FloorServer.new(base: any, floorIndex: number, floorFolder: Folder, floorData: FloorData?): FloorServer
+function FloorServer.new(owner: Player, floorIndex: number, floorFolder: Folder, floorData: Scribe.PlayerData<FloorData>, isUnlocked: boolean): FloorServer
 	local self = setmetatable({} :: self, FloorServer)
-	self.Trove = Trove.new()
 
-	self.Base = base
+	self.Trove = Trove.new()
+	self.Owner = owner
+	self.Unlocked = isUnlocked
 	self.FloorIndex = floorIndex
 	self.FloorData = floorData
 	self.FloorFolder = floorFolder
 	self.AnimalStands = {}
-
 	self.FloorThread = nil
 
-	if self:OwnsFloor() then
+	if isUnlocked then
 		self:_buildStands()
 	end
-
 	self:_Refresh()
 
 	return self
 end
 
 function FloorServer._Refresh(self: FloorServer)
+	local ownsFloor = self.Unlocked
 	local floorFolder: Folder = self.FloorFolder
 	local model: Folder = floorFolder.Model
 
-	local ownsFloor = self:OwnsFloor()
-
 	BaseServiceUtils.showInstance(model, ownsFloor)
 	floorFolder:SetAttribute("Active", ownsFloor)
-	floorFolder:SetAttribute("DroneCollectTime", self:GetDroneCollectTime())
-	floorFolder:SetAttribute("DroneStepTime", self:GetDroneStepTime())
 end
 
 function FloorServer._buildStands(self: FloorServer)
-	local floorFolder: Folder = self.FloorFolder
-
-	local floorData: FloorData = self.FloorData
-	if not floorData then
-		warn("[_buildStands] missing floor data")
-		return
-	end
-
+	local floorFolder: Folder = self.FloorFolder 
 	local standsContainer = floorFolder.AnimalStands
 	for _, standFolder in standsContainer:GetChildren() do
 		local standIndex = tonumber(standFolder.Name)
-		if not standIndex then
-			warn("[_buildStands] invalid stand index: ", standIndex)
-			continue
-		end
+		if not standIndex then continue end
 
 		if self.AnimalStands[standIndex] then
 			warn("[_buildStands] duplicate stand index: ", standIndex)
 			continue
 		end
 
-		floorData.animalStands[standIndex] = floorData.animalStands[standIndex]
-			or {
+		local standData = self.FloorData.animalStands[standIndex]
+		if standData.Get() == nil then
+			standData.Set({
 				unlocked = false,
-				occupant = nil,
-			}
-		local standData: StandData = floorData.animalStands[standIndex]
+				occupant = nil
+			})
+		end
 
-		self.AnimalStands[standIndex] = self.Trove:Add(AnimalStandServer.new(self, standIndex, standFolder, standData))
+		local animalStand = AnimalStandServer.new(self.Owner, self.FloorIndex, standIndex, standFolder, standData)
+		self.AnimalStands[standIndex] = animalStand
+		self.Trove:Add(animalStand)
 	end
 
-	self:_startLoop()
+	--self:_startLoop()
 end
 
 function FloorServer._startLoop(self: FloorServer)
@@ -181,24 +171,12 @@ end
 -- ACTIONS --
 --------------------------------------------------
 
-function FloorServer.Unlock(self: FloorServer)
-	local baseData: BaseData = self.Base.BaseData
-	if self.FloorIndex ~= baseData.unlockedFloors + 1 then
-		warn("Floor is not the next floor to be unlocked")
-		return
-	end
-
-	baseData.unlockedFloors += 1
-	baseData.floors[self.FloorIndex] = baseData.floors[self.FloorIndex]
-		or { -- TODO: fix sparse numbered data structure
-			animalStands = {},
-			upgrades = {},
-		}
-	self.FloorData = baseData.floors[self.FloorIndex]
-
+function FloorServer.Activate(self: FloorServer)
+	if self.Unlocked then return end
+	self.Unlocked = true
+	
 	-- fire owner to reveal floor
-	local owner: Player = self.Base.Owner
-	remotes.BuyFloor:FireClient(owner, self.FloorIndex)
+	remotes.BuyFloor:FireClient(self.Owner, self.FloorIndex)
 
 	-- activate
 	self.Trove:Add(task.delay(3, function()
@@ -206,6 +184,7 @@ function FloorServer.Unlock(self: FloorServer)
 		self:_Refresh()
 	end))
 end
+
 
 function FloorServer.Destroy(self: FloorServer)
 	self.Trove:Destroy()
@@ -220,13 +199,7 @@ end
 -- HELPERS --
 --------------------------------------------------
 
-function FloorServer.GetDroneCollectTime(self: FloorServer): number
-	return 3 -- TODO multiply by speed ugprade from player data
-end
 
-function FloorServer.GetDroneStepTime(self: FloorServer): number
-	return 1 -- TODO multiply by speed ugprade from player data
-end
 
 function FloorServer.GetReadyAhead(self: FloorServer, fromIndex, dir: number, now: number): AnimalStandServer?
 	local i = fromIndex + dir
@@ -242,9 +215,6 @@ function FloorServer.GetReadyAhead(self: FloorServer, fromIndex, dir: number, no
 	return nil
 end
 
-function FloorServer.OwnsFloor(self: FloorServer): boolean
-	local baseData: BaseData = self.Base.BaseData
-	return self.FloorIndex <= baseData.unlockedFloors
-end
+
 
 return FloorServer

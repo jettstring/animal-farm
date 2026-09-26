@@ -6,26 +6,23 @@ local Players = game:GetService("Players")
 -- DEPENDENCIES -- 
 --------------------------------------------------
 
--- Services
 local Data = require(ReplicatedStorage.Source.Game.Data).Server
-local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
+local DataTemplate = require(ReplicatedStorage.Source.Game.DataTemplate)
 local AnimalServiceUtils = require(ReplicatedStorage.Source.Features.Animal.AnimalServiceUtils)
-
 
 --------------------------------------------------
 -- TYPES -- 
 --------------------------------------------------
 
-type Profile = ProfileTemplate.ProfileTemplate
-type AnimalData = ProfileTemplate.AnimalData
+type AnimalData = DataTemplate.AnimalData
 
 --------------------------------------------------
 -- STATE --
 --------------------------------------------------
-local AnimalService = {}
-AnimalService.Services = {}
-AnimalService.Signals = {}
-AnimalService.AnimalTools = {} :: {[Player]: {[string]: Tool}}
+local AnimalServiceServer = {}
+AnimalServiceServer.Services = {}
+AnimalServiceServer.Signals = {}
+AnimalServiceServer.AnimalTools = {} :: {[Player]: {[string]: Tool}}
 
 
 --------------------------------------------------
@@ -46,29 +43,33 @@ local function _playerAdded(player: Player)
 	end
 	
 	player.CharacterAdded:Connect(function()
-		self.AnimalTools[player] = nil
-		AnimalService:_HydrateTools(player)
+		AnimalServiceServer.AnimalTools[player] = nil
+		AnimalServiceServer:_HydrateTools(player)
 	end)
 	if player.Character then
 		print("GIVING ANIMAL TOOLS")
-		AnimalService:_HydrateTools(player)
+		AnimalServiceServer:_HydrateTools(player)
 	end
 end
 
 local function _playerRemoved(player: Player)
-	AnimalService.AnimalTools[player] = nil
+	AnimalServiceServer.AnimalTools[player] = nil
 end
+
 
 --------------------------------------------------
 -- PUBLIC FUNCTIONS --
 --------------------------------------------------
 
+function AnimalServiceServer.GetEquippedAnimalTool(self: AnimalServiceServer, player: Player): Tool?
+	return player and player.Character and player.Character:FindFirstChild("AnimalTool")
+end
 
-function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalData: AnimalData): boolean
-	if not animalData or not animalData.definitionKey then warn("[GiveAnimal] invalid animalData: ", animalData) return false end
+function AnimalServiceServer.GiveAnimal(self: AnimalServiceServer, player: Player, animalData: AnimalData): boolean
+	if not animalData or not animalData.definitionKey then warn("[GiveAnimal] invalid animalData: ", animalData); return false end
 	
 	local animalKey = AnimalServiceUtils.generateAnimalKey(animalData)
-	if not animalKey then warn("[GiveAnimal] invalid animalKey: ", animalKey) return false end
+	if not animalKey then warn("[GiveAnimal] invalid animalKey: ", animalKey); return false end
 
 	local playerData = Data[player]
 
@@ -89,7 +90,7 @@ function AnimalService.GiveAnimal(self: AnimalService, player: Player, animalDat
 	return true
 end
 
-function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, animalKey: string): Tool?
+function AnimalServiceServer.CreateAnimalTool(self: AnimalServiceServer, player: Player, animalKey: string): Tool?
 	local playerData = Data[player]
 	
 	-- check if animalKey exists in profile
@@ -151,7 +152,7 @@ function AnimalService.CreateAnimalTool(self: AnimalService, player: Player, ani
 	return tool
 end
 
-function AnimalService.UpdateAnimalTool(self: AnimalService, player: Player, animalKey: string)
+function AnimalServiceServer.UpdateAnimalTool(self: AnimalServiceServer, player: Player, animalKey: string)
 	local animals = Data[player].inventory.animals
 
 	-- check if animalKey exists in profile
@@ -182,7 +183,7 @@ function AnimalService.UpdateAnimalTool(self: AnimalService, player: Player, ani
 	existingTool:SetAttribute("Quantity", ownedAmount)
 end
 
-function AnimalService._HydrateTools(self: AnimalService, player: Player)
+function AnimalServiceServer._HydrateTools(self: AnimalServiceServer, player: Player)
 	local animals = Data[player].inventory.animals
 	for animalKey, ownedAmount in animals.Get() do
 		if ownedAmount < 1 then
@@ -193,7 +194,7 @@ function AnimalService._HydrateTools(self: AnimalService, player: Player)
 	end
 end
 
-function AnimalService.discoveredAnimal(self: AnimalService, player: Player, animalKey: string): boolean
+function AnimalServiceServer.discoveredAnimal(self: AnimalServiceServer, player: Player, animalKey: string): boolean
 	return Data[player] and Data[player].index[animalKey]
 end
 
@@ -201,11 +202,11 @@ end
 -- MAIN --
 --------------------------------------------------
 
-function AnimalService.Init(self: AnimalService)
+function AnimalServiceServer.Init(self: AnimalServiceServer)
 
 end
 
-function AnimalService.Start(self: AnimalService)
+function AnimalServiceServer.Start(self: AnimalServiceServer)
 	Players.PlayerAdded:Connect(_playerAdded)
 	for _, player in Players:GetPlayers() do
 		task.spawn(_playerAdded(player))
@@ -214,6 +215,6 @@ function AnimalService.Start(self: AnimalService)
 	Players.PlayerRemoving:Connect(_playerRemoved)
 end
 
-type AnimalService = typeof(AnimalService) & {}
+type AnimalServiceServer = typeof(AnimalServiceServer) & {}
 
-return AnimalService
+return AnimalServiceServer

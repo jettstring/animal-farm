@@ -17,20 +17,17 @@ end
 --------------------------------------------------
 -- DEPENDENCIES -- 
 --------------------------------------------------
-
--- Controllers
-local CarryServiceClient = require(ReplicatedStorage.Source.Features.Carry.CarryServiceClient)
-local InteractionServiceClient = require(ReplicatedStorage.Source.Features.Interaction.InteractionServiceClient)
-
 local player = Players.LocalPlayer
 local playerGui = player.PlayerGui
 
--- Modules
-local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
-local BaseTypes = require(ReplicatedStorage.Source.Features.Base.BaseTypes)
-local AnimalBillboard = require(ReplicatedStorage.Source.Features.Animal.Classes.AnimalBillboard)
+local Data = require(ReplicatedStorage.Source.Game.Data).Client
+local DataTemplate = require(ReplicatedStorage.Source.Game.DataTemplate)
+local CarryServiceClient = require(ReplicatedStorage.Source.Features.Carry.CarryServiceClient)
+local InteractionServiceClient = require(ReplicatedStorage.Source.Features.Interaction.InteractionServiceClient)
 
--- Utils
+-- Modules
+local BaseTypes = require(ReplicatedStorage.Source.Features.Base.Modules.BaseTypes)
+local AnimalBillboard = require(ReplicatedStorage.Source.Features.Animal.Classes.AnimalBillboard)
 local BaseServiceUtils = require(ReplicatedStorage.Source.Features.Base.BaseServiceUtils)
 local AnimalServiceUtils = require(ReplicatedStorage.Source.Features.Animal.AnimalServiceUtils)
 
@@ -67,8 +64,7 @@ type Trove = Trove.Trove
 type AnimationDefinition = AnimalConfig.AnimalDefinition
 type AnimalMutation = AnimalConfig.AnimalMutation
 
-type Profile = ProfileTemplate.ProfileTemplate
-type AnimalData = ProfileTemplate.AnimalData
+type AnimalData = DataTemplate.AnimalData
 
 type SlotResult = BaseTypes.SlotResult
 type RollResult = BaseTypes.RollResult
@@ -459,16 +455,13 @@ local function mountFloors(baseFolder: Folder, owner: Player)
 	
 	for _, floorFolder: Folder in floorsContainer:GetChildren() do
 		local floorIndex: number = tonumber(floorFolder.Name)
-		if not floorIndex then warn("[mountFloors] invalid floor index: ", floorIndex) continue end
-		
-		local modelFolder = floorFolder:WaitForChild("Model")
+		if not floorIndex then continue end
 		
 		trove:Add(Observers.observeAttribute(floorFolder, "Active", function(isActive: boolean)
 			local floorTrove = trove:Extend()
-			local upgradesSign = floorFolder:WaitForChild("UpgradeSign")
-			BaseServiceUtils.showInstance(upgradesSign, isOwner and isActive)
+			local floorUpgradeSign = floorFolder:WaitForChild("FloorUpgradeSign")
+			BaseServiceUtils.showInstance(floorUpgradeSign, isOwner and isActive)
 			
-			-- drone
 			if isOwner and isActive then floorTrove:Add(mountDrone(floorFolder)) end
 			
 			return function() floorTrove:Destroy() end
@@ -478,7 +471,7 @@ local function mountFloors(baseFolder: Folder, owner: Player)
 		local standsContainer = floorFolder:WaitForChild("AnimalStands")
 		for _, standFolder: Folder in standsContainer:GetChildren() do
 			local standIndex: number = tonumber(standFolder.Name)
-			if not standIndex then warn("[mountFloors] invalid stand index: ", standIndex) continue end
+			if not standIndex then continue end
 
 			trove:Add(mountAnimalStand(standFolder, floorIndex, owner))
 		end

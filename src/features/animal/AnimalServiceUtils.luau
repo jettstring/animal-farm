@@ -4,7 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- DEPENDENCIES --
 --------------------------------------------------
 
-local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
+local DataTemplate = require(ReplicatedStorage.Source.Game.DataTemplate) 
 local Rarities = require(ReplicatedStorage.Source.Features.Animal.Modules.Rarities)
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
@@ -21,8 +21,7 @@ local EggModels = AnimalAssets.EggModels
 type AnimalDefinition = AnimalConfig.AnimalDefinition
 type MutationDefinition = AnimalConfig.MutationDefinition
 
-type Profile = ProfileTemplate.ProfileTemplate
-type AnimalData = ProfileTemplate.AnimalData
+type AnimalData = DataTemplate.AnimalData
 
 local AnimalUtil = {}
 
@@ -169,7 +168,7 @@ function AnimalUtil.getLevelUpCost(definitionKey: string, fromLevel: number, cou
 end
 
 function AnimalUtil.rollAnimalResult(luck: number): string
-	local luck = math.max(luck or 1, 1)
+	luck = math.max(luck or 1, 1)
 
 	local totalOdds = 0
 	for animalName, animalDef: AnimalDefinition in AnimalDefinitions do

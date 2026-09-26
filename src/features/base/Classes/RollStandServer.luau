@@ -9,15 +9,14 @@ local Trove = require(ReplicatedStorage.Packages.Trove)
 --------------------------------------------------
 
 -- Services
+local Scribe = require(ReplicatedStorage.Packages.Scribe)
+local Data = require(ReplicatedStorage.Source.Game.Data).Server
+local DataTemplate = require(ReplicatedStorage.Source.Game.DataTemplate)
 local AnimalService = require(ServerScriptService.Features.Animal.AnimalServiceServer)
 local NotificationServiceServer = require(ServerScriptService.Features.Notification.NotificationServiceServer)
 
--- Services
-local DataService = require(ServerScriptService.Features.Data.DataServiceServer)
-
 -- Modules
-local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
-local BaseTypes = require(ReplicatedStorage.Source.Features.Base.BaseTypes)
+local BaseTypes = require(ReplicatedStorage.Source.Features.Base.Modules.BaseTypes)
 
 -- Utils
 local BaseServiceUtils = require(ReplicatedStorage.Source.Features.Base.BaseServiceUtils)
@@ -35,8 +34,7 @@ local remotes = {
 -- TYPES --
 --------------------------------------------------
 
-type Profile = ProfileTemplate.ProfileTemplate
-type RollData = ProfileTemplate.RollData
+type RollStandData = DataTemplate.RollStandData
 
 type AnimalDefinition = AnimalConfig.AnimalDefinition
 type AnimalMutation = AnimalConfig.AnimalMutation
@@ -53,22 +51,22 @@ RollStandServer.__index = RollStandServer
 
 type self = {
 	Trove: Trove.Trove,
-	Base: any,
+	Owner: Player,
+	Container: Folder,
+	RollStandData: Scribe.PlayerData<RollStandData>,
 }
 
 export type RollStandServer = typeof(setmetatable({} :: self, RollStandServer))
 
-function RollStandServer.new(base: any, services: any)
+function RollStandServer.new(owner: Player, container: Folder, rollData: Scribe.PlayerData<RollStandData>)
 	local self = setmetatable({} :: self, RollStandServer)
 	self.Trove = Trove.new()
 
-	self.Base = base
+	self.Owner = owner
+	self.Container = container
+	self.RollStandData = rollData
 
-	local baseFolder: Folder = base.BaseFolder
-	local baseModel: Model = baseFolder.Base
-	local container: Folder = baseModel.Components.RollStand
 	BaseServiceUtils.showInstance(container, true)
-
 	self:_Refresh()
 
 	return self
@@ -79,26 +77,19 @@ end
 --------------------------------------------------
 
 function RollStandServer.Roll(self: RollStandServer)
-	local rollData: RollData = self.Base.BaseData.rollData
-	local unlockedCount = rollData.unlockedCount
 	local playerLuck = self:GetRollLuck()
-	local owner: Player = self.Base.Owner
+	local owner: Player = self.Owner
 
 	local rollResult: RollResult = {
 		slots = {},
 		cutsceneSlotIndex = nil,
 	}
 
-	rollData.slotData = {}
+	self.RollStandData.slotData.Set({})
 	self:_Refresh()
 
+	local unlockedCount = self.RollStandData.unlockedCount.Get()
 	for slotIndex = 1, unlockedCount do
-		if not rollData.slotData[slotIndex] then
-			rollData.slotData[slotIndex] = {}
-		end
-		local slotData = rollData.slotData[slotIndex]
-
-		-- get result
 		local animalKey = AnimalServiceUtils.rollAnimalResult(playerLuck)
 		if not animalKey then
 			warn("[Roll] bad result: ", animalKey)
@@ -110,7 +101,9 @@ function RollStandServer.Roll(self: RollStandServer)
 			isNew = AnimalService:discoveredAnimal(owner, animalKey) == false,
 		}
 
-		slotData.definitionKey = animalKey
+		self.RollStandData.slotData[slotIndex].Set({
+			definitionKey = animalKey
+		})
 	end
 
 	remotes.RollAnimal:FireClient(owner, rollResult)
@@ -121,15 +114,8 @@ function RollStandServer.Roll(self: RollStandServer)
 end
 
 function RollStandServer.BuySlotAnimal(self: RollStandServer, slotIndex: number)
-	local owner: Player = self.Base.Owner
-	local profile: Profile = DataService:GetProfile(owner)
-	if not profile then
-		warn("[BuySlotAnimal] No profile found for player:", owner)
-		return
-	end
-
-	local rollData: RollData = profile.base.rollData
-	local slotData = rollData and rollData.slotData[slotIndex]
+	local owner = self.Owner
+	local slotData = self.RollStandData.slotData[slotIndex].Get()
 	if not slotData or not slotData.definitionKey then
 		return
 	end
@@ -141,7 +127,7 @@ function RollStandServer.BuySlotAnimal(self: RollStandServer, slotIndex: number)
 	end
 
 	local cost = 100 -- TODO: derive cost from AnimalUtil
-	if profile.currency.Money <= cost then
+	if Data[owner].currency.Money.Get() <= cost then
 		NotificationServiceServer:Error(owner, "Cannot buy!")
 		return
 	end
@@ -152,9 +138,12 @@ function RollStandServer.BuySlotAnimal(self: RollStandServer, slotIndex: number)
 		return
 	end
 
-	DataService:IncrementCurrency(owner, "Money", -cost, "Buy Animal", false)
+	Data[owner].currency.Money.Decrement(cost, {
+		TransactionType = Enum.AnalyticsEconomyTransactionType.Gameplay,
+		ItemSku = "Buy Roll Animal"
+	})
 
-	rollData.slotData[slotIndex] = nil
+	self.RollStandData.slotData[slotIndex].Set(nil)
 	self:_Refresh()
 end
 
@@ -167,30 +156,22 @@ end
 --------------------------------------------------
 
 function RollStandServer.GetRollLuck(self: RollStandServer): number
-	local owner: Player = self.Base.Owner
-
 	local total = 1
 
 	-- roll luck upgrade
-	local rollData: RollData = self.Base.BaseData.rollData
-	local rollLuck = rollData.rollLuck
+	local rollLuck = self.RollStandData.rollLuck.Get()
 	total += math.max(rollLuck, 0)
 
 	return total
 end
 
 function RollStandServer._Refresh(self: RollStandServer)
-	local baseFolder: Folder = self.Base.BaseFolder
-	local baseModel: Model = baseFolder:WaitForChild("Base")
-	local container: Folder = baseModel.Components.RollStand
-	local slots: Folder = container.Slots
-
-	local rollData: RollData = self.Base.BaseData.rollData
+	local rollData = self.RollStandData.Get()
 	local unlockedCount = rollData.unlockedCount
-	local rollLuck = rollData.rollLuck
 
-	-- iterate through stands
-	for _, slot in slots:GetChildren() do
+	-- iterate through slots
+	local slotsContainer: Folder = self.Container.Slots
+	for _, slot in slotsContainer:GetChildren() do
 		local slotIndex = tonumber(slot.Name)
 		local model = slot:FindFirstChild("Model")
 

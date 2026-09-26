@@ -3,15 +3,15 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local NotificationServiceServer = require(ServerScriptService.Features.Notification.NotificationServiceServer)
 local AnimalServiceServer = require(ServerScriptService.Features.Animal.AnimalServiceServer)
---local BaseServiceServer = require(ServerScriptService.Features.Base.BaseServiceServer)
+local BaseServiceServer = require(ServerScriptService.Features.Base.BaseServiceServer)
 
 NotificationServiceServer:Init()
 AnimalServiceServer:Init()
--- BaseServiceServer:Init()
+BaseServiceServer:Init()
 
 NotificationServiceServer:Start()
 AnimalServiceServer:Start()
--- BaseServiceServer:Start()
+BaseServiceServer:Start()
 
 
 local Cmdr = require(ServerScriptService.ServerPackages.Cmdr)

@@ -2,15 +2,16 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterGui = game:GetService("StarterGui")
 local Trove = require(ReplicatedStorage.Packages.Trove)
 
+
+local DataTemplate = require(ReplicatedStorage.Source.Game.DataTemplate)
 local AnimalServiceUtil = require(ReplicatedStorage.Source.Features.Animal.AnimalServiceUtils)
-local ProfileTemplate = require(ReplicatedStorage.Source.Features.Data.ProfileTemplate)
 local Abbreviate = require(ReplicatedStorage.Source.Core.Util.Abbreviate)
 local GradientSpinner = require(ReplicatedStorage.Source.Core.UI.GradientSpinner)
 
 local AnimalAssets: Folder = ReplicatedStorage.Assets.Animals
 
 -- Types
-type AnimalData = ProfileTemplate.AnimalData
+type AnimalData = DataTemplate.AnimalData
 
 
 local AnimalBillboard = {}
@@ -23,7 +24,7 @@ export type AnimalBillboard = typeof(setmetatable({} :: {
     
 }, AnimalBillboard))
 
-function AnimalBillboard.new(root: Part, animalData: AnimalData): AnimalBillboard
+function AnimalBillboard.new(root: Part, animalData: AnimalData): AnimalBillboard?
     local self = setmetatable({}, AnimalBillboard)
     self.trove = Trove.new()
     self.gradientTrove = self.trove:Extend()
