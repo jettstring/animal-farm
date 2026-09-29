@@ -37,8 +37,16 @@ function DroneServer.new(floorFolder: Folder, animalStands: { [number]: AnimalSt
     self.floorFolder = floorFolder
     self.animalStands = animalStands
     self.floorUpgrades = floorUpgrades
-    self.state = nil
     self.direction = 1
+
+    local now = workspace:GetServerTimeNow()
+    self:setState({
+        phase = "Idle",
+        fromStand = 1,
+        toStand = 1,
+        phaseStart = now,
+        phaseEnd = now,
+    })
 
     return self
 end
@@ -47,13 +55,24 @@ function DroneServer.update(self: DroneServer, now: number): CollectedEgg?
     local state = self.state
     local phase = state.phase
     local toStand = state.toStand
-    local fromStand = state.fromStand
     local phaseEnd = state.phaseEnd
-    local phaseStart = state.phaseStart
+    local dir = self.direction
     
     if now < phaseEnd then
-        -- re-check for new target stand mid phase
-        -- if new target new then change target stand and recompute new endTime
+        -- re-check for new target stand mid phase thats closer than current target
+        -- if so then change target stand and recompute new endTime
+        if phase == "Moving" then
+            local closer = self:getClosestReadyAhead(state.fromStand, dir, now)
+            if closer and (closer.StandIndex - state.fromStand) * dir < (toStand - state.fromStand) * dir then
+                self:setState({
+                    phase = "Moving",
+                    fromStand = state.fromStand,
+                    toStand = closer.StandIndex,
+                    phaseStart = state.phaseStart,
+                    phaseEnd = state.phaseStart + math.abs(closer.StandIndex - state.fromStand) * self:getStepTime(),
+                })
+            end
+        end
 
         return nil -- mid phase
     end
@@ -69,7 +88,20 @@ function DroneServer.update(self: DroneServer, now: number): CollectedEgg?
         end
     end
 
-    -- get next target stand ..
+    -- arrived (or idling) at toStand - if it's ready right now, stop and collect it
+    local hereStand = self.animalStands[toStand]
+    if phase ~= "Collecting" and hereStand and hereStand:IsEggReady(now) then
+        self:setState({
+            phase = "Collecting",
+            fromStand = toStand,
+            toStand = toStand,
+            phaseStart = now,
+            phaseEnd = now + self:getCollectTime(),
+        })
+        return collected
+    end
+
+    -- get next target
 
     -- if target in current direction
         -- set new state to moving towards target
@@ -79,7 +111,32 @@ function DroneServer.update(self: DroneServer, now: number): CollectedEgg?
         -- current stand is the only stand
         -- change state to idle
 
-  
+    local target = self:getTargetInDirection(toStand, self.direction, now)
+    if not target then
+        self.direction = -self.direction
+        target = self:getTargetInDirection(toStand, self.direction, now)
+    end
+
+    if target then
+        self:setState({
+            phase = "Moving",
+            fromStand = toStand,
+            toStand = target.StandIndex,
+            phaseStart = now,
+            phaseEnd = now + math.abs(target.StandIndex - toStand) * self:getStepTime(),
+        })
+    else
+        if phase ~= "Idle" then
+            self:setState({
+                phase = "Idle",
+                fromStand = toStand,
+                toStand = toStand,
+                phaseStart = now,
+                phaseEnd = now,
+            })
+        end
+    end
+
     return collected
 end
 
@@ -87,18 +144,28 @@ end
 function DroneServer.setState(self: DroneServer, state: DroneState)
     self.state = state
     self.floorFolder:SetAttribute("DroneState", HttpService:JSONEncode(state))
+
+    print("[DroneServer] State updated:", HttpService:JSONEncode(state))
 end
 
-function DroneServer.getTargetInDirection(self: DroneServer, dir: number): AnimalStandServer? -- should this take in currentIndex, and current time? answer:
-    local state = self.state
-
+function DroneServer.getTargetInDirection(self: DroneServer, fromIndex: number, dir: number, now: number): AnimalStandServer?
     -- check for any unlocked stands in current direction
     -- if yes
-        -- check for closest ready stand in that direction
+        -- check for closest ready stand in that direction   
             -- if yes return
         -- else return outer most unlocked in current direction
     
-    
+    local closestReady = self:getClosestReadyAhead(fromIndex, dir, now)
+    if closestReady then
+        return closestReady
+    end
+
+    local furthest = self:getFurthestUnlocked(dir)
+    if furthest and furthest.StandIndex ~= fromIndex then
+        return furthest
+    end
+
+    return nil
 end
 
 function DroneServer.getClosestReadyAhead(self: DroneServer, fromIndex: number, dir: number, now: number)
@@ -115,7 +182,7 @@ function DroneServer.getClosestReadyAhead(self: DroneServer, fromIndex: number, 
     return nil
 end
 
-function DroneServer.getFurthestUnlockedAhead(self: DroneServer, dir: number): AnimalStandServer?
+function DroneServer.getFurthestUnlocked(self: DroneServer, dir: number): AnimalStandServer?
     -- return the outer most unlocked stand in the given direction
     local startIndex = dir == 1 and 1 or #self.animalStands
     local furthestUnlockedStand: AnimalStandServer? = nil

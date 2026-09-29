@@ -37,10 +37,19 @@
             "BaseServiceUtils": {
               "$path": "src/features/base/BaseServiceUtils.luau"
             },
+            "Classes": {
+              "$className": "Folder",
+              "DroneClient": {
+                "$path": "src/features/base/Classes/DroneClient.luau"
+              }
+            },
             "Modules": {
               "$className": "Folder",
               "BaseTypes": {
                 "$path": "src/features/base/modules/BaseTypes.luau"
+              },
+              "BaseUpgrades": {
+                "$path": "src/features/base/modules/BaseUpgrades.luau"
               },
               "DroneUtils": {
                 "$path": "src/features/base/modules/DroneUtils.luau"
@@ -101,6 +110,9 @@
           "Client": {
             "$path": "src/startup/Client.client.luau"
           }
+        },
+        "UI": {
+          "$path": "src/UI.luau"
         }
       },
       "Packages": {

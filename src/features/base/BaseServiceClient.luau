@@ -5,10 +5,12 @@ local Debris = game:GetService("Debris")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 
+
 local Observers = require(ReplicatedStorage.Packages.Observers)
 local Trove = require(ReplicatedStorage.Packages.Trove)
 local Abbreviate = require(ReplicatedStorage.Source.Core.Util.Abbreviate)
 local VfxUtils = require(ReplicatedStorage.Source.Core.Util.VfxUtils)
+local GradientSpinner = require(ReplicatedStorage.Source.Core.UI.GradientSpinner)
 
 local function quadraticBezier(p0: Vector3, p1: Vector3, p2: Vector3, t: number): Vector3
 	return p0:Lerp(p1, t):Lerp(p1:Lerp(p2, t), t)
@@ -30,6 +32,11 @@ local BaseTypes = require(ReplicatedStorage.Source.Features.Base.Modules.BaseTyp
 local AnimalBillboard = require(ReplicatedStorage.Source.Features.Animal.Classes.AnimalBillboard)
 local BaseServiceUtils = require(ReplicatedStorage.Source.Features.Base.BaseServiceUtils)
 local AnimalServiceUtils = require(ReplicatedStorage.Source.Features.Animal.AnimalServiceUtils)
+local BaseUpgrades = require(ReplicatedStorage.Source.Features.Base.Modules.BaseUpgrades)
+
+
+-- Classes
+local DroneClient = require(ReplicatedStorage.Source.Features.Base.Classes.DroneClient)
 
 -- Base Assets
 local Assets: Folder = ReplicatedStorage:WaitForChild("Assets")
@@ -47,12 +54,14 @@ local remotes = {
 	RollAnimal = remotesFolder.Base.RollAnimal,
 	BuySlotAnimal = remotesFolder.Base.BuySlotAnimal,
 	StealSlotAnimal = remotesFolder.Base.StealSlotAnimal,
-	BuyFloor = remotesFolder.Base.BuyFloor,
 	BuyAnimalStand = remotesFolder.Base.BuyAnimalStand,
 	PlaceAnimal = remotesFolder.Base.PlaceAnimal,
 	BuyAnimalLevel = remotesFolder.Base.BuyAnimalLevel,
 	RemoveAnimal = remotesFolder.Base.RemoveAnimal,
 	SellEggs = remotesFolder.Base.SellEggs,
+	BuyFloor = remotesFolder.Base.BuyFloor,
+	UpgradeFloor = remotesFolder.Base.UpgradeFloor,
+	UpgradeRollStand = remotesFolder.Base.UpgradeRollStand,
 }
 
 --------------------------------------------------
@@ -75,7 +84,6 @@ type AnimalBillboard = AnimalBillboard.AnimalBillboard
 -- STATE --
 --------------------------------------------------
 local BaseController = {}
-BaseController.Controllers = {}
 BaseController.Signals = {}
 
 
@@ -93,7 +101,115 @@ local standDisplayTrove = Trove.new()
 -- PRIVATE FUNCTIONS --
 --------------------------------------------------
 
-local function playRollReveal(slotParts: {Part}, rollResults)
+local function mountUpgradeSigns(baseFolder: Folder)
+	local baseModel = baseFolder:WaitForChild("Base")
+	local signContainer = baseModel.Components.Signs
+
+	-- floor upgrade signs
+	local floorsContainer: Folder = baseModel:WaitForChild("Floors")
+	for _, floorFolder: Folder in floorsContainer:GetChildren() do
+		local floorIndex: number = tonumber(floorFolder.Name)
+		if not floorIndex then continue end
+		
+		Observers.observeAttribute(floorFolder, "Active", function(isActive: boolean)
+			local floorTrove = Trove.new()
+			local floorUpgradeSign = floorFolder:WaitForChild("FloorUpgradeSign")
+			local options = floorUpgradeSign.Display.SurfaceGui.Options :: Frame
+			BaseServiceUtils.showInstance(floorUpgradeSign, isActive)
+			
+			local floorUpgradesNode = Data.base.floors[floorIndex].upgrades
+			for upgradeName in BaseUpgrades.floorUpgrades do
+				local upgradeFrame = options:FindFirstChild(upgradeName) :: Frame
+				local amountLabel = upgradeFrame.AmountLabel :: TextLabel
+				local buyButton = upgradeFrame.Buy :: ImageButton
+				local priceLabel = buyButton.PriceLabel :: TextLabel
+
+				floorTrove:Add(buyButton.Activated:Connect(function()
+					remotes.UpgradeFloor:FireServer(floorIndex, upgradeName)
+				end))
+
+				floorTrove:Add(floorUpgradesNode[upgradeName].Observe(function(level: number?)
+					local currentLevel = level or 1
+					local nextLevelPrice = BaseUpgrades.getFloorUpgradePrice(upgradeName, currentLevel + 1, floorIndex)
+
+					if nextLevelPrice then
+						amountLabel.Text = string.format("%d > %d", currentLevel, currentLevel + 1)
+						priceLabel.Text = string.format("$%s", Abbreviate.AbbreviateNumber(nextLevelPrice, 2))
+					else
+						amountLabel.Text = string.format("Max (%d)", currentLevel)
+						priceLabel.Text = "Max"
+					end
+				end))
+			end
+			
+			return function() floorTrove:Destroy() end
+		end)
+	end
+
+
+	-- roll upgrades
+	do 
+		local rollUpgradeSign = signContainer.RollUpgrades :: Model
+		local options = rollUpgradeSign.Display.SurfaceGui.Options :: Frame
+
+		BaseServiceUtils.showInstance(rollUpgradeSign, true)
+		
+		for upgradeName in BaseUpgrades.rollUpgrades do
+			local upgradeFrame = options:FindFirstChild(upgradeName) :: Frame
+			local amountLabel = upgradeFrame.AmountLabel :: TextLabel
+			local buyButton = upgradeFrame.Buy :: ImageButton
+			local priceLabel = buyButton.PriceLabel :: TextLabel
+
+			buyButton.Activated:Connect(function()
+				remotes.UpgradeRollStand:FireServer(upgradeName)
+			end)
+
+			Data.base.rollStandData.upgrades[upgradeName].Observe(function(level: number?)
+				local currentLevel = level or 1
+				local nextLevelPrice = BaseUpgrades.getRollUpgradePrice(upgradeName, currentLevel + 1)
+
+				if nextLevelPrice then
+					if upgradeName == "rollLuck" then
+						amountLabel.Text = string.format("%dx > %dx", currentLevel, currentLevel + 1)
+					else
+						amountLabel.Text = string.format("%d > %d", currentLevel, currentLevel + 1)
+					end
+					priceLabel.Text = string.format("$%s", Abbreviate.AbbreviateNumber(nextLevelPrice, 2))
+				else
+					amountLabel.Text = string.format("Max (%d)", currentLevel)
+					priceLabel.Text = "Max"
+				end
+			end)
+		end
+	end
+
+
+	-- floor unlocks
+	do 
+		local buyFloorSign = signContainer.PlotFloors :: Model
+		local display = buyFloorSign.Display.SurfaceGui.Display :: Frame
+		local amountLabel = display.AmountLabel :: TextLabel
+		local buyButton = display.Buy :: ImageButton
+		local priceLabel = buyButton.PriceLabel :: TextLabel
+
+		BaseServiceUtils.showInstance(buyFloorSign, true)
+
+		buyButton.Activated:Connect(function()
+			remotes.BuyFloor:FireServer()
+		end)
+
+		Data.base.unlockedFloors.Observe(function(unlockedFloors: number?)
+			unlockedFloors = unlockedFloors or 1
+			local nextFloorPrice = BaseUpgrades.floors[unlockedFloors + 1] and BaseUpgrades.floors[unlockedFloors + 1].price
+			if nextFloorPrice then
+				amountLabel.Text = string.format("%d > %d", unlockedFloors, unlockedFloors + 1)
+				priceLabel.Text = string.format("$%s", Abbreviate.AbbreviateNumber(unlockedFloors, 2))
+			else
+				amountLabel.Text = string.format("Max (%d)", unlockedFloors)
+				priceLabel.Text = "Max"
+			end
+		end)
+	end
 	
 end
 
@@ -127,10 +243,19 @@ local function showStandDisplay(standFolder: Folder, floorIndex: number, isOwner
 	local buy10Button = options:FindFirstChild("Buy10")
 
 	nameLabel.Text = animalDef.displayName
-	rarityLabel.Text = animalDef.rarity
-	billboard.Adornee = animalMiddle
-	billboard.Parent = playerGui   
+	
 
+	local rarityInfo = AnimalServiceUtils.resolveRarityInfo(defKey)
+	rarityLabel.Text = rarityInfo.name or "N/A"
+ 	if rarityInfo then
+		local colorSequence = rarityInfo.gradient
+		local rarityGradient = trove:Add(Instance.new("UIGradient"))
+		rarityGradient.Color = colorSequence or ColorSequence.new(Color3.new(1, 1, 1))
+		trove:Add(GradientSpinner.spin(rarityGradient, 50))
+		rarityGradient.Parent = rarityLabel
+ 	end
+		
+	
 	trove:Add(Observers.observeAttribute(standFolder, "Level", function(level: number)
 		levelLabel.Text = string.format("Level %s", Abbreviate.AbbreviateNumber(level, 1))
 
@@ -155,6 +280,7 @@ local function showStandDisplay(standFolder: Folder, floorIndex: number, isOwner
 		end
 
 		-- TODO: gradient effects
+
 	end))
 
 	trove:Add(Observers.observeAttribute(standFolder, "MoneyPerEgg", function(moneyPerEgg: number)
@@ -177,6 +303,8 @@ local function showStandDisplay(standFolder: Folder, floorIndex: number, isOwner
 	end
 
 	currentStand = standFolder
+	billboard.Adornee = animalMiddle
+	billboard.Parent = playerGui   
 
 	return function() trove:Clean() end
 end
@@ -296,190 +424,6 @@ local function mountAnimalStand(standFolder: Folder, floorIndex: number, owner: 
 		
 		return function() trove:Destroy() end
 	end)
-end
-
-local function mountDrone(floorFolder: Folder)
-	local trove = Trove.new()
-	
-	local floorIndex = tonumber(floorFolder.Name)
-	
-	local waypointParts: {[number]: Part} = {}
-	local standsContainer = floorFolder:WaitForChild("AnimalStands")
-	for _, standFolder: Folder in standsContainer:GetChildren() do
-		local standIndex: number = tonumber(standFolder.Name)
-		if not standIndex then warn("[mountDrone] invalid stand index: ", standIndex) continue end
-		if not waypointParts[standIndex] then
-			waypointParts[standIndex] = standFolder:WaitForChild("DroneWaypoint")
-		end
-	end
-
-	-- setup
-	local droneAssets = BaseAssets:WaitForChild("Drone")
-	local animations = droneAssets:WaitForChild("Animations")
-	
-	local droneRoot = trove:Add(Instance.new("Part"))
-	droneRoot.Name = "DroneRoot"
-	droneRoot.Anchored = true
-	droneRoot.CanCollide = false
-	droneRoot.Transparency = 0
-	droneRoot.Material = Enum.Material.ForceField
-	droneRoot.Parent = floorFolder
-	
-	local droneModel = trove:Add(droneAssets:WaitForChild("DroneModel"):Clone())
-	local droneBody = droneModel:WaitForChild("Body")
-	local animator = droneModel.AnimationController:WaitForChild("Animator")
-
-	local weld = Instance.new("WeldConstraint")
-	weld.Part0 = droneRoot
-	weld.Part1 = droneModel.PrimaryPart
-	weld.Parent = droneModel.PrimaryPart
-	droneModel:PivotTo(droneRoot.CFrame)
-	droneModel.Parent = floorFolder
-	
-	local tracks = {
-		left = animator:LoadAnimation(animations.Left),
-		right = animator:LoadAnimation(animations.Right),
-		vacuum = animator:LoadAnimation(animations.Vacuuming)
-	}
-	
-	local droneIndex = floorFolder:GetAttribute("DroneIndex") or 1
-	local targetIndex = droneIndex
-	
-	
-	local facing = nil -- nil until first move
-	local function face(dir)
-		local faceTrack = dir == 1 and tracks.right or tracks.left
-		for _, track in tracks do
-			track:Stop()
-		end
-		faceTrack:Play(0.15)
-		print("playing ", faceTrack)
-		facing = dir
-	end
-	
-	trove:Add(task.spawn(function()
-		while true do
-			if droneIndex == targetIndex then
-				task.wait(0.1)
-			else
-				local dir = math.sign(targetIndex - droneIndex)
-				local nextIndex = droneIndex + dir
-				local stepTime = floorFolder:GetAttribute("DroneStepTime") or 1
-				
-				face(dir)
-				
-				local tween = TweenService:Create(droneRoot, 
-					TweenInfo.new(stepTime, Enum.EasingStyle.Linear),
-					{ CFrame = waypointParts[nextIndex].CFrame }
-				)
-				tween:Play()
-				tween.Completed:Wait()
-				droneIndex = nextIndex
-			end
-		end
-	end))
-	
-	trove:Add(Observers.observeAttribute(floorFolder, "DroneIndex", function(standIndex: string)
-		targetIndex = standIndex
-	end))
-	
-	trove:Add(Observers.observeAttribute(floorFolder, "DroneVacuuming", function(isVacuuming: boolean)
-		if not isVacuuming then return end
-		
-		local collectSpeed: number = floorFolder:GetAttribute("DroneCollectTime")
-		tracks.left:Stop(); tracks.right:Stop()
-		tracks.vacuum:Play(1, 1, collectSpeed)
-		
-		
-		local standFolder = standsContainer[targetIndex]
-		local definitionKey = standFolder and standFolder:GetAttribute("DefinitionKey")
-		if not definitionKey then
-			warn("[mountDrone] missing stand folder definitionKey for index: ", targetIndex)
-		end
-		
-		-- crate conveyor eggs
-		local animalData: AnimalData = definitionKey and { definitionKey = definitionKey }
-		if animalData then
-			trove:Add(task.delay(0.1, function()
-				local travelTime = BaseServiceUtils.getConveyorTravelTime(floorIndex, targetIndex) 
-
-				for i = 1, 5 do
-					local eggModel = AnimalServiceUtils.getEggModel(animalData)
-					if not eggModel then return end
-					Debris:AddItem(eggModel, travelTime)
-
-					local primaryPart = eggModel.PrimaryPart
-					if not primaryPart then
-						eggModel:Destroy()
-						warn("[mountDrone] missing primary part for egg model")
-						return
-					end
-					eggModel:AddTag("EggModel")
-
-					for _, basePart: BasePart in eggModel:QueryDescendants("BasePart") do
-						local weld = Instance.new("WeldConstraint")
-						weld.Part0 = primaryPart
-						weld.Part1 = basePart
-						weld.Parent = basePart
-						basePart.Anchored = false
-						basePart.CollisionGroup = "AssemblyEggs"
-						basePart.CanCollide = basePart ~= primaryPart
-						basePart.Massless = true
-					end
-
-
-					eggModel:PivotTo(droneModel.Body.EggPart:GetPivot())
-					eggModel.Parent = workspace
-
-					task.wait(0.35)
-				end
-
-			end))
-		end
-		
-		
-		return function() 
-			tracks.vacuum:Stop()
-		end
-	end))
-	
-	return function() trove:Destroy() end
-end
-
-local function mountFloors(baseFolder: Folder, owner: Player)
-	local trove = Trove.new()
-	local isOwner = owner == player
-	
-	local baseModel = baseFolder:WaitForChild("Base")
-	local floorsContainer: Folder = baseModel:WaitForChild("Floors")
-	
-	for _, floorFolder: Folder in floorsContainer:GetChildren() do
-		local floorIndex: number = tonumber(floorFolder.Name)
-		if not floorIndex then continue end
-		
-		trove:Add(Observers.observeAttribute(floorFolder, "Active", function(isActive: boolean)
-			local floorTrove = trove:Extend()
-			local floorUpgradeSign = floorFolder:WaitForChild("FloorUpgradeSign")
-			BaseServiceUtils.showInstance(floorUpgradeSign, isOwner and isActive)
-			
-			if isOwner and isActive then floorTrove:Add(mountDrone(floorFolder)) end
-			
-			return function() floorTrove:Destroy() end
-		end))
-		
-		-- animal stands
-		local standsContainer = floorFolder:WaitForChild("AnimalStands")
-		for _, standFolder: Folder in standsContainer:GetChildren() do
-			local standIndex: number = tonumber(standFolder.Name)
-			if not standIndex then continue end
-
-			trove:Add(mountAnimalStand(standFolder, floorIndex, owner))
-		end
-		
-		
-	end
-	
-	return function() trove:Destroy() end
 end
 
 local function mountEggCollector(baseFolder: Folder, owner: Player)
@@ -930,6 +874,39 @@ local function mountRollStand(baseFolder: Folder, owner: Player)
 	return function() trove:Destroy() end
 end
 
+local function mountFloors(baseFolder: Folder, owner: Player)
+	local trove = Trove.new()
+	local isOwner = owner == player
+	
+	local baseModel = baseFolder:WaitForChild("Base")
+	local floorsContainer: Folder = baseModel:WaitForChild("Floors")
+	
+	for _, floorFolder: Folder in floorsContainer:GetChildren() do
+		local floorIndex: number = tonumber(floorFolder.Name)
+		if not floorIndex then continue end
+		
+		trove:Add(Observers.observeAttribute(floorFolder, "Active", function(isActive: boolean)
+			local floorTrove = trove:Extend()
+			if isOwner and isActive then floorTrove:Add(DroneClient.new(floorFolder)) end
+			
+			return function() floorTrove:Destroy() end
+		end))
+		
+		-- animal stands
+		local standsContainer = floorFolder:WaitForChild("AnimalStands")
+		for _, standFolder: Folder in standsContainer:GetChildren() do
+			local standIndex: number = tonumber(standFolder.Name)
+			if not standIndex then continue end
+
+			trove:Add(mountAnimalStand(standFolder, floorIndex, owner))
+		end
+		
+		
+	end
+	
+	return function() trove:Destroy() end
+end
+
 local function mountBases()
 	Observers.observeTag("Base", function(baseFolder: Folder)
 		return Observers.observeAttribute(baseFolder, "Owner", function(ownerName)
@@ -945,6 +922,7 @@ local function mountBases()
 			
 			if isOwner then
 				mountSellStand(baseFolder)
+				mountUpgradeSigns(baseFolder)
 			end
 			
 			return function() trove:Destroy() end
@@ -963,8 +941,7 @@ end
 -- MAIN --
 --------------------------------------------------
 
-function BaseController.Init(self: BaseController, controllers)
-	self.Controllers = controllers
+function BaseController.Init(self: BaseController)
 	
 end
 

@@ -123,7 +123,7 @@ function BaseServer._setup(self: BaseServer)
 	end
 
 	-- setup components
-	self.RollStand = self.Trove:Add(RollStandServer.new(owner, components.RollStand, self.BaseData.rollStandData))
+	self.RollStand = self.Trove:Add(RollStandServer.new(owner, components.RollStand))
 
 	baseFolder:SetAttribute("Owner", owner.Name)
 	self.State.Active = true
@@ -159,7 +159,11 @@ function BaseServer.buildFloor(self: BaseServer, floorIndex: number)
 	if floorData.Get() == nil then
 		floorData.Set({
 			animalStands = {},
-			upgrades = {},
+			upgrades = {
+				droneSpeed = 1,
+				eggYield = 1,
+				eggGrowSpeed = 1,
+			},
 		})
 	end
 
@@ -227,7 +231,7 @@ end
 function BaseServer.collectQueue(self: BaseServer, now: number)
 	if not now then return end
 	for i, egg in self.EggQueue do
-		if egg.collectTimestamp <= now then
+		if egg.collectTime <= now then
 			self:IncrementCrateValue(egg.earnings)
 			table.remove(self.EggQueue, i)
 		end

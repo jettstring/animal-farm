@@ -1,3 +1,4 @@
+local EncodingService = game:GetService("EncodingService")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
@@ -53,21 +54,26 @@ type self = {
 	Trove: Trove.Trove,
 	Owner: Player,
 	Container: Folder,
-	RollStandData: Scribe.PlayerData<RollStandData>,
+	RollStandData: Scribe.PlayerData<typeof(DataTemplate.base.rollStandData)>,
 }
 
 export type RollStandServer = typeof(setmetatable({} :: self, RollStandServer))
 
-function RollStandServer.new(owner: Player, container: Folder, rollData: Scribe.PlayerData<RollStandData>)
+function RollStandServer.new(owner: Player, container: Folder)
 	local self = setmetatable({} :: self, RollStandServer)
 	self.Trove = Trove.new()
 
 	self.Owner = owner
 	self.Container = container
-	self.RollStandData = rollData
+	self.RollStandData = Data[owner].base.rollStandData
 
 	BaseServiceUtils.showInstance(container, true)
-	self:_Refresh()
+	self:refreshAllSlots()
+
+	self.Trove:Add(self.RollStandData.upgrades.rollSlots.Changed(function(newUnlockedAmount: number)
+		self:refreshSlot(newUnlockedAmount)
+	end))
+
 
 	return self
 end
@@ -86,10 +92,10 @@ function RollStandServer.Roll(self: RollStandServer)
 	}
 
 	self.RollStandData.slotData.Set({})
-	self:_Refresh()
+	self:refreshAllSlots()
 
-	local unlockedCount = self.RollStandData.unlockedCount.Get()
-	for slotIndex = 1, unlockedCount do
+	local unlockedSlots = self.RollStandData.upgrades.rollSlots.Get()
+	for slotIndex = 1, unlockedSlots do
 		local animalKey = AnimalServiceUtils.rollAnimalResult(playerLuck)
 		if not animalKey then
 			warn("[Roll] bad result: ", animalKey)
@@ -107,9 +113,9 @@ function RollStandServer.Roll(self: RollStandServer)
 	end
 
 	remotes.RollAnimal:FireClient(owner, rollResult)
-
+	print("Roll Luck", playerLuck)
 	task.delay(BaseServiceUtils.rollLength, function()
-		self:_Refresh()
+		self:refreshAllSlots()
 	end)
 end
 
@@ -144,7 +150,39 @@ function RollStandServer.BuySlotAnimal(self: RollStandServer, slotIndex: number)
 	})
 
 	self.RollStandData.slotData[slotIndex].Set(nil)
-	self:_Refresh()
+	self:refreshSlot(slotIndex)
+end
+
+function RollStandServer.refreshSlot(self: RollStandServer, slotIndex: number)
+	local rollData = self.RollStandData.Get()
+	local unlockedSlots = rollData.upgrades.rollSlots
+	local available = slotIndex <= unlockedSlots
+
+	local slotModel: Folder = self.Container.Slots:FindFirstChild(slotIndex)
+	if not slotModel then
+		warn("[refreshSlot] slot model not found for slotIndex: ", slotIndex)
+		return
+	end
+
+	if available then
+		local slotData = rollData.slotData[slotIndex]
+		local definitionKey = slotData and slotData.definitionKey
+		slotModel:SetAttribute("DefinitionKey", definitionKey)
+	else
+		slotModel:SetAttribute("DefinitionKey", nil)
+	end
+
+	-- show/hide slot
+	BaseServiceUtils.showInstance(slotModel, available)
+	slotModel:SetAttribute("Active", available)
+end
+
+function RollStandServer.refreshAllSlots(self: RollStandServer)
+	local slotsContainer = self.Container.Slots :: Folder
+	for _, slotModel in ipairs(slotsContainer:GetChildren()) do
+		local slotIndex = tonumber(slotModel.Name)
+		self:refreshSlot(slotIndex)
+	end
 end
 
 function RollStandServer.Destroy(self: RollStandServer)
@@ -156,39 +194,18 @@ end
 --------------------------------------------------
 
 function RollStandServer.GetRollLuck(self: RollStandServer): number
-	local total = 1
+	local added = 0
 
 	-- roll luck upgrade
-	local rollLuck = self.RollStandData.rollLuck.Get()
-	total += math.max(rollLuck, 0)
+	local rollLuck = self.RollStandData.upgrades.rollLuck.Get()
+	added += math.max(rollLuck, 0)
 
-	return total
+	-- TODO: pity luck
+
+	return math.max(added, 1)
 end
 
-function RollStandServer._Refresh(self: RollStandServer)
-	local rollData = self.RollStandData.Get()
-	local unlockedCount = rollData.unlockedCount
 
-	-- iterate through slots
-	local slotsContainer: Folder = self.Container.Slots
-	for _, slot in slotsContainer:GetChildren() do
-		local slotIndex = tonumber(slot.Name)
-		local model = slot:FindFirstChild("Model")
 
-		local available = slotIndex <= unlockedCount
-		slot:SetAttribute("Active", available)
-
-		if available then
-			local slotData = rollData.slotData[slotIndex]
-			local definitionKey = slotData and slotData.definitionKey
-			slot:SetAttribute("DefinitionKey", definitionKey)
-		else
-			slot:SetAttribute("DefinitionKey", nil)
-		end
-
-		-- show/hide slot
-		BaseServiceUtils.showInstance(model, available)
-	end
-end
 
 return RollStandServer

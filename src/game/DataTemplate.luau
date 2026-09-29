@@ -19,8 +19,7 @@ export type FloorData = {
 }
 
 export type RollStandData = {
-	unlockedCount: number,
-	rollLuck: number,
+    upgrades: {},
 	slotData: {[number]: AnimalData},
 }
 
@@ -50,17 +49,14 @@ return {
         crateValue = 0,
         eggsCollected = 0,
         
-        floors = {
-	        [1] = {
-				animalStands = {},
-				upgrades = {}
-			}
-        } :: { FloorData }, -- dense: floors unlock sequentially
+        floors = {} :: { FloorData }, -- dense: floors unlock sequentially
         
         rollStandData = {
-            unlockedCount = 2,
-            rollLuck = 1,
             slotData = {},
+            upgrades = {
+                rollSlots = 2,
+                rollLuck = 1,
+            },
         },
     },
 }

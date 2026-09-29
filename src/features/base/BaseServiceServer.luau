@@ -15,15 +15,16 @@ local NotificationService = require(ServerScriptService.Features.Notification.No
 -- Classes
 local BaseServer = require(ServerScriptService.Features.Base.Classes.BaseServer)
 
--- Utils
+-- Modules
 local BaseServiceUtils = require(ReplicatedStorage.Source.Features.Base.BaseServiceUtils)
 local AnimalServiceUtils = require(ReplicatedStorage.Source.Features.Animal.AnimalServiceUtils)
+local BaseUpgrades = require(ReplicatedStorage.Source.Features.Base.Modules.BaseUpgrades)
+
 
 local BaseFolders: Folder = workspace.Bases
 
 local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local remotes = {
-	BuyFloor = remotesFolder.Base.BuyFloor,
 	BuyAnimalStand = remotesFolder.Base.BuyAnimalStand,
 	PlaceAnimal = remotesFolder.Base.PlaceAnimal,
 	BuyAnimalLevel = remotesFolder.Base.BuyAnimalLevel,
@@ -31,6 +32,9 @@ local remotes = {
 	SellEggs = remotesFolder.Base.SellEggs,
 	RollAnimal = remotesFolder.Base.RollAnimal,
 	BuySlotAnimal = remotesFolder.Base.BuySlotAnimal,
+	BuyFloor = remotesFolder.Base.BuyFloor,
+	UpgradeFloor = remotesFolder.Base.UpgradeFloor,
+	UpgradeRollStand = remotesFolder.Base.UpgradeRollStand,
 }
 
 --------------------------------------------------
@@ -178,6 +182,98 @@ local function attemptBuySlotAnimal(player: Player, slotIndex: number)
 	rollStand:BuySlotAnimal(slotIndex)
 end
 
+local function attemptBuyNextFloor(player: Player)
+	local base: BaseServer = BaseService.PlayerBases[player]
+	if not base then warn("[attemptBuyNextFloor] missing base") return end
+
+	local currentFloorIndex = Data[player].base.unlockedFloors.Get()
+	local nextFloorCost = BaseUpgrades.floors[currentFloorIndex + 1] and BaseUpgrades.floors[currentFloorIndex + 1].price
+	if not nextFloorCost then
+		warn("[attemptBuyNextFloor] missing floor cost for floor:", currentFloorIndex)
+		return
+	end
+
+	if Data[player].currency.Money.Get() < nextFloorCost then
+		NotificationService:Error(player, "Cannot afford next floor!")
+		return
+	end
+
+	local success = base:UnlockNextFloor()
+	if not success then
+		NotificationService:Error(player, "Failed to unlock next floor!")
+		return
+	end
+
+	Data[player].currency.Money.Decrement(nextFloorCost, {
+		TransactionType = Enum.AnalyticsEconomyTransactionType.Gameplay,
+		ItemSku = "Buy Floor",
+	})
+end
+
+local function attemptBuyFloorUpgrade(player: Player, floorIndex: number, upgradeType: string)
+	local base: BaseServer = BaseService.PlayerBases[player]
+	if not base then
+		warn("[attemptBuyFloorUpgrade] missing base")
+		return
+	end
+
+	-- floor unlock guard
+	if not base:OwnsFloor(floorIndex) then
+		warn("[attemptBuyFloorUpgrade] player does not own floor:", floorIndex)
+		return
+	end
+
+	local floorNode = Data[player].base.floors[floorIndex]
+	local currentLevel = floorNode.upgrades[upgradeType].Get()
+	if not currentLevel then
+		warn("[attemptBuyFloorUpgrade] missing current level for upgrade type:", upgradeType)
+		return
+	end
+	
+	local upgradePrice = BaseUpgrades.getFloorUpgradePrice(upgradeType, currentLevel + 1, floorIndex)
+	if not upgradePrice then return end
+	if Data[player].currency.Money.Get() < upgradePrice then
+		NotificationService:Error(player, "Cannot afford!")
+		return
+	end
+
+	floorNode.upgrades[upgradeType].Increment(1)
+	
+	Data[player].currency.Money.Decrement(upgradePrice, {
+		TransactionType = Enum.AnalyticsEconomyTransactionType.Gameplay,
+		ItemSku = "Floor Upgrade",
+	})
+end
+
+local function attemptBuyRollUpgrade(player: Player, upgradeType: string)
+	local base: BaseServer = BaseService.PlayerBases[player]
+	if not base then
+		warn("[attemptBuyRollUpgrade] missing base")
+		return
+	end
+
+	local currentLevel = Data[player].base.rollStandData.upgrades[upgradeType].Get()
+	if not currentLevel then
+		warn("[attemptBuyRollUpgrade] missing current level for upgrade type:", upgradeType)
+		return
+	end
+
+	local upgradePrice = currentLevel and BaseUpgrades.getRollUpgradePrice(upgradeType, currentLevel + 1)
+	if not upgradePrice then return end
+
+	if Data[player].currency.Money.Get() < upgradePrice then
+		NotificationService:Error(player, "Cannot afford!")
+		return
+	end
+
+	Data[player].base.rollStandData.upgrades[upgradeType].Increment(1)
+
+	Data[player].currency.Money.Decrement(upgradePrice, {
+		TransactionType = Enum.AnalyticsEconomyTransactionType.Gameplay,
+		ItemSku = "Roll Upgrade",
+	})
+end
+
 local function _cleanupBase(baseFolder: Folder)
 	local baseModel: Model = baseFolder.Base
 	
@@ -286,6 +382,9 @@ function BaseService.Start(self: BaseService)
 	remotes.SellEggs.OnServerEvent:Connect(attemptSellEggs)
 	remotes.RollAnimal.OnServerEvent:Connect(attemptRollAnimal)
 	remotes.BuySlotAnimal.OnServerEvent:Connect(attemptBuySlotAnimal)
+	remotes.BuyFloor.OnServerEvent:Connect(attemptBuyNextFloor)
+	remotes.UpgradeFloor.OnServerEvent:Connect(attemptBuyFloorUpgrade)
+	remotes.UpgradeRollStand.OnServerEvent:Connect(attemptBuyRollUpgrade)
 end
 
 type BaseService = typeof(BaseService) & {}
